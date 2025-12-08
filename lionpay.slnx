@@ -1,0 +1,6 @@
+<Solution>
+    <Project Path="aspire-apphost/LionPay.AppHost.csproj" />
+    <Project Path="aspire-servicedefaults/LionPay.ServiceDefaults.csproj" />
+    <Project Path="aspire-tests/LionPay.Tests.csproj" />
+    <Project Path="lionpay-wallet/LionPay.Wallet.csproj" />
+</Solution>
