@@ -4,7 +4,7 @@ spring:
 aws:
   region: ap-northeast-2
   dynamodb:
-    endpoint: http://localhost:8000  # 로컬일 때, 실 AWS면 제거
+    endpoint: ${DYNAMODB_URL}  # 로컬일 때, 실 AWS면 제거
     access-key: ${AWS_ACCESS_KEY_ID:}
     secret-key: ${AWS_SECRET_ACCESS_KEY:}
     table:

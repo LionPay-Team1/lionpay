@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: lionpay-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: lionpay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - "./docker/postgres:/var/lib/postgresql/data"
+    networks:
+      - lionpay-network
+    restart: always
+
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: lionpay-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    networks:
+      - lionpay-network
+    restart: always
+    # auth-service:
+    #   image: lionpay/auth-service:dev
+    #   container_name: lionpay-auth
+    #   ports:
+    #     - "8080:8080"
+    # environment:
+    #   AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+    #   AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+    #   REGION: 'eu-west-1'
+    # depends_on:
+    #   - dynamodb
+    #   networks:
+    #     - lionpay-network
+
+    # wallet-service:
+    #   image: lionpay/wallet-service:dev
+    #   container_name: lionpay-wallet
+    #   ports:
+    #     - "8081:8081"
+    #   depends_on:
+    #     - postgres
+    #   networks:
+    #     - lionpay-network
+
+    # app:
+    #   image: lionpay/app:dev
+    #   container_name: lionpay-app
+    #   ports:
+    #     - "8082:8082"
+    #   depends_on:
+    #     - auth-service
+    #     - wallet-service
+    #   networks:
+    #     - lionpay-network
+
+    # management-service:
+    #   image: lionpay/management-service:dev
+    #   container_name: lionpay-management
+    #   ports:
+    #     - "8083:8083"
+    #   depends_on:
+    #     - auth-service
+    #     - wallet-service
+    #   networks:
+    #     - lionpay-network
+
+networks:
+  lionpay-network:
