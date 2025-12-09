@@ -8,14 +8,20 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Optional;
 
 @Repository
 public class RefreshTokenRepository {
 
     private final DynamoDbTable<RefreshTokenEntity> table;
 
-    public RefreshTokenRepository(DynamoDbEnhancedClient client) {
-        this.table = client.table("lionpay-refresh-token",
+    /**
+     * 제안: 테이블 이름을 application.yml에서 주입받아 사용하면 유연성이 향상됩니다.
+     */
+    public RefreshTokenRepository(DynamoDbEnhancedClient client, @Value("${aws.dynamodb.table.refresh-token}") String tableName) {
+        this.table = client.table(tableName,
                 TableSchema.fromBean(RefreshTokenEntity.class));
     }
 
@@ -30,5 +36,22 @@ public class RefreshTokenRepository {
                 QueryConditional.keyEqualTo(Key.builder().partitionValue(pk).build())
         ));
         pages.items().forEach(table::deleteItem);
+    }
+
+    /**
+     * 제안: 로그아웃 로직을 위해 PK와 SK로 특정 토큰을 조회하는 메서드를 추가합니다.
+     */
+    public Optional<RefreshTokenEntity> findByPkAndSk(String pk, String sk) {
+        Key key = Key.builder().partitionValue(pk).sortValue(sk).build();
+        return Optional.ofNullable(table.getItem(r -> r.key(key)));
+    }
+
+    /**
+     * 제안: 특정 엔티티를 삭제하는 메서드를 추가합니다.
+     *
+     * @param tokenEntity 삭제할 리프레시 토큰 엔티티
+     */
+    public void delete(RefreshTokenEntity tokenEntity) {
+        table.deleteItem(tokenEntity);
     }
 }

@@ -6,6 +6,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Optional;
 
@@ -14,8 +15,11 @@ public class AdminRepository {
 
     private final DynamoDbTable<AdminEntity> table;
 
-    public AdminRepository(DynamoDbEnhancedClient client) {
-        this.table = client.table("lionpay-admin",
+    /**
+     * 제안: 테이블 이름을 application.yml에서 주입받아 사용하면 유연성이 향상됩니다.
+     */
+    public AdminRepository(DynamoDbEnhancedClient client, @Value("${aws.dynamodb.table.admin}") String tableName) {
+        this.table = client.table(tableName,
                 TableSchema.fromBean(AdminEntity.class));
     }
 
@@ -32,4 +36,3 @@ public class AdminRepository {
         table.putItem(admin);
     }
 }
-
