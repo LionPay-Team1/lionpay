@@ -1,3 +1,15 @@
 spring:
   application:
     name: lionpay-auth
+aws:
+  region: ap-northeast-2
+  dynamodb:
+    endpoint: http://localhost:8000  # 로컬일 때, 실 AWS면 제거
+    access-key: dummy
+    secret-key: dummy
+jwt:
+  # suggestion: JWT 비밀키는 HS256 알고리즘을 위해 최소 256비트(32바이트) 이상이어야 합니다.
+  # 아래는 예시이며, 실제 운영 환경에서는 더 복잡한 키를 사용하세요.
+  secret: "b25lLXRpbWUtc2VjcmV0LWtleS1mb3Itand0LXNlY3VyaXR5LWV4YW1wbGU="
+  access-token-expiration-minutes: 30
+  refresh-token-expiration-days: 7
