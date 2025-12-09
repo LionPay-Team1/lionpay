@@ -2,9 +2,14 @@ package com.likelion.lionpay_auth.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public record AdminCreateRequest(
-        @NotBlank String username,
+        @NotBlank
+        @Size(min = 4, max = 20)
+        @Pattern(regexp = "^[A-Za-z0-9_.]+$", message = "Username must contain only letters, numbers, underscores, or periods.")
+        String username,
         @NotBlank
         @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}:;<>.,?]).{8,}$",
