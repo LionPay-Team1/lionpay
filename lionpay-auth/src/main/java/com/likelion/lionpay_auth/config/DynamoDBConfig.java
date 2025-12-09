@@ -8,7 +8,6 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URI;
@@ -35,8 +34,7 @@ public class DynamoDBConfig {
                 .region(Region.of(region))
                 .endpointOverride(URI.create(dynamoEndpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
-                ))
+                        AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
     }
 
@@ -47,4 +45,3 @@ public class DynamoDBConfig {
                 .build();
     }
 }
-
