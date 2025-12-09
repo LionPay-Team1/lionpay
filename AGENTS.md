@@ -15,7 +15,7 @@ Use Git for version control and follow these rules:
 - Suggested workflow:
   - `git fetch --all`
   - `git switch -c feature/<short-desc>` or `git checkout -b feature/<short-desc>`
-  - Make your changes and `git add` / `git commit` (use Conventional Commits if possible)
+  - Make your changes and `git add` / `git commit` (write simple commit messages in Korean without headers like `feat:`, `fix:`)
   - `git push -u origin <branch>` and open a PR
 
 Branch naming examples:
@@ -35,9 +35,9 @@ PR checklist:
 
 Commit message examples:
 
-- `Add JWT refresh token support`
-- `Fix correct user info serialization`
-- `Bump gradle wrapper`
+- `JWT 리프레시 토큰 지원 추가`
+- `사용자 정보 직렬화 수정`
+- `그레이들 래퍼 버전 업그레이드`
 
 ## Code Writing and Change Rules
 
