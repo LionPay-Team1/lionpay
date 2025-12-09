@@ -35,7 +35,7 @@ export default function My() {
             </div>
 
             <Button variant="ghost" className="w-full text-red-500 hover:text-red-600 hover:bg-red-50">
-                <LogOut className="w-4 h-4 mr-2" /> 로그아웃
+                <LogOut className="w-4 h-4 mr-2" /> SignOut
             </Button>
         </div>
     );
