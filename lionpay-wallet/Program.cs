@@ -1,12 +1,11 @@
 using LionPay.Wallet.Endpoints;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+
+builder.AddNpgsqlDataSource(connectionName: "walletdb");
 
 // Add services to the container.
 builder.Services.AddProblemDetails();

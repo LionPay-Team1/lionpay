@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: lionpay-auth-test
+
+aws:
+  region: ap-northeast-2
+  dynamodb:
+    endpoint: http://localhost:8000
+    access-key: test
+    secret-key: test
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci10ZXN0aW5nLXB1cnBvc2Utb25seS1tdXN0LWJlLWF0LWxlYXN0LTI1Ni1iaXRz
+  access-token-expiration-minutes: 30
+  refresh-token-expiration-days: 7
