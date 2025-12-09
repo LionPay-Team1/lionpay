@@ -62,8 +62,11 @@ public class AdminAuthService {
     }
 
     public void logout(String adminId, String refreshToken) {
-        // 단순 버전: adminId 기준 모든 refreshToken 삭제
-        refreshTokenRepository.deleteAllByUserId(adminId);
+        // Validate that the refresh token exists and belongs to the user, then delete only that token
+        String pk = RT_PK_PREFIX + adminId;
+        RefreshTokenEntity tokenEntity = refreshTokenRepository.findByPkAndSk(pk, refreshToken)
+                .orElseThrow(() -> new RuntimeException("REFRESH_TOKEN_NOT_FOUND"));
+        refreshTokenRepository.delete(tokenEntity);
     }
 
     public String createAdmin(AdminCreateRequest req) {
