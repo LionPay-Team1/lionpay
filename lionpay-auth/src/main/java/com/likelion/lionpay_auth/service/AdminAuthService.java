@@ -55,7 +55,7 @@ public class AdminAuthService {
         // [핵심 수정] 공용 필드인 userId에 관리자 ID를 저장합니다.
         rt.setUserId(admin.getAdminId());
         rt.setCreatedAt(now.toString());
-        rt.setExpiresAt(expiresAt.toString()); // TTL 설정을 위해 만료 시간 저장
+        rt.setExpiresAt(String.valueOf(expiresAt.getEpochSecond())); // TTL 설정을 위해 만료 시간 저장 (DynamoDB TTL은 epoch seconds 필요)
         refreshTokenRepository.save(rt);
 
         return new TokenResponse(accessToken, refreshToken);
