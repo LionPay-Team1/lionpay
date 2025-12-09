@@ -106,18 +106,29 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                        <Card key={i} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer group active:scale-[0.98]">
+                    {useAppStore().transactions.slice(0, 3).map((tx) => (
+                        <Card key={tx.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer group active:scale-[0.98]">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-500 group-hover:bg-primary-100 transition-colors">
-                                    <Send className="w-5 h-5" />
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${tx.type === 'charge' ? 'bg-blue-50 text-blue-500' :
+                                    tx.type === 'earn' ? 'bg-yellow-50 text-yellow-600' :
+                                        'bg-primary-50 text-primary-500 group-hover:bg-primary-100'
+                                    }`}>
+                                    {tx.type === 'charge' ? <Plus className="w-5 h-5" /> :
+                                        tx.type === 'earn' ? <Coins className="w-5 h-5" /> :
+                                            <Send className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-gray-900">스타벅스 강남점</p>
-                                    <p className="text-sm text-gray-500">2023.12.08 12:30</p>
+                                    <p className="font-bold text-gray-900">{tx.title}</p>
+                                    <p className="text-sm text-gray-500">{tx.date} {tx.time}</p>
                                 </div>
                             </div>
-                            <p className="font-bold text-gray-900">- 4,500원</p>
+                            <p className={`font-bold ${tx.type === 'charge' ? 'text-blue-600' :
+                                tx.type === 'earn' ? 'text-yellow-600' :
+                                    'text-gray-900'
+                                }`}>
+                                {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()}
+                                {tx.type === 'earn' ? ' P' : '원'}
+                            </p>
                         </Card>
                     ))}
                 </div>
