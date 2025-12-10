@@ -1044,3 +1044,6 @@ buck-out/
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,java,react,visualstudio,rider,intellij,visualstudiocode,reactnative
+
+# Docker
+docker/

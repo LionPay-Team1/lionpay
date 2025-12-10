@@ -36,4 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
+# OpenTelemetry agent
+!otel-agent/lib/opentelemetry-javaagent.jar
+
+# .env
 .env

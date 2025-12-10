@@ -4,16 +4,16 @@ import Home from './pages/Home';
 import Charge from './pages/Charge';
 import History from './pages/History';
 import My from './pages/My';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 import Payment from './pages/Payment';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/charge" element={<Charge />} />
