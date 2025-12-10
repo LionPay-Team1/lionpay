@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // ✅ 관리자 생성, 로그인은 인증 없이 허용해야 함
                         .requestMatchers("/api/v1/admin/new").permitAll()
+                        .requestMatchers("/api/v1/auth/refresh-token").permitAll()
                         .requestMatchers("/api/v1/admin/sign-in").permitAll()
                         .requestMatchers("/api/v1/admin/sign-out").authenticated()
                         // 나머지는 인증 필요

@@ -3,6 +3,7 @@ package com.likelion.lionpay_auth.model.entity;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 
 @DynamoDbBean
 public class RefreshTokenEntity {
@@ -18,6 +19,7 @@ public class RefreshTokenEntity {
     public String getPk() { return pk; }
     public void setPk(String pk) { this.pk = pk; }
 
+    @DynamoDbSecondaryPartitionKey(indexNames = "byRefreshToken")
     @DynamoDbSortKey
     public String getSk() { return sk; }
     public void setSk(String sk) { this.sk = sk; }

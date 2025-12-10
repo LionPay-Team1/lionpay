@@ -70,14 +70,8 @@ public class JwtUtil {
 
     // 토큰 파싱을 위한 private 헬퍼 메서드
     private Claims parseToken(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims(); // 만료된 토큰도 클레임은 반환
-        }
+        // suggestion: 만료된 토큰의 클레임을 반환하는 것은 보안상 위험할 수 있습니다.
+        // 예외를 그대로 던져 호출자가 처리하도록 하는 것이 더 안전합니다.
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 }
