@@ -3,6 +3,7 @@ package com.likelion.lionpay_auth.model.entity;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 
 @DynamoDbBean
 public class AdminEntity {
@@ -22,7 +23,8 @@ public class AdminEntity {
     @DynamoDbSortKey
     public String getSk() { return sk; }
     public void setSk(String sk) { this.sk = sk; }
-
+    
+    @DynamoDbSecondaryPartitionKey(indexNames = "byAdminId")
     public String getAdminId() { return adminId; }
     public void setAdminId(String adminId) { this.adminId = adminId; }
 
@@ -38,4 +40,3 @@ public class AdminEntity {
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 }
-
