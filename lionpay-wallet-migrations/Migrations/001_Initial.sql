@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS wallets (
     -- User ID is part of the Key for multi-tenancy/sharding patterns often used
     wallet_type VARCHAR(10) DEFAULT 'POINT',
     balance DECIMAL(18, 0) DEFAULT 0 NOT NULL,
+    version INT DEFAULT 1 NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT pk_wallets PRIMARY KEY (wallet_id, user_id)
@@ -34,3 +35,6 @@ CREATE TABLE IF NOT EXISTS merchants (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT pk_merchants PRIMARY KEY (merchant_id)
 );
+ALTER TABLE transactions
+ADD COLUMN IF NOT EXISTS idempotency_key VARCHAR(255);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_idempotency ON transactions (idempotency_key);
