@@ -1,0 +1,77 @@
+name: CI - Build & Test
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Compose services
+        run: docker compose build
+
+  test-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v3
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+      - name: Grant execute permission for gradlew
+        run: chmod +x lionpay-auth/gradlew
+      - name: Test with Gradle
+        working-directory: ./lionpay-auth
+        run: ./gradlew test
+
+  test-wallet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+      - name: Test
+        working-directory: ./lionpay-wallet
+        run: dotnet test
+      - name: Verify Code Format
+        working-directory: ./lionpay-wallet
+        run: dotnet format --verify-no-changes
+
+  lint-lionpay-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: lionpay-app/package-lock.json
+      - name: Install dependencies
+        working-directory: ./lionpay-app
+        run: npm ci
+      - name: Run lint
+        working-directory: ./lionpay-app
+        run: npm run lint
+
+  lint-lionpay-management:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: lionpay-management/package-lock.json
+      - name: Install dependencies
+        working-directory: ./lionpay-management
+        run: npm ci
+      - name: Run lint
+        working-directory: ./lionpay-management
+        run: npm run lint
