@@ -2,6 +2,7 @@ package com.likelion.lionpay_auth.model.repository;
 
 import com.likelion.lionpay_auth.model.entity.RefreshTokenEntity;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class RefreshTokenRepository {
 
     private final DynamoDbTable<RefreshTokenEntity> table;
+    private final DynamoDbIndex<RefreshTokenEntity> byRefreshTokenIndex;
 
     /**
      * 제안: 테이블 이름을 application.yml에서 주입받아 사용하면 유연성이 향상됩니다.
@@ -23,6 +25,8 @@ public class RefreshTokenRepository {
     public RefreshTokenRepository(DynamoDbEnhancedClient client, @Value("${aws.dynamodb.table.refresh-token}") String tableName) {
         this.table = client.table(tableName,
                 TableSchema.fromBean(RefreshTokenEntity.class));
+        // "byRefreshToken"은 DynamoDB에 생성할 GSI의 이름입니다.
+        this.byRefreshTokenIndex = table.index("byRefreshToken");
     }
 
     public void save(RefreshTokenEntity token) {
@@ -53,5 +57,16 @@ public class RefreshTokenRepository {
      */
     public void delete(RefreshTokenEntity tokenEntity) {
         table.deleteItem(tokenEntity);
+    }
+
+    /**
+     * 제안: GSI를 사용하여 리프레시 토큰 값으로 엔티티를 조회합니다.
+     * @param refreshToken 조회할 리프레시 토큰
+     * @return 조회된 토큰 엔티티 (Optional)
+     */
+    public Optional<RefreshTokenEntity> findByRefreshToken(String refreshToken) {
+        QueryConditional query = QueryConditional.keyEqualTo(Key.builder().partitionValue(refreshToken).build());
+        // GSI 쿼리 결과는 여러 개일 수 있으므로 첫 번째 항목을 가져옵니다.
+        return byRefreshTokenIndex.query(query).stream().findFirst().flatMap(page -> page.items().stream().findFirst());
     }
 }
