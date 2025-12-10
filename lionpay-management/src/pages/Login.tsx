@@ -22,7 +22,7 @@ export function Login() {
       const { accessToken } = await authApi.login(username, password);
       await login(accessToken);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('잘못된 ID 또는 Password입니다.');
     } finally {
       setIsLoading(false);
@@ -34,18 +34,18 @@ export function Login() {
       <div className="login-card">
         <h1 className="login-title">LionPay Admin</h1>
         <form onSubmit={handleSubmit} className="login-form">
-          <Input 
-            label="Username" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
+          <Input
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter admin ID"
             required
           />
-          <Input 
-            label="Password" 
+          <Input
+            label="Password"
             type="password"
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
             required
           />

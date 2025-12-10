@@ -9,21 +9,21 @@ export function UserList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
+  const loadUsers = React.useCallback(async (query: string) => {
     setLoading(true);
     try {
-      const data = await usersApi.getUsers({ search });
+      const data = await usersApi.getUsers({ search: query });
       setUsers(data);
     } catch (error) {
       console.error("Failed to load users", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUsers('');
+  }, [loadUsers]);
 
   const viewPoints = async (user: User) => {
     try {
@@ -38,7 +38,7 @@ export function UserList() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    loadUsers();
+    loadUsers(search);
   };
 
   return (
@@ -46,16 +46,16 @@ export function UserList() {
       <div className="page-header">
         <h2>User Management</h2>
         <form onSubmit={handleSearch} className="search-form">
-          <Input 
-            placeholder="Search users..." 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
+          <Input
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="search-input"
           />
           <Button type="submit" variant="secondary">Search</Button>
         </form>
       </div>
-      
+
       <div className="table-container">
         <table className="data-table">
           <thead>
