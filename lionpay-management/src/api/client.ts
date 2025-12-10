@@ -2,7 +2,7 @@ import axios, { type InternalAxiosRequestConfig } from 'axios';
 
 // Use Vite env var `VITE_API_BASE_URL` when available, otherwise default to local auth service v1
 // Example: VITE_API_BASE_URL=http://localhost:8080/api/v1
-export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL ?? 'http://localhost:8080/api/v1';
+export const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL ?? 'http://localhost:8080/api/v1';
 
 const client = axios.create({
   baseURL: API_BASE_URL,
@@ -20,7 +20,7 @@ client.interceptors.request.use(
     }
     return config;
   },
-  (error: any) => {
+  (error: unknown) => {
     return Promise.reject(error);
   }
 );
