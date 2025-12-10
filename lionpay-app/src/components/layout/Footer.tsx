@@ -1,13 +1,15 @@
 import { Home, CreditCard, History, User } from 'lucide-react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
 export function Footer() {
-    const location = useLocation();
-    const path = location.pathname;
 
-    const NavItem = ({ to, icon: Icon, label }: { to: string; icon: any; label: string }) => {
+    const NavItem = ({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) => {
+        const location = useLocation();
+        const path = location.pathname;
         const isActive = path === to;
+
         return (
             <Link to={to} className="flex flex-col items-center justify-center w-full h-full space-y-1">
                 <Icon

@@ -18,15 +18,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        try {
-          const profile = await authApi.getProfile();
-          setUser(profile);
-        } catch (error) {
-          console.error("Failed to fetch profile:", error);
-          localStorage.removeItem('accessToken');
+      try {
+        // If test admin params present in URL, use them for local testing
+        if (typeof window !== 'undefined' && window.location.search) {
+          const sp = new URLSearchParams(window.location.search);
+          if (sp.get('testAdmin') === '1') {
+            const username = sp.get('username') || 'admin';
+            const token = sp.get('token') || 'test-admin-token';
+            localStorage.setItem('accessToken', token);
+            const profile = { id: 0, username, role: 'ADMIN' } as AdminProfile;
+            setUser(profile);
+            // remove query params from URL
+            const u = new URL(window.location.href);
+            u.search = '';
+            window.history.replaceState({}, '', u.toString());
+            setIsLoading(false);
+            return;
+          }
         }
+
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          try {
+            const profile = await authApi.getProfile();
+            setUser(profile);
+          } catch (error) {
+            console.error("Failed to fetch profile:", error);
+            localStorage.removeItem('accessToken');
+          }
+        }
+      } catch (e) {
+        console.error('Auth init error', e);
       }
       setIsLoading(false);
     };
@@ -52,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {

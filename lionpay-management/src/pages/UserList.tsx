@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { usersApi, type User } from '../api/users';
+import { walletApi } from '../api/wallet';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
@@ -8,25 +9,36 @@ export function UserList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
+  const loadUsers = React.useCallback(async (query: string) => {
     setLoading(true);
     try {
-      const data = await usersApi.getUsers({ search });
+      const data = await usersApi.getUsers({ search: query });
       setUsers(data);
     } catch (error) {
       console.error("Failed to load users", error);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    loadUsers('');
+  }, [loadUsers]);
+
+  const viewPoints = async (user: User) => {
+    try {
+      const res = await walletApi.getUserBalance(user.id);
+      // 간단한 UI: alert로 잔액 표시
+      alert(`${user.name}님의 잔액: ${res.balance} ${res.currency ?? ''}`);
+    } catch (err) {
+      console.error('Failed to fetch balance', err);
+      alert('잔액 조회에 실패했습니다. 백엔드가 동작하지 않으면 모의 데이터가 표시됩니다.');
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    loadUsers();
+    loadUsers(search);
   };
 
   return (
@@ -34,16 +46,16 @@ export function UserList() {
       <div className="page-header">
         <h2>User Management</h2>
         <form onSubmit={handleSearch} className="search-form">
-          <Input 
-            placeholder="Search users..." 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
+          <Input
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="search-input"
           />
           <Button type="submit" variant="secondary">Search</Button>
         </form>
       </div>
-      
+
       <div className="table-container">
         <table className="data-table">
           <thead>
@@ -74,7 +86,7 @@ export function UserList() {
                   </td>
                   <td>{new Date(user.joinedAt).toLocaleDateString()}</td>
                   <td>
-                    <Button variant="secondary" className="btn-sm">View Points</Button>
+                    <Button variant="secondary" className="btn-sm" onClick={() => viewPoints(user)}>View Points</Button>
                   </td>
                 </tr>
               ))
