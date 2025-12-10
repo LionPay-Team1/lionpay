@@ -1,13 +1,17 @@
 package com.likelion.lionpay_auth.config;
 
-import com.likelion.lionpay_auth.filter.JwtAuthFilter;
+import com.likelion.lionpay_auth.security.JwtAuthenticationEntryPoint;
+import com.likelion.lionpay_auth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -16,28 +20,48 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // [핵심 수정] JWT 인증 필터를 주입받습니다.
-    private final JwtAuthFilter jwtAuthFilter;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(auth -> auth
-                        // ✅ 관리자 생성, 로그인은 인증 없이 허용해야 함
-                        .requestMatchers("/api/v1/admin/new").permitAll()
-                        .requestMatchers("/api/v1/auth/refresh-token").permitAll()
-                        .requestMatchers("/api/v1/admin/sign-in").permitAll()
-                        .requestMatchers("/api/v1/admin/sign-out").authenticated()
-                        // 나머지는 인증 필요
-                        .anyRequest().authenticated()
-                )
-                // [핵심 수정] UsernamePasswordAuthenticationFilter 앞에 JwtAuthFilter를 추가하여 토큰을 먼저 검증하도록 설정합니다.
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(auth -> auth
+                                                // Admin Public Endpoints
+                                                .requestMatchers("/api/v1/admin/new", "/api/v1/admin/sign-in")
+                                                .permitAll()
 
-        return http.build();
-    }
+                                                // User Public Endpoints
+                                                .requestMatchers(
+                                                                "/api/v1/auth/sign-up",
+                                                                "/api/v1/auth/sign-in",
+                                                                "/api/v1/auth/refresh-token",
+                                                                "/api/v1/auth/ping")
+                                                .permitAll()
+
+                                                // Common Public Endpoints
+                                                .requestMatchers("/api/test/**", "/actuator/**").permitAll()
+
+                                                // All other requests require authentication
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(exception -> exception
+                                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+                        throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
+        }
+
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }
