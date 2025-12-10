@@ -3,4 +3,5 @@
     <Project Path="aspire-servicedefaults/LionPay.ServiceDefaults.csproj" />
     <Project Path="aspire-tests/LionPay.Tests.csproj" />
     <Project Path="lionpay-wallet/LionPay.Wallet.csproj" />
+    <Project Path="lionpay-wallet-migrations/LionPay.Wallet.Migrations.csproj" />
 </Solution>

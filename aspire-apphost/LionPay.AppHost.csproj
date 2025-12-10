@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\lionpay-wallet\LionPay.Wallet.csproj" />
+    <ProjectReference Include="..\lionpay-wallet-migrations\LionPay.Wallet.Migrations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
