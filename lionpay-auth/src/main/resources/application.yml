@@ -1,19 +1,19 @@
 spring:
   application:
     name: lionpay-auth
-
 aws:
   region: ap-northeast-2
   dynamodb:
-    endpoint: http://localhost:8000
-    access-key: dummy
-    secret-key: dummy
-
+    endpoint: ${DYNAMODB_URL}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+    table:
+      admin: lionpay-admin
+      refresh-token: lionpay-refresh-token
 jwt:
-  secret: "b25lLXRpbWUtc2VjcmV0LWtleS1mb3Itand0LXNlY3VyaXR5LWV4YW1wbGU="
+  secret: ${JWT_SECRET}
   access-token-expiration-minutes: 30
   refresh-token-expiration-days: 7
-
 logging:
   level:
     root: INFO

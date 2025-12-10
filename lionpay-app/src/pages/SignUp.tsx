@@ -5,7 +5,7 @@ import { formatPhoneNumber, toE164 } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-export default function Signup() {
+export default function SignUp() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -26,7 +26,7 @@ export default function Signup() {
         setError('');
     };
 
-    const handleSignup = (e: React.FormEvent) => {
+    const handleSignUp = (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.password !== formData.passwordConfirm) {
             setError('비밀번호가 일치하지 않습니다.');
@@ -44,7 +44,7 @@ export default function Signup() {
         const e164Phone = toE164(formData.phone);
         console.log('Sending to backend:', { ...formData, phone: e164Phone });
 
-        // Mock Signup with delay
+        // Mock SignUp with delay
         setTimeout(() => {
             setIsLoading(false);
             navigate('/');
@@ -54,13 +54,13 @@ export default function Signup() {
     return (
         <div className="min-h-screen flex flex-col p-6 bg-white animate-in slide-in-from-right-10 duration-500">
             <div className="flex items-center gap-2 mb-8">
-                <button onClick={() => navigate('/login')} className="p-2 -ml-2 text-gray-600">
+                <button onClick={() => navigate('/signin')} className="p-2 -ml-2 text-gray-600">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-xl font-bold">회원가입</h1>
+                <h1 className="text-xl font-bold">SignUp</h1>
             </div>
 
-            <form onSubmit={handleSignup} className="space-y-6">
+            <form onSubmit={handleSignUp} className="space-y-6">
                 <Input
                     label="이름"
                     name="name"
@@ -100,7 +100,7 @@ export default function Signup() {
                 />
 
                 <Button type="submit" className="w-full mt-8" size="lg" isLoading={isLoading}>
-                    가입하기
+                    SignUp
                 </Button>
             </form>
         </div>

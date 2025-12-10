@@ -1,0 +1,117 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: lionpay-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - lionpay-network
+    restart: always
+
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: lionpay-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    volumes:
+      - dynamodb-data:/home/dynamodblocal/data
+    working_dir: /home/dynamodblocal
+    networks:
+      - lionpay-network
+    restart: always
+
+  auth-service:
+    image: lionpay/auth-service:dev
+    build:
+      context: .
+      dockerfile: lionpay-auth/Dockerfile
+    container_name: auth-service
+    ports:
+      - "8080:8080"
+      - "5005:5005" # For remote debugging
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      DYNAMODB_URL: ${DYNAMODB_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - dynamodb
+    networks:
+      - lionpay-network
+
+  wallet-migrations:
+    image: lionpay/wallet-migrations:dev
+    build:
+      context: .
+      dockerfile: lionpay-wallet-migrations/Dockerfile
+    container_name: wallet-migrations
+    environment:
+      ConnectionStrings__walletdb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_started
+    networks:
+      - lionpay-network
+
+  wallet-service:
+    image: lionpay/wallet-service:dev
+    build:
+      context: .
+      dockerfile: lionpay-wallet/Dockerfile
+    container_name: wallet-service
+    ports:
+      - "8081:8080"
+    environment:
+      ConnectionStrings__walletdb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_started
+      wallet-migrations:
+        condition: service_completed_successfully
+    networks:
+      - lionpay-network
+
+  app:
+    image: lionpay/app:dev
+    build:
+      context: lionpay-app
+      dockerfile: Dockerfile
+    container_name: app-service
+    ports:
+      - "8082:80"
+    depends_on:
+      - auth-service
+      - wallet-service
+    networks:
+      - lionpay-network
+
+  management-service:
+    image: lionpay/management-service:dev
+    build:
+      context: lionpay-management
+      dockerfile: Dockerfile
+    container_name: management-service
+    ports:
+      - "8083:80"
+    depends_on:
+      - auth-service
+      - wallet-service
+    networks:
+      - lionpay-network
+
+networks:
+  lionpay-network:
+
+
+volumes:
+  postgres-data:
+  dynamodb-data:

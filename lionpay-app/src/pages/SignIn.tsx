@@ -4,14 +4,14 @@ import { Input } from '../components/ui/Input';
 import { formatPhoneNumber, toE164 } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 
-export default function Login() {
+export default function SignIn() {
     const navigate = useNavigate();
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleSignIn = (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
@@ -19,7 +19,7 @@ export default function Login() {
         const e164Phone = toE164(phone);
         console.log('Sending to backend:', e164Phone);
 
-        // Mock login with delay
+        // Mock SignIn with delay
         setTimeout(() => {
             setIsLoading(false);
             navigate('/');
@@ -36,7 +36,7 @@ export default function Login() {
                     <p className="text-gray-500">간편하고 안전한 포인트 결제</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleSignIn} className="space-y-6">
                     <div className="space-y-4">
                         <Input
                             label="휴대전화 번호"
@@ -56,12 +56,12 @@ export default function Login() {
                     </div>
 
                     <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                        로그인
+                        SignIn
                     </Button>
                 </form>
 
                 <p className="text-center text-sm text-gray-500">
-                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">회원가입</Link>
+                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">SignUp</Link>
                 </p>
             </div>
         </div>
