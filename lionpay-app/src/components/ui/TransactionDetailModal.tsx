@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './Button';
 import { X, Receipt } from 'lucide-react';
+import type { Transaction } from '../../lib/store';
 
 interface TransactionDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
-    transaction: any;
+    transaction: Transaction | null;
 }
 
 export function TransactionDetailModal({ isOpen, onClose, transaction }: TransactionDetailModalProps) {
