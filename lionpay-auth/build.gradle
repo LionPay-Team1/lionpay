@@ -5,12 +5,12 @@ plugins {
 }
 
 group = 'com.likelion'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 description = 'Demo project for Spring Boot'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -42,4 +42,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar'
 }
