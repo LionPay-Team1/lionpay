@@ -15,11 +15,20 @@ export default function SignIn() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Convert to E.164 for backend
+        // Test admin shortcut: username 'admin' and password 'password'
+        if (phone === 'admin' && password === 'password') {
+            // Redirect to management app with test token and username in query
+            const params = new URLSearchParams({ testAdmin: '1', username: 'admin', token: 'test-admin-token' });
+            setIsLoading(false);
+            window.location.href = `http://localhost:8083/?${params.toString()}`;
+            return;
+        }
+
+        // Convert to E.164 for backend for normal users
         const e164Phone = toE164(phone);
         console.log('Sending to backend:', e164Phone);
 
-        // Mock SignIn with delay
+        // Mock SignIn with delay for non-admin
         setTimeout(() => {
             setIsLoading(false);
             navigate('/');
