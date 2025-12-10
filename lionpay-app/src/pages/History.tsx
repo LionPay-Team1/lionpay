@@ -4,13 +4,13 @@ import { ArrowDownLeft, ArrowUpRight, Coins } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TransactionDetailModal } from '../components/ui/TransactionDetailModal';
 import { cn } from '../lib/utils';
-import { useAppStore } from '../lib/store';
+import { useAppStore, type Transaction } from '../lib/store';
 
 type FilterType = 'all' | 'charge' | 'use' | 'earn';
 
 export default function History() {
     const [filter, setFilter] = useState<FilterType>('all');
-    const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
     const { transactions } = useAppStore();
 
