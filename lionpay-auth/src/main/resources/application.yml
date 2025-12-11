@@ -4,15 +4,17 @@ spring:
 aws:
   region: ap-northeast-2
   dynamodb:
-    endpoint: ${DYNAMODB_URL}  # 로컬일 때, 실 AWS면 제거
-    access-key: ${AWS_ACCESS_KEY_ID:}
-    secret-key: ${AWS_SECRET_ACCESS_KEY:}
+    endpoint: ${DYNAMODB_URL}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
     table:
       admin: lionpay-admin
       refresh-token: lionpay-refresh-token
 jwt:
-  # suggestion: JWT 비밀키는 HS256 알고리즘을 위해 최소 256비트(32바이트) 이상이어야 합니다.
-  # 아래는 예시이며, 실제 운영 환경에서는 더 복잡한 키를 사용하세요.
   secret: ${JWT_SECRET}
   access-token-expiration-minutes: 30
   refresh-token-expiration-days: 7
+logging:
+  level:
+    root: INFO
+    com.likelion: DEBUG

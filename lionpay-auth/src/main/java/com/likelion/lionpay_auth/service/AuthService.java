@@ -1,71 +1,126 @@
 package com.likelion.lionpay_auth.service;
 
-import com.likelion.lionpay_auth.model.dto.TokenResponse;
-import com.likelion.lionpay_auth.model.entity.AdminEntity;
-import com.likelion.lionpay_auth.model.entity.RefreshTokenEntity;
-import com.likelion.lionpay_auth.model.repository.AdminRepository;
-import com.likelion.lionpay_auth.model.repository.RefreshTokenRepository;
-import com.likelion.lionpay_auth.util.JwtUtil;
+import com.likelion.lionpay_auth.dto.SignInRequest;
+import com.likelion.lionpay_auth.dto.SignInResponse;
+import com.likelion.lionpay_auth.dto.SignUpRequest;
+import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
+import com.likelion.lionpay_auth.entity.User;
+import com.likelion.lionpay_auth.exception.InvalidCredentialsException;
+import com.likelion.lionpay_auth.exception.InvalidTokenException;
+import com.likelion.lionpay_auth.exception.UserAlreadyExistsException;
+import com.likelion.lionpay_auth.repository.RefreshTokenRepository;
+import com.likelion.lionpay_auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
+import java.util.Date;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    @Value("${jwt.refresh-token-expiration-days}")
-    private long refreshTokenExpirationDays;
-
-    private static final String RT_PK_PREFIX = "REFRESH_TOKEN#";
-
-    /**
-     * suggestion: DynamoDB는 Spring의 표준 @Transactional을 지원하지 않으므로 어노테이션을 제거합니다.
-     * 토큰 재발급 로직은 여러 단계로 이루어지지만, 중간에 실패하더라도 사용자가 다시 로그인하면 해결되므로
-     * 현재 구조에서는 트랜잭션 없이 진행하는 것이 합리적입니다.
-     */
-    public TokenResponse refreshToken(String oldRefreshToken) {
-        // 1. DB에서 리프레시 토큰 조회
-        RefreshTokenEntity oldTokenEntity = refreshTokenRepository.findByRefreshToken(oldRefreshToken)
-                .orElseThrow(() -> new RuntimeException("TOKEN_NOT_FOUND"));
-
-        // 2. 토큰 만료 시간 검증 (DynamoDB TTL은 약간의 지연이 있을 수 있으므로 코드에서도 검증)
-        long expiresAt = Long.parseLong(oldTokenEntity.getExpiresAt());
-        if (expiresAt < Instant.now().getEpochSecond()) {
-            refreshTokenRepository.delete(oldTokenEntity); // 만료된 토큰은 DB에서 삭제
-            throw new RuntimeException("INVALID_TOKEN");
+    public User signUp(SignUpRequest request) {
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new UserAlreadyExistsException("이미 존재하는 사용자입니다");
         }
 
-        // 3. 토큰 소유자(관리자) 정보 조회
-        // TODO: 나중에 'USER' 타입도 처리하는 로직 추가 필요
-        AdminEntity admin = adminRepository.findByAdminId(oldTokenEntity.getUserId())
-                .orElseThrow(() -> new RuntimeException("TOKEN_NOT_FOUND")); // 토큰은 있지만 해당 유저가 삭제된 경우
+        User user = User.builder()
+                .phone(request.getPhone())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .build();
 
-        // 4. 새로운 토큰 생성
-        String newAccessToken = jwtUtil.generateAccessToken(admin.getAdminId(), admin.getUsername());
-        String newRefreshToken = UUID.randomUUID().toString();
+        user.prePersist();
 
-        // 5. 기존 리프레시 토큰 삭제
-        refreshTokenRepository.delete(oldTokenEntity);
+        return userRepository.save(user);
+    }
 
-        // 6. 새로운 리프레시 토큰 저장
-        RefreshTokenEntity newRt = new RefreshTokenEntity();
-        newRt.setPk(RT_PK_PREFIX + admin.getAdminId());
-        newRt.setSk(newRefreshToken);
-        newRt.setUserId(admin.getAdminId());
-        newRt.setCreatedAt(Instant.now().toString());
-        Instant newExpiresAt = Instant.now().plus(refreshTokenExpirationDays, ChronoUnit.DAYS);
-        newRt.setExpiresAt(String.valueOf(newExpiresAt.getEpochSecond()));
-        refreshTokenRepository.save(newRt);
+    public SignInResponse signIn(SignInRequest request) {
+        User user = userRepository.findByPhone(request.getPhone())
+                .orElseThrow(() -> new InvalidCredentialsException("비밀번호가 일치하지 않습니다"));
 
-        return new TokenResponse(newAccessToken, newRefreshToken);
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다");
+        }
+
+        String accessToken = jwtService.generateAccessToken(user.getPhone());
+        String refreshToken = jwtService.generateRefreshToken(user.getPhone());
+
+        saveRefreshToken(user.getUserId(), refreshToken);
+
+        return SignInResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .phone(user.getPhone())
+                .name(user.getName())
+                .build();
+    }
+
+    public void signOut(String accessToken) {
+        try {
+            // Bearer 접두사 제거
+            String tokenWithoutBearer = accessToken.startsWith("Bearer ") ? accessToken.substring(7) : accessToken;
+
+            // 전화번호 추출
+            String phone = jwtService.getPhoneFromToken(tokenWithoutBearer);
+            userRepository.findByPhone(phone).ifPresent(user -> {
+                refreshTokenRepository.deleteAllByUserId(user.getUserId());
+            });
+        } catch (Exception e) {
+            log.warn("SignOut failed", e);
+        }
+    }
+
+    public void signOutByRefreshToken(String refreshToken) {
+        refreshTokenRepository.deleteByToken(refreshToken);
+    }
+
+    public SignInResponse refreshAccessToken(String refreshToken) {
+        if (!jwtService.validateToken(refreshToken)) {
+            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다");
+        }
+
+        RefreshTokenEntity tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new InvalidTokenException("제공되어진 리프레시 토큰을 찾을수 없습니다"));
+
+        String phone = jwtService.getSubject(refreshToken);
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
+
+        String newAccessToken = jwtService.generateAccessToken(phone);
+        String newRefreshToken = jwtService.generateRefreshToken(phone);
+
+        refreshTokenRepository.delete(tokenEntity);
+        saveRefreshToken(user.getUserId(), newRefreshToken);
+
+        return SignInResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .phone(user.getPhone())
+                .name(user.getName())
+                .build();
+    }
+
+    private void saveRefreshToken(String userId, String token) {
+        Date expiresAtDate = jwtService.getExpirationFromToken(token);
+        String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
+
+        RefreshTokenEntity rt = new RefreshTokenEntity();
+        rt.setPk("REFRESH_TOKEN#" + userId);
+        rt.setSk(token);
+        rt.setUserId(userId);
+        rt.setCreatedAt(Instant.now().toString());
+        rt.setExpiresAt(expiresAtString);
+
+        refreshTokenRepository.save(rt);
     }
 }
