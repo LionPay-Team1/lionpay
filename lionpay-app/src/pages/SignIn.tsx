@@ -4,8 +4,11 @@ import { Input } from '../components/ui/Input';
 import { formatPhoneNumber, toE164 } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 
+import { useAppStore } from '../lib/store';
+
 export default function SignIn() {
     const navigate = useNavigate();
+    const { login } = useAppStore();
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
@@ -15,10 +18,10 @@ export default function SignIn() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Test admin shortcut: username 'admin' and password 'password'
-        if (phone === 'admin' && password === 'password') {
+        // Test admin shortcut: username '0000' and password 'password'
+        if (phone === '0000' && password === 'password') {
             // Redirect to management app with test token and username in query
-            const params = new URLSearchParams({ testAdmin: '1', username: 'admin', token: 'test-admin-token' });
+            const params = new URLSearchParams({ testAdmin: '1', username: '0000', token: 'test-admin-token' });
             setIsLoading(false);
             window.location.href = `http://localhost:8083/?${params.toString()}`;
             return;
@@ -31,6 +34,7 @@ export default function SignIn() {
         // Mock SignIn with delay for non-admin
         setTimeout(() => {
             setIsLoading(false);
+            login(); // Set auth state to true
             navigate('/');
         }, 500);
     };
@@ -50,10 +54,18 @@ export default function SignIn() {
                         <Input
                             label="휴대전화 번호"
                             placeholder="010-1234-5678"
-                            type="tel"
-                            maxLength={13}
+                            type="text"
+                            maxLength={20}
                             value={phone}
-                            onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                // Magic code 0000 bypasses formatting
+                                if (val === '0000') {
+                                    setPhone(val);
+                                } else {
+                                    setPhone(formatPhoneNumber(val));
+                                }
+                            }}
                         />
                         <Input
                             label="비밀번호"
