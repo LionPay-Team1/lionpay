@@ -18,14 +18,7 @@ export default function SignIn() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Test admin shortcut: username '0000' and password 'password'
-        if (phone === '0000' && password === 'password') {
-            // Redirect to management app with test token and username in query
-            const params = new URLSearchParams({ testAdmin: '1', username: '0000', token: 'test-admin-token' });
-            setIsLoading(false);
-            window.location.href = `http://localhost:8083/?${params.toString()}`;
-            return;
-        }
+
 
         // Convert to E.164 for backend for normal users
         const e164Phone = toE164(phone);
@@ -54,18 +47,10 @@ export default function SignIn() {
                         <Input
                             label="휴대전화 번호"
                             placeholder="010-1234-5678"
-                            type="text"
-                            maxLength={20}
+                            type="tel"
+                            maxLength={13}
                             value={phone}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                // Magic code 0000 bypasses formatting
-                                if (val === '0000') {
-                                    setPhone(val);
-                                } else {
-                                    setPhone(formatPhoneNumber(val));
-                                }
-                            }}
+                            onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                         />
                         <Input
                             label="비밀번호"
