@@ -13,7 +13,7 @@ var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
         new JavaAppExecutableResourceOptions
         {
             ApplicationName = "build/libs/app.jar",
-            Port = 8080,
+            Port = 7780,
             Args = [],
             JvmArgs = [],
             OtelAgentPath = "../lionpay-auth/otel-agent/lib"

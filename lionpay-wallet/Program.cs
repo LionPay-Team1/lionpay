@@ -1,12 +1,12 @@
 using System.Text;
 using LionPay.Wallet;
 using LionPay.Wallet.Endpoints;
+using LionPay.Wallet.Extensions;
+using LionPay.Wallet.Models;
 using LionPay.Wallet.Repositories;
 using LionPay.Wallet.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using LionPay.Wallet.Models;
-using LionPay.Wallet.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

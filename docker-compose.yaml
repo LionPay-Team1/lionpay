@@ -3,7 +3,7 @@ services:
     image: postgres:16
     container_name: lionpay-postgres
     ports:
-      - "5432:5432"
+      - "9955:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -34,7 +34,7 @@ services:
       dockerfile: lionpay-auth/Dockerfile
     container_name: auth-service
     ports:
-      - "8080:8080"
+      - "7755:8080"
       - "5005:5005" # For remote debugging
     environment:
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
@@ -71,7 +71,7 @@ services:
       dockerfile: lionpay-wallet/Dockerfile
     container_name: wallet-service
     ports:
-      - "8081:8080"
+      - "8855:8080"
     environment:
       ConnectionStrings__walletdb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     depends_on:
@@ -89,7 +89,7 @@ services:
       dockerfile: Dockerfile
     container_name: app-service
     ports:
-      - "8082:80"
+      - "8866:80"
     depends_on:
       - auth-service
       - wallet-service
@@ -103,7 +103,7 @@ services:
       dockerfile: Dockerfile
     container_name: management-service
     ports:
-      - "8083:80"
+      - "8877:80"
     depends_on:
       - auth-service
       - wallet-service
