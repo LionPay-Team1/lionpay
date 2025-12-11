@@ -4,14 +4,11 @@ import com.likelion.lionpay_auth.dto.SignInRequest;
 import com.likelion.lionpay_auth.dto.SignInResponse;
 import com.likelion.lionpay_auth.dto.SignOutRequest;
 import com.likelion.lionpay_auth.dto.SignUpRequest;
-import com.likelion.lionpay_auth.entity.User;
 import com.likelion.lionpay_auth.service.AuthService;
-import com.likelion.lionpay_auth.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -89,22 +86,6 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         response.put("accessToken", signInResponse.getAccessToken());
         response.put("refreshToken", signInResponse.getRefreshToken());
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/users/me")
-    public ResponseEntity<Map<String, Object>> getCurrentUser(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        log.info("본인 정보 조회 요청: phone={}", userDetails.getUser().getPhone());
-        User user = userDetails.getUser();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("userId", user.getUserId());
-        response.put("phone", user.getPhone());
-        response.put("status", user.getStatus());
-        response.put("createdAt", user.getCreatedAt());
 
         return ResponseEntity.ok(response);
     }
