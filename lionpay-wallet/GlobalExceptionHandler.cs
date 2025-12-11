@@ -7,7 +7,7 @@ namespace LionPay.Wallet;
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
-        HttpContext httpContext, 
+        HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {

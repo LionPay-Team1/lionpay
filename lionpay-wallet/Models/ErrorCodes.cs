@@ -4,7 +4,7 @@ public static class ErrorCodes
 {
     // Common
     public const string InternalServerError = "INTERNAL_SERVER_ERROR";
-    
+
     // Auth
     public const string Unauthenticated = "UNAUTHENTICATED";
     public const string PermissionDenied = "PERMISSION_DENIED";
