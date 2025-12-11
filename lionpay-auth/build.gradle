@@ -47,10 +47,10 @@ dependencies {
 }
 
 openApi {
-    apiDocsUrl.set("http://localhost:8090/openapi")
+    apiDocsUrl.set("http://localhost:8080/openapi")
     outputDir.set(file("build/docs"))
     outputFileName.set("lionpay-auth.json")
-    waitTimeInSeconds.set(10)
+    waitTimeInSeconds.set(20)
 }
 
 tasks.named('test') {
