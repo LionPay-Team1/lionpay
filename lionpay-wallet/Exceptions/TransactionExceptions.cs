@@ -1,6 +1,7 @@
 using System.Net;
+using LionPay.Wallet.Models;
 
 namespace LionPay.Wallet.Exceptions;
 
 public class TransactionNotFoundException()
-    : DomainException("TRANSACTION_NOT_FOUND", "Transaction not found.", HttpStatusCode.NotFound);
+    : DomainException(ErrorCodes.TransactionNotFound, "Transaction not found.", HttpStatusCode.NotFound);

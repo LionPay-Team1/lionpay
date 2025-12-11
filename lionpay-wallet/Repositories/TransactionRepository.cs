@@ -11,35 +11,31 @@ public interface ITransactionRepository
     Task<PaymentTransaction?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey);
 }
 
-public class TransactionRepository : ITransactionRepository
+public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRepository
 {
-    private readonly NpgsqlDataSource _dataSource;
-
-    public TransactionRepository(NpgsqlDataSource dataSource)
-    {
-        _dataSource = dataSource;
-    }
-
     public async Task CreateTransactionAsync(PaymentTransaction transaction, NpgsqlTransaction? dbTx = null)
     {
-        const string sql = @"
+        const string sql =
+            """
             INSERT INTO transactions (
-                tx_id, merchant_id, wallet_id, user_id, group_tx_id, tx_type, order_name, 
-                amount, balance_snapshot, merchant_name, merchant_category, region_code, 
-                tx_status, idempotency_key, created_at
+               tx_id, merchant_id, wallet_id, user_id, group_tx_id, tx_type, order_name, 
+               amount, balance_snapshot, merchant_name, merchant_category, region_code, 
+               tx_status, idempotency_key, created_at
             ) VALUES (
-                @TxId, @MerchantId, @WalletId, @UserId, @GroupTxId, @TxType, @OrderName, 
-                @Amount, @BalanceSnapshot, @MerchantName, @MerchantCategory, @RegionCode, 
-                @TxStatus, @IdempotencyKey, @CreatedAt
-            )";
+               @TxId, @MerchantId, @WalletId, @UserId, @GroupTxId, @TxType, @OrderName, 
+               @Amount, @BalanceSnapshot, @MerchantName, @MerchantCategory, @RegionCode, 
+               @TxStatus, @IdempotencyKey, @CreatedAt
+            )
+            """;
 
-        var connection = dbTx?.Connection ?? _dataSource.CreateConnection();
+        var connection = dbTx?.Connection ?? dataSource.CreateConnection();
         await connection.ExecuteAsync(sql, transaction, dbTx);
     }
 
     public async Task<IEnumerable<PaymentTransaction>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0)
     {
-        const string sql = @"
+        const string sql =
+            """
             SELECT 
                 tx_id AS TxId,
                 merchant_id AS MerchantId,
@@ -59,16 +55,18 @@ public class TransactionRepository : ITransactionRepository
             FROM transactions
             WHERE user_id = @UserId
             ORDER BY created_at DESC
-            LIMIT @Limit OFFSET @Offset";
+            LIMIT @Limit OFFSET @Offset
+            """;
 
-        await using var connection = _dataSource.CreateConnection();
+        await using var connection = dataSource.CreateConnection();
         return await connection.QueryAsync<PaymentTransaction>(sql,
             new { UserId = userId, Limit = limit, Offset = offset });
     }
 
     public async Task<PaymentTransaction?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey)
     {
-        const string sql = @"
+        const string sql =
+            """
             SELECT 
                 tx_id AS TxId,
                 merchant_id AS MerchantId,
@@ -86,9 +84,10 @@ public class TransactionRepository : ITransactionRepository
                 idempotency_key AS IdempotencyKey,
                 created_at AS CreatedAt
             FROM transactions
-            WHERE idempotency_key = @IdempotencyKey";
+            WHERE idempotency_key = @IdempotencyKey
+            """;
 
-        await using var connection = _dataSource.CreateConnection();
+        await using var connection = dataSource.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<PaymentTransaction>(sql,
             new { IdempotencyKey = idempotencyKey });
     }

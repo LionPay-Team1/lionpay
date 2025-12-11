@@ -9,18 +9,12 @@ public interface IMerchantRepository
     Task<Merchant?> GetMerchantAsync(Guid merchantId);
 }
 
-public class MerchantRepository : IMerchantRepository
+public class MerchantRepository(NpgsqlDataSource dataSource) : IMerchantRepository
 {
-    private readonly NpgsqlDataSource _dataSource;
-
-    public MerchantRepository(NpgsqlDataSource dataSource)
-    {
-        _dataSource = dataSource;
-    }
-
     public async Task<Merchant?> GetMerchantAsync(Guid merchantId)
     {
-        const string sql = @"
+        const string sql =
+            """
             SELECT 
                 merchant_id AS MerchantId,
                 merchant_name AS MerchantName,
@@ -29,9 +23,10 @@ public class MerchantRepository : IMerchantRepository
                 merchant_status AS MerchantStatus,
                 created_at AS CreatedAt
             FROM merchants
-            WHERE merchant_id = @MerchantId";
+            WHERE merchant_id = @MerchantId
+            """;
 
-        await using var connection = _dataSource.CreateConnection();
+        await using var connection = dataSource.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<Merchant>(sql, new { MerchantId = merchantId });
     }
 }

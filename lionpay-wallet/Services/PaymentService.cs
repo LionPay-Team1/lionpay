@@ -1,3 +1,4 @@
+using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Models;
 using LionPay.Wallet.Repositories;
 using Npgsql;
@@ -6,83 +7,69 @@ namespace LionPay.Wallet.Services;
 
 public interface IPaymentService
 {
-    Task<PaymentTransaction> ProcessPaymentAsync(Guid userId, PaymentRequest request,
-        string? idempotencyKey);
+    Task<PaymentTransaction> ProcessPaymentAsync(Guid userId, PaymentRequest request, string? idempotencyKey);
 }
 
-public class PaymentService : IPaymentService
+public class PaymentService(
+    IWalletRepository walletRepository,
+    ITransactionRepository transactionRepository,
+    IMerchantRepository merchantRepository,
+    NpgsqlDataSource dataSource)
+    : IPaymentService
 {
-    private readonly IWalletRepository _walletRepository;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IMerchantRepository _merchantRepository;
-    private readonly NpgsqlDataSource _dataSource;
-
-    public PaymentService(
-        IWalletRepository walletRepository,
-        ITransactionRepository transactionRepository,
-        IMerchantRepository merchantRepository,
-        NpgsqlDataSource dataSource)
-    {
-        _walletRepository = walletRepository;
-        _transactionRepository = transactionRepository;
-        _merchantRepository = merchantRepository;
-        _dataSource = dataSource;
-    }
-
     public async Task<PaymentTransaction> ProcessPaymentAsync(Guid userId, PaymentRequest request,
         string? idempotencyKey)
     {
         // 1. Idempotency Check
         if (!string.IsNullOrEmpty(idempotencyKey))
         {
-            var existingTx = await _transactionRepository.GetTransactionByIdempotencyKeyAsync(idempotencyKey);
+            var existingTx = await transactionRepository.GetTransactionByIdempotencyKeyAsync(idempotencyKey);
             if (existingTx != null)
             {
-                if (existingTx.UserId != userId) throw new Exceptions.IdempotencyConflictException();
-                return existingTx;
+                return existingTx.UserId != userId ? throw new IdempotencyConflictException() : existingTx;
             }
         }
 
         // 2. Mock Currency Conversion (1 JPY = 9.12 KRW)
         // Ideally fetch from an external service
-        decimal exchangeRate = 1.0m;
+        var exchangeRate = 1.0m;
         if (request.Currency == "JPY") exchangeRate = 9.12m;
 
-        decimal amountPoint = request.AmountCash * exchangeRate;
+        var amountPoint = request.AmountCash * exchangeRate;
 
         // 3. Retry Loop for Optimistic Locking
-        int retry = 0;
+        var retry = 0;
         const int maxRetry = 3;
 
         while (retry < maxRetry)
         {
             try
             {
-                await using var connection = await _dataSource.OpenConnectionAsync();
+                await using var connection = await dataSource.OpenConnectionAsync();
                 await using var transaction = await connection.BeginTransactionAsync();
 
                 try
                 {
                     // 4. Wallet & Balance Check
-                    var wallet = await _walletRepository.GetWalletAsync(userId);
+                    var wallet = await walletRepository.GetWalletAsync(userId);
 
-                    wallet = await _walletRepository.GetWalletForUpdateAsync(wallet?.WalletId ?? Guid.Empty,
+                    wallet = await walletRepository.GetWalletForUpdateAsync(wallet?.WalletId ?? Guid.Empty,
                         transaction);
 
                     if (wallet == null)
                     {
-                        throw new Exceptions.WalletNotFoundException();
+                        throw new WalletNotFoundException();
                     }
 
                     if (wallet.Balance < amountPoint)
                     {
-                        throw new Exceptions.InsufficientBalanceException();
+                        throw new InsufficientBalanceException();
                     }
 
                     // 5. Update Balance (Optimistic Lock)
                     var newBalance = wallet.Balance - amountPoint;
 
-                    bool success = await _walletRepository.UpdateBalanceAsync(wallet.WalletId, newBalance,
+                    bool success = await walletRepository.UpdateBalanceAsync(wallet.WalletId, newBalance,
                         wallet.Version, transaction);
 
                     if (!success)
@@ -94,7 +81,7 @@ public class PaymentService : IPaymentService
                     }
 
                     // 6. Record Transaction
-                    var merchant = await _merchantRepository.GetMerchantAsync(request.MerchantId);
+                    var merchant = await merchantRepository.GetMerchantAsync(request.MerchantId);
 
                     var tx = new PaymentTransaction
                     {
@@ -114,12 +101,12 @@ public class PaymentService : IPaymentService
                         OrderName = $"Payment to {merchant?.MerchantName ?? "Merchant"}"
                     };
 
-                    await _transactionRepository.CreateTransactionAsync(tx, transaction);
+                    await transactionRepository.CreateTransactionAsync(tx, transaction);
 
                     await transaction.CommitAsync();
                     return tx;
                 }
-                catch (Exception ex) when (ex is not Exceptions.DomainException)
+                catch (Exception ex) when (ex is not DomainException)
                 {
                     await transaction.RollbackAsync();
                     retry++;
@@ -136,6 +123,6 @@ public class PaymentService : IPaymentService
             }
         }
 
-        throw new Exceptions.PaymentFailedException();
+        throw new PaymentFailedException();
     }
 }

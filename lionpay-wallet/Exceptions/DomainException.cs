@@ -11,6 +11,3 @@ public class DomainException(
     public string ErrorCode { get; } = errorCode;
     public HttpStatusCode StatusCode { get; } = statusCode;
 }
-
-public class InvalidParameterException(string message)
-    : DomainException("INVALID_PARAMETER", message);
