@@ -20,6 +20,13 @@ export default function SignIn() {
 
 
 
+
+        // Admin Login Check
+        if (phone === '000' && password === 'password') {
+            window.location.href = 'http://localhost:8083';
+            return;
+        }
+
         // Convert to E.164 for backend for normal users
         const e164Phone = toE164(phone);
         console.log('Sending to backend:', e164Phone);
