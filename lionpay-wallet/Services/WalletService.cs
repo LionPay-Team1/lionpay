@@ -9,20 +9,12 @@ public interface IWalletService
     Task<WalletModel> ChargeAsync(Guid userId, decimal amount);
 }
 
-public class WalletService : IWalletService
+public class WalletService(IWalletRepository walletRepository, ITransactionRepository transactionRepository)
+    : IWalletService
 {
-    private readonly IWalletRepository _walletRepository;
-    private readonly ITransactionRepository _transactionRepository;
-
-    public WalletService(IWalletRepository walletRepository, ITransactionRepository transactionRepository)
-    {
-        _walletRepository = walletRepository;
-        _transactionRepository = transactionRepository;
-    }
-
     public async Task<WalletModel> GetMyWalletAsync(Guid userId)
     {
-        var wallet = await _walletRepository.GetWalletAsync(userId);
+        var wallet = await walletRepository.GetWalletAsync(userId);
         if (wallet != null)
         {
             return wallet;
@@ -42,14 +34,14 @@ public class WalletService : IWalletService
 
         try
         {
-            await _walletRepository.CreateWalletAsync(newWallet);
+            await walletRepository.CreateWalletAsync(newWallet);
         }
         catch (Exception)
         {
             // Ignore (Concurrent creation)
         }
 
-        var createdWallet = await _walletRepository.GetWalletAsync(userId);
+        var createdWallet = await walletRepository.GetWalletAsync(userId);
         return createdWallet ?? throw new InvalidOperationException("Failed to provision wallet.");
     }
 
@@ -70,12 +62,12 @@ public class WalletService : IWalletService
 
         while (retry < maxRetry)
         {
-            var currentWallet = await _walletRepository.GetWalletAsync(userId);
+            var currentWallet = await walletRepository.GetWalletAsync(userId);
             if (currentWallet == null) throw new InvalidOperationException("Wallet not found.");
 
             var newBalance = currentWallet.Balance + amount;
             var success =
-                await _walletRepository.UpdateBalanceAsync(currentWallet.WalletId, newBalance, currentWallet.Version);
+                await walletRepository.UpdateBalanceAsync(currentWallet.WalletId, newBalance, currentWallet.Version);
 
             if (success)
             {
@@ -93,7 +85,7 @@ public class WalletService : IWalletService
                     TxStatus = "SUCCESS",
                     CreatedAt = DateTime.UtcNow
                 };
-                await _transactionRepository.CreateTransactionAsync(tx);
+                await transactionRepository.CreateTransactionAsync(tx);
 
                 currentWallet.Balance = newBalance;
                 currentWallet.Version++;

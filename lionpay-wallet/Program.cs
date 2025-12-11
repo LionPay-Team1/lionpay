@@ -1,9 +1,13 @@
 using System.Text;
+using LionPay.Wallet;
 using LionPay.Wallet.Endpoints;
 using LionPay.Wallet.Repositories;
 using LionPay.Wallet.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using LionPay.Wallet.Models;
+using LionPay.Wallet.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,28 +26,12 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
 
-// Add Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        // TODO: Move key to safe storage / User Secrets
-        // For now using a hardcoded key matching Auth Service or Env Var
-        var key = builder.Configuration["Jwt:Key"] ?? "super_secret_key_for_lionpay_must_be_long_enough";
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-            ValidateIssuer = false, // Simplified for internal microservice comms
-            ValidateAudience = false,
-            RequireExpirationTime = true,
-            ValidateLifetime = true
-        };
-    });
-
-builder.Services.AddAuthorization();
+// Add Authentication/Authorization
+builder.Services.AddWalletAuthentication(builder.Configuration);
+builder.Services.AddWalletAuthorization();
 
 builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<LionPay.Wallet.Infrastructure.GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -55,13 +43,16 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapGet("/", () => "API service is running.")
+        .ExcludeFromDescription();
+
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "API service is running.");
 
 app.MapDefaultEndpoints();
 
