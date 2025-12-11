@@ -43,6 +43,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
       JWT_SECRET: ${JWT_SECRET}
+      SUPER_ADMIN_USERNAME: ${SUPER_ADMIN_USERNAME}
+      SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD}
     depends_on:
       - dynamodb
     networks:

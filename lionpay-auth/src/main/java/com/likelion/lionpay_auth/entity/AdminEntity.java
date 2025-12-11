@@ -1,5 +1,6 @@
 package com.likelion.lionpay_auth.entity;
 
+import com.likelion.lionpay_auth.enums.AdminRole;
 import lombok.Data;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
@@ -16,6 +17,7 @@ public class AdminEntity {
     private String passwordHash;
     private String name;
     private String createdAt;
+    private AdminRole role;
 
     @DynamoDbPartitionKey
     public String getPk() {
@@ -33,5 +35,12 @@ public class AdminEntity {
 
     public void setSk(String sk) {
         this.sk = sk;
+    }
+
+    public AdminRole getRole() {
+        return role;
+    }
+    public void setRole(AdminRole role) {
+        this.role = role;
     }
 }

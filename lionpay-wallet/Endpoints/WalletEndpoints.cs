@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using LionPay.ServiceDefaults;
 using LionPay.Wallet.Models;
 using LionPay.Wallet.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +11,33 @@ public static class WalletEndpoints
     public static void MapWalletEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/wallets")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithTags("Wallet");
 
-        group.MapGet("/me", GetMyWallet);
-        group.MapPost("/charge", ChargeWallet);
+        group.MapGet("/me", GetMyWallet)
+            .WithSummary("Get my wallet")
+            .WithDescription("Retrieves the current user's wallet information.")
+            .Produces<WalletResponse>()
+            .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
+        group.MapPost("/charge", ChargeWallet)
+            .WithSummary("Charge wallet")
+            .WithDescription("Charges the user's wallet with the specified amount.")
+            .Produces<WalletResponse>()
+            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
+            .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
     }
 
     public static async Task<IResult> GetMyWallet(ClaimsPrincipal user, IWalletService walletService)
     {
-        var userId = GetUserId(user);
+        var userId = user.GetUserId();
         var wallet = await walletService.GetMyWalletAsync(userId);
-        return Results.Ok(wallet);
+        var response = new WalletResponse(
+            wallet.WalletId,
+            wallet.Balance,
+            wallet.WalletType,
+            wallet.UpdatedAt
+        );
+        return Results.Ok(response);
     }
 
     public static async Task<IResult> ChargeWallet(
@@ -28,18 +45,14 @@ public static class WalletEndpoints
         [FromBody] ChargeRequest request,
         IWalletService walletService)
     {
-        var userId = GetUserId(user);
+        var userId = user.GetUserId();
         var wallet = await walletService.ChargeAsync(userId, request.Amount);
-        return Results.Ok(wallet);
-    }
-
-
-    private static Guid GetUserId(ClaimsPrincipal user)
-    {
-        var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)
-                      ?? user.FindFirst("sub")
-                      ?? throw new InvalidOperationException("User ID claim not found.");
-
-        return Guid.Parse(idClaim.Value);
+        var response = new WalletResponse(
+            wallet.WalletId,
+            wallet.Balance,
+            wallet.WalletType,
+            wallet.UpdatedAt
+        );
+        return Results.Ok(response);
     }
 }

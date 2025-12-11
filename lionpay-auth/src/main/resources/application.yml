@@ -10,7 +10,7 @@ aws:
     access-key: ${AWS_ACCESS_KEY_ID}
     secret-key: ${AWS_SECRET_ACCESS_KEY}
     table:
-      admin: lionpay-admin
+      admin: lionpay-auth-admin
       refresh-token: lionpay-refresh-token
 jwt:
   secret: ${JWT_SECRET}
@@ -20,3 +20,7 @@ logging:
   level:
     root: INFO
     com.likelion: DEBUG
+
+super-admin:
+  username: ${SUPER_ADMIN_USERNAME}
+  password: ${SUPER_ADMIN_PASSWORD}
