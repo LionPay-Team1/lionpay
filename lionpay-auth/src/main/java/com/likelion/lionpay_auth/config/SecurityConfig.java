@@ -37,6 +37,7 @@ public class SecurityConfig {
         }
 
         // 2. JWT 필터와 인증/인가가 필요한 나머지 모든 경로를 처리하는 단일 필터 체인
+        @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(csrf -> csrf.disable())
@@ -53,6 +54,11 @@ public class SecurityConfig {
                                                                 "/api/test/**",
                                                                 "/actuator/**")
                                                 .permitAll()
+                                                // suggestion: 기존 permitAll()과 anyRequest().authenticated() 사이에 관리자 권한 설정을 추가합니다.
+                                                // 순서가 중요합니다. 구체적인 경로가 먼저, 포괄적인 경로가 나중에 와야 합니다.
+                                                .requestMatchers("/api/v1/admin/sign-in").permitAll()
+                                                .requestMatchers("/api/v1/admin/new").hasRole("SUPER_ADMIN")
+                                                .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                                                 // Customizer에 의해 제외되지 않은 모든 요청은 인증 필요
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(exception -> exception

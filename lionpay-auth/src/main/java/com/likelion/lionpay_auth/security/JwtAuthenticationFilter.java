@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-@Slf4j
+@Slf4j // suggestion: 로그를 사용하기 위해 @Slf4j 어노테이션을 추가합니다.
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -55,10 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (username != null) {
                     // It's an ADMIN token
                     String adminId = jwtService.getSubject(token);
+                    String role = jwtService.getRole(token);
+                    String authority = "ROLE_" + role;
 
                     JwtAuthentication principal = new JwtAuthentication(adminId, username);
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            principal, null, List.of(() -> "ROLE_ADMIN"));
+                            principal, null, List.of(() -> authority));
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 

@@ -1,6 +1,7 @@
 package com.likelion.lionpay_auth.service;
 
 import com.likelion.lionpay_auth.config.JwtProperties;
+import com.likelion.lionpay_auth.enums.AdminRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -41,8 +42,8 @@ public class JwtService {
     }
 
     // Admin Access Token
-    public String generateAccessToken(String adminId, String username) {
-        return generateToken(adminId, Map.of("username", username, "role", "ADMIN"),
+    public String generateAccessToken(String adminId, String username, AdminRole role) {
+        return generateToken(adminId, Map.of("username", username, "role", role.name()),
                 jwtProperties.getAccessTokenExpirationMinutes(), ChronoUnit.MINUTES);
     }
 
@@ -89,6 +90,10 @@ public class JwtService {
 
     public String getUsername(String token) {
         return parseToken(token).get("username", String.class);
+    }
+
+    public String getRole(String token) {
+        return parseToken(token).get("role", String.class);
     }
 
     public Date getExpirationFromToken(String token) {

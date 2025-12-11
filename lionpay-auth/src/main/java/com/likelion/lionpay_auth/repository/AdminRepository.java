@@ -1,6 +1,7 @@
 package com.likelion.lionpay_auth.repository;
 
 import com.likelion.lionpay_auth.entity.AdminEntity;
+import com.likelion.lionpay_auth.enums.AdminRole;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -45,5 +46,15 @@ public class AdminRepository {
         return table.scan().items().stream()
                 .filter(a -> adminId.equals(a.getAdminId()))
                 .findFirst();
+    }
+
+    /**
+     * 특정 역할을 가진 관리자가 존재하는지 확인합니다.
+     * 경고: 이 메서드는 테이블 전체를 스캔하므로 성능에 유의해야 합니다.
+     * @param role 확인할 역할
+     * @return 존재 여부
+     */
+    public boolean existsByRole(AdminRole role) {
+        return table.scan().items().stream().anyMatch(admin -> role.equals(admin.getRole()));
     }
 }
