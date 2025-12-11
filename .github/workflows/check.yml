@@ -12,6 +12,18 @@ jobs:
       - name: Build Docker Compose services
         run: docker compose build
 
+  test-lionpay-integrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+      - name: Test
+        working-directory: ./
+        run: dotnet test
+
   test-auth:
     runs-on: ubuntu-latest
     steps:
@@ -35,9 +47,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 10.0.x
-      - name: Test
-        working-directory: ./lionpay-wallet
-        run: dotnet test
+      # - name: Test
+      #   working-directory: ./lionpay-wallet
+      #   run: dotnet test
       - name: Verify Code Format
         working-directory: ./lionpay-wallet
         run: dotnet format --verify-no-changes
