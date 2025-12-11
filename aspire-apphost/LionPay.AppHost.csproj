@@ -9,15 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lionpay-wallet\LionPay.Wallet.csproj" />
-    <ProjectReference Include="..\lionpay-wallet-migrations\LionPay.Wallet.Migrations.csproj" />
+    <ProjectReference Include="..\lionpay-wallet\LionPay.Wallet.csproj"/>
+    <ProjectReference Include="..\lionpay-wallet-migrations\LionPay.Wallet.Migrations.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.0.2" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="13.0.2" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="13.0.1-beta.468" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.NodeJS.Extensions" Version="*" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.0.2"/>
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.0.2"/>
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="13.0.1-beta.468"/>
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.NodeJS.Extensions" Version="*"/>
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties
 public class LionpayAuthApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(LionpayAuthApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(LionpayAuthApplication.class, args);
+	}
 }
