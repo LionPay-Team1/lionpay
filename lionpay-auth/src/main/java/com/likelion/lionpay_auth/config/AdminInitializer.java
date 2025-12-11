@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @DependsOn("dynamoDbInitializer") // suggestion: DynamoDbInitializer가 먼저 실행되도록 의존성을 설정합니다.
+@Profile("!test")
 public class AdminInitializer {
 
     private final AdminRepository adminRepository;
