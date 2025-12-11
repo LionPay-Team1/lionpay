@@ -31,5 +31,5 @@ springdoc:
     - /api/**
     - /admin/**
 super-admin:
-  username: ${SUPER_ADMIN_USERNAME}
-  password: ${SUPER_ADMIN_PASSWORD}
+  username: ${SUPER_ADMIN_USERNAME:admin}
+  password: ${SUPER_ADMIN_PASSWORD:password}
