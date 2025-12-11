@@ -46,8 +46,9 @@ public class AuthService {
 
     public SignInResponse signIn(SignInRequest request) {
         User user = userRepository.findByPhone(request.getPhone())
-                .orElseThrow(() -> new InvalidCredentialsException("비밀번호가 일치하지 않습니다"));
+                .orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
 
+        // 🚨 여기에 브레이크포인트를 설정: 비밀번호 검증 지점
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다");
         }
@@ -115,8 +116,11 @@ public class AuthService {
         String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
 
         RefreshTokenEntity rt = new RefreshTokenEntity();
-        rt.setPk("REFRESH_TOKEN#" + userId);
-        rt.setSk(token);
+
+        // 🛠️ 수정된 부분: RefreshTokenEntity의 PK/SK 필드에 토큰 정보를 할당하여 컴파일 오류 해결
+        rt.setPk("REFRESH_TOKEN#" + userId); // Partition Key 설정
+        rt.setSk(token); // Sort Key 설정 (실제 토큰 값)
+
         rt.setUserId(userId);
         rt.setCreatedAt(Instant.now().toString());
         rt.setExpiresAt(expiresAtString);

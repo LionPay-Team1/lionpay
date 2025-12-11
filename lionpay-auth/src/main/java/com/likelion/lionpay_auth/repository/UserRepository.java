@@ -15,7 +15,7 @@ public class UserRepository {
     private final DynamoDbTable<User> userTable;
 
     public UserRepository(DynamoDbEnhancedClient enhancedClient) {
-        this.userTable = enhancedClient.table("Users", TableSchema.fromBean(User.class));
+        this.userTable = enhancedClient.table("User", TableSchema.fromBean(User.class));
     }
 
     public User save(User user) {

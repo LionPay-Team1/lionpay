@@ -34,21 +34,14 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Map<String, Object>> signUp(@Valid @RequestBody SignUpRequest request) {
+    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         log.info("회원가입 요청 수신: {}", request);
-        User user = authService.signUp(request);
 
-        // 실제로는 회원가입 후 바로 로그인 토큰을 반환하는 경우가 많으나,
-        // 여기서는 간단히 빈 토큰을 반환하고 다음 단계(로그인)에서 실제 토큰을 받도록 합니다.
-        // 현재는 토큰 생성 로직이 있으므로 주석 처리된 부분을 실제 로그인 로직처럼 수정해야 합니다.
-        SignInResponse signInResponse = authService
-                .signIn(new SignInRequest(request.getPhone(), request.getPassword()));
+        // 🚨 수정된 로직: 순수한 회원가입(DB 저장)만 수행하고, 로그인 로직을 제거함
+        authService.signUp(request);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("accessToken", signInResponse.getAccessToken());
-        response.put("refreshToken", signInResponse.getRefreshToken());
-
-        return ResponseEntity.ok(response);
+        // HTTP 201 Created 상태 코드를 반환하며 종료 (본문 없음)
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/sign-in")
