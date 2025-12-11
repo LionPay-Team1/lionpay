@@ -4,6 +4,7 @@ import com.likelion.lionpay_auth.dto.AdminCreateRequest;
 import com.likelion.lionpay_auth.dto.AdminSignInRequest;
 import com.likelion.lionpay_auth.dto.TokenResponse;
 import com.likelion.lionpay_auth.entity.AdminEntity;
+import com.likelion.lionpay_auth.enums.AdminRole;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import com.likelion.lionpay_auth.repository.AdminRepository;
 import com.likelion.lionpay_auth.repository.RefreshTokenRepository;
@@ -35,7 +36,7 @@ public class AdminAuthService {
             throw new RuntimeException("INVALID_PASSWORD");
         }
 
-        String accessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername());
+        String accessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername(), admin.getRole());
         String refreshToken = jwtService.generateRefreshToken(admin.getAdminId()); // Subject for admin token is adminId
 
         saveRefreshToken(admin.getAdminId(), refreshToken);
@@ -62,6 +63,7 @@ public class AdminAuthService {
         admin.setUsername(req.username());
         admin.setPasswordHash(passwordEncoder.encode(req.password()));
         admin.setName(req.name());
+        admin.setRole(AdminRole.ADMIN); // 새로 생성되는 관리자는 기본적으로 ADMIN 역할
         admin.setCreatedAt(Instant.now().toString());
 
         adminRepository.save(admin);
