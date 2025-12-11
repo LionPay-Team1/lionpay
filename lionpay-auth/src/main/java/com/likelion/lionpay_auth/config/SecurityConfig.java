@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,29 +24,36 @@ public class SecurityConfig {
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
         private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+        // [핵심 해결] 1. WebSecurityCustomizer를 사용하여 특정 경로를 필터 체인에서 완전히 제외
         @Bean
+        public WebSecurityCustomizer webSecurityCustomizer() {
+                return (web) -> web.ignoring().requestMatchers(
+                                "/api/v1/auth/sign-up",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/logout",
+                                "/api/v1/auth/ping",
+                                "/api/v1/auth/refresh-token", // <--- 이 경로를 추가했습니다.
+                                "/actuator/**");
+        }
+
+        // 2. JWT 필터와 인증/인가가 필요한 나머지 모든 경로를 처리하는 단일 필터 체인
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                // Admin Public Endpoints
-                                                .requestMatchers("/api/v1/admin/new", "/api/v1/admin/sign-in")
-                                                .permitAll()
-
-                                                // User Public Endpoints
+                                                // 인증 없이 접근 가능한 엔드포인트
                                                 .requestMatchers(
                                                                 "/api/v1/auth/sign-up",
                                                                 "/api/v1/auth/sign-in",
+                                                                "/api/v1/auth/login",
                                                                 "/api/v1/auth/refresh-token",
-                                                                "/api/v1/auth/ping")
+                                                                "/api/v1/auth/ping",
+                                                                "/api/test/**",
+                                                                "/actuator/**")
                                                 .permitAll()
-
-                                                // Common Public Endpoints
-                                                .requestMatchers("/api/test/**", "/actuator/**").permitAll()
-
-                                                // All other requests require authentication
+                                                // Customizer에 의해 제외되지 않은 모든 요청은 인증 필요
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint(jwtAuthenticationEntryPoint))

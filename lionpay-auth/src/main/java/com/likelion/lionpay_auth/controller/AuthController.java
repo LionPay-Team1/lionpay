@@ -38,11 +38,17 @@ public class AuthController {
         log.info("회원가입 요청 수신: {}", request);
         User user = authService.signUp(request);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("accessToken", "AccessToken");
-        response.put("refreshToken", "RefreshToken");
+        // 실제로는 회원가입 후 바로 로그인 토큰을 반환하는 경우가 많으나,
+        // 여기서는 간단히 빈 토큰을 반환하고 다음 단계(로그인)에서 실제 토큰을 받도록 합니다.
+        // 현재는 토큰 생성 로직이 있으므로 주석 처리된 부분을 실제 로그인 로직처럼 수정해야 합니다.
+        SignInResponse signInResponse = authService
+                .signIn(new SignInRequest(request.getPhone(), request.getPassword()));
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        Map<String, Object> response = new HashMap<>();
+        response.put("accessToken", signInResponse.getAccessToken());
+        response.put("refreshToken", signInResponse.getRefreshToken());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sign-in")

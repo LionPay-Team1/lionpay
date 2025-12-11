@@ -41,12 +41,7 @@ public class AuthService {
 
         user.prePersist();
 
-        try {
-            return userRepository.save(user);
-        } catch (Exception e) {
-            log.error("DynamoDB Save Error", e);
-            throw new RuntimeException("회원가입 중 서버 오류 발생", e);
-        }
+        return userRepository.save(user);
     }
 
     public SignInResponse signIn(SignInRequest request) {
@@ -72,7 +67,11 @@ public class AuthService {
 
     public void signOut(String accessToken) {
         try {
-            String phone = jwtService.getSubject(accessToken);
+            // Bearer 접두사 제거
+            String tokenWithoutBearer = accessToken.startsWith("Bearer ") ? accessToken.substring(7) : accessToken;
+
+            // 전화번호 추출
+            String phone = jwtService.getPhoneFromToken(tokenWithoutBearer);
             userRepository.findByPhone(phone).ifPresent(user -> {
                 refreshTokenRepository.deleteAllByUserId(user.getUserId());
             });
