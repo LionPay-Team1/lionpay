@@ -32,6 +32,10 @@ interface AppState {
     paymentPriority: 'money' | 'points';
     setPaymentPriority: (priority: 'money' | 'points') => void;
 
+    isAuthenticated: boolean;
+    login: () => void;
+    logout: () => void;
+
     setMoney: (amount: number) => void;
     addMoney: (amount: number) => void;
     deductMoney: (amount: number) => void;
@@ -58,6 +62,10 @@ export const useAppStore = create<AppState>((set) => ({
     transactions: INITIAL_TRANSACTIONS,
     paymentPriority: 'money', // Default
     setPaymentPriority: (priority) => set({ paymentPriority: priority }),
+
+    isAuthenticated: false,
+    login: () => set({ isAuthenticated: true }),
+    logout: () => set({ isAuthenticated: false }),
 
     setMoney: (money) => set({ money }),
     addMoney: (amount) => set((state) => ({ money: state.money + amount })),

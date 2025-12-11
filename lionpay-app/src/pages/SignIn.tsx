@@ -4,8 +4,11 @@ import { Input } from '../components/ui/Input';
 import { formatPhoneNumber, toE164 } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 
+import { useAppStore } from '../lib/store';
+
 export default function SignIn() {
     const navigate = useNavigate();
+    const { login } = useAppStore();
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
@@ -15,12 +18,12 @@ export default function SignIn() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Test admin shortcut: username 'admin' and password 'password'
-        if (phone === 'admin' && password === 'password') {
-            // Redirect to management app with test token and username in query
-            const params = new URLSearchParams({ testAdmin: '1', username: 'admin', token: 'test-admin-token' });
-            setIsLoading(false);
-            window.location.href = `http://localhost:8083/?${params.toString()}`;
+
+
+
+        // Admin Login Check
+        if (phone === '000' && password === 'password') {
+            window.location.href = 'http://localhost:8083';
             return;
         }
 
@@ -31,6 +34,7 @@ export default function SignIn() {
         // Mock SignIn with delay for non-admin
         setTimeout(() => {
             setIsLoading(false);
+            login(); // Set auth state to true
             navigate('/');
         }, 500);
     };
