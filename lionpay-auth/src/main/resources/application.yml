@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   application:
     name: lionpay-auth
@@ -8,7 +10,7 @@ aws:
     access-key: ${AWS_ACCESS_KEY_ID:local}
     secret-key: ${AWS_SECRET_ACCESS_KEY:local}
     table:
-      admin: lionpay-admin
+      admin: lionpay-auth-admin
       refresh-token: lionpay-refresh-token
 jwt:
   secret: ${JWT_SECRET:SGVsbG9Xb3JsZFRoaXNJc0FTZWNyZXRLZXlGb3JMb2NhbFRlc3Rpbmc=}
@@ -28,3 +30,6 @@ springdoc:
   paths-to-match:
     - /api/**
     - /admin/**
+super-admin:
+  username: ${SUPER_ADMIN_USERNAME}
+  password: ${SUPER_ADMIN_PASSWORD}

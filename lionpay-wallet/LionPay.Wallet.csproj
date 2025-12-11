@@ -7,7 +7,6 @@
     <OpenApiGenerateDocumentsOptions>--file-name lionpay-wallet</OpenApiGenerateDocumentsOptions>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\aspire-servicedefaults\LionPay.ServiceDefaults.csproj" />
   </ItemGroup>

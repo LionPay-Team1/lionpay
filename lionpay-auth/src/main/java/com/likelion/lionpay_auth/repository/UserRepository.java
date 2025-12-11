@@ -12,25 +12,25 @@ import java.util.Optional;
 @Repository
 public class UserRepository {
 
-	private final DynamoDbTable<User> userTable;
+    private final DynamoDbTable<User> userTable;
 
-	public UserRepository(DynamoDbEnhancedClient enhancedClient) {
-		this.userTable = enhancedClient.table("Users", TableSchema.fromBean(User.class));
-	}
+    public UserRepository(DynamoDbEnhancedClient enhancedClient) {
+        this.userTable = enhancedClient.table("User", TableSchema.fromBean(User.class));
+    }
 
-	public User save(User user) {
-		userTable.putItem(user);
-		return user;
-	}
+    public User save(User user) {
+        userTable.putItem(user);
+        return user;
+    }
 
-	public Optional<User> findByPhone(String phone) {
-		Key key = Key.builder()
-				.partitionValue(phone)
-				.build();
-		return Optional.ofNullable(userTable.getItem(key));
-	}
+    public Optional<User> findByPhone(String phone) {
+        Key key = Key.builder()
+                .partitionValue(phone)
+                .build();
+        return Optional.ofNullable(userTable.getItem(key));
+    }
 
-	public boolean existsByPhone(String phone) {
-		return findByPhone(phone).isPresent();
-	}
+    public boolean existsByPhone(String phone) {
+        return findByPhone(phone).isPresent();
+    }
 }
