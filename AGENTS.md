@@ -76,6 +76,7 @@ Commit message examples:
 
 - Update `README.md`, `spec.md`, or service docs when changes affect public APIs, configuration, or developer experience.
 - Include local run instructions, required env variables, and relevant test commands.
+- When writing documentation in Korean (e.g., README.md), use the plain form ending ('~한다') instead of polite forms ('~합니다', '~요').
 
 ## PR Review and Merge Guide
 
