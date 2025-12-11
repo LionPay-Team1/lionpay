@@ -17,35 +17,35 @@ import java.util.UUID;
 @DynamoDbBean
 public class User {
 
-    private String userId;
-    private String phone;
-    private String password;
-    private String name;
-    private String status;
-    private String createdAt;
-    private String updatedAt;
+	private String userId;
+	private String phone;
+	private String password;
+	private String name;
+	private String status;
+	private String createdAt;
+	private String updatedAt;
 
-    // DynamoDB Partition Key
-    @DynamoDbPartitionKey
-    public String getPhone() {
-        return phone;
-    }
+	// DynamoDB Partition Key
+	@DynamoDbPartitionKey
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public void prePersist() {
-        String now = Instant.now().toString();
-        if (this.userId == null) {
-            this.userId = UUID.randomUUID().toString();
-        }
-        if (this.createdAt == null) {
-            this.createdAt = now;
-        }
-        if (this.status == null) {
-            this.status = "ACTIVE";
-        }
-        this.updatedAt = now;
-    }
+	public void prePersist() {
+		String now = Instant.now().toString();
+		if (this.userId == null) {
+			this.userId = UUID.randomUUID().toString();
+		}
+		if (this.createdAt == null) {
+			this.createdAt = now;
+		}
+		if (this.status == null) {
+			this.status = "ACTIVE";
+		}
+		this.updatedAt = now;
+	}
 }

@@ -9,29 +9,29 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 @DynamoDbBean
 public class AdminEntity {
 
-    private String pk; // "ADMIN#{username}"
-    private String sk; // "INFO"
-    private String adminId;
-    private String username;
-    private String passwordHash;
-    private String name;
-    private String createdAt;
+	private String pk; // "ADMIN#{username}"
+	private String sk; // "INFO"
+	private String adminId;
+	private String username;
+	private String passwordHash;
+	private String name;
+	private String createdAt;
 
-    @DynamoDbPartitionKey
-    public String getPk() {
-        return pk;
-    }
+	@DynamoDbPartitionKey
+	public String getPk() {
+		return pk;
+	}
 
-    public void setPk(String pk) {
-        this.pk = pk;
-    }
+	public void setPk(String pk) {
+		this.pk = pk;
+	}
 
-    @DynamoDbSortKey
-    public String getSk() {
-        return sk;
-    }
+	@DynamoDbSortKey
+	public String getSk() {
+		return sk;
+	}
 
-    public void setSk(String sk) {
-        this.sk = sk;
-    }
+	public void setSk(String sk) {
+		this.sk = sk;
+	}
 }

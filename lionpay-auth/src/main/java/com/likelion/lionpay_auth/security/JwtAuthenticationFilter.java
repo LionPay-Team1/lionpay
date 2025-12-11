@@ -25,61 +25,61 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
+	private final JwtService jwtService;
+	private final UserRepository userRepository;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request,
+									HttpServletResponse response,
+									FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+		String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
-        String token = authHeader.substring(7);
+		String token = authHeader.substring(7);
 
-        try {
-            if (jwtService.validateToken(token)) {
-                // Determine if Admin or User based on extracted claims (or lack thereof)
-                // Note: JwtService.validateToken parses parsing internally, but we might parse
-                // again here
-                // Optimization: JwtService could return claims, but let's stick to using helper
-                // methods.
+		try {
+			if (jwtService.validateToken(token)) {
+				// Determine if Admin or User based on extracted claims (or lack thereof)
+				// Note: JwtService.validateToken parses parsing internally, but we might parse
+				// again here
+				// Optimization: JwtService could return claims, but let's stick to using helper
+				// methods.
 
-                String username = jwtService.getUsername(token); // Returns null if not present
+				String username = jwtService.getUsername(token); // Returns null if not present
 
-                if (username != null) {
-                    // It's an ADMIN token
-                    String adminId = jwtService.getSubject(token);
+				if (username != null) {
+					// It's an ADMIN token
+					String adminId = jwtService.getSubject(token);
 
-                    JwtAuthentication principal = new JwtAuthentication(adminId, username);
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            principal, null, List.of(() -> "ROLE_ADMIN"));
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+					JwtAuthentication principal = new JwtAuthentication(adminId, username);
+					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+							principal, null, List.of(() -> "ROLE_ADMIN"));
+					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                } else {
-                    // It's a USER token
-                    String phone = jwtService.getSubject(token);
-                    User user = userRepository.findByPhone(phone).orElse(null);
+				} else {
+					// It's a USER token
+					String phone = jwtService.getSubject(token);
+					User user = userRepository.findByPhone(phone).orElse(null);
 
-                    if (user != null) {
-                        CustomUserDetails userDetails = new CustomUserDetails(user);
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("JWT Authentication failed: {}", e.getMessage());
-        }
+					if (user != null) {
+						CustomUserDetails userDetails = new CustomUserDetails(user);
+						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+								userDetails, null, userDetails.getAuthorities());
+						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+						SecurityContextHolder.getContext().setAuthentication(authToken);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("JWT Authentication failed: {}", e.getMessage());
+		}
 
-        filterChain.doFilter(request, response);
-    }
+		filterChain.doFilter(request, response);
+	}
 }

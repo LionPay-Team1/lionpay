@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SignOutRequest {
 
-    @NotBlank(message = "Refresh token은 필수입니다")
-    private String refreshToken;
+	@NotBlank(message = "Refresh token은 필수입니다")
+	private String refreshToken;
 }
