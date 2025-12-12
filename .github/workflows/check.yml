@@ -80,14 +80,3 @@ jobs:
       - name: Run lint
         working-directory: ./lionpay-management
         run: npm run lint
-
-env:
-  POSTGRES_DB: testdb
-  POSTGRES_USER: test
-  POSTGRES_PASSWORD: test
-  DYNAMODB_URL: http://localhost:8000
-  JWT_SECRET: your-secret
-  AWS_ACCESS_KEY_ID: dummy
-  AWS_SECRET_ACCESS_KEY: dummy
-  SUPER_ADMIN_USERNAME: admin
-  SUPER_ADMIN_PASSWORD: admin
