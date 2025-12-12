@@ -11,7 +11,7 @@ public static class PaymentEndpoints
     public static void MapPaymentEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/payments")
-            .RequireAuthorization()
+            .RequireAuthorization(Policies.UserRole)
             .WithTags("Payment");
 
         group.MapPost("/", ProcessPayment)
@@ -42,3 +42,4 @@ public static class PaymentEndpoints
         return Results.Ok(response);
     }
 }
+

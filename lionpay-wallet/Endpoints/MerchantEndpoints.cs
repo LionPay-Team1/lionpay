@@ -8,7 +8,7 @@ public static class MerchantEndpoints
     public static void MapMerchantEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/merchants")
-            .RequireAuthorization()
+            .RequireAuthorization(Policies.UserRole)
             .WithTags("Merchant");
 
         group.MapGet("/{id:guid}", GetMerchant)
@@ -33,3 +33,4 @@ public static class MerchantEndpoints
         return Results.Ok(response);
     }
 }
+

@@ -49,7 +49,14 @@ public static class ServiceCollectionExtensions
 
         public IServiceCollection AddWalletAuthorization()
         {
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.UserRole, policy =>
+                    policy.RequireAuthenticatedUser());
+
+                options.AddPolicy(Policies.AdminRole, policy =>
+                    policy.RequireClaim("role", "ADMIN", "SUPER_ADMIN"));
+            });
             return services;
         }
     }

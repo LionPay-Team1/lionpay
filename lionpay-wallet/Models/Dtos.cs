@@ -20,7 +20,7 @@ public record PaymentResponse(
     Guid TxId,
     Guid MerchantId,
     decimal Amount,
-    string TxStatus,
+    TxStatus TxStatus,
     DateTime CreatedAt
 );
 
@@ -28,8 +28,8 @@ public record TransactionResponse(
     Guid TxId,
     Guid MerchantId,
     decimal Amount,
-    string TxType,
-    string TxStatus,
+    TxType TxType,
+    TxStatus TxStatus,
     string MerchantName,
     DateTime CreatedAt
 );
@@ -37,7 +37,7 @@ public record TransactionResponse(
 public record WalletResponse(
     Guid WalletId,
     decimal Balance,
-    string WalletType,
+    WalletType WalletType,
     DateTime UpdatedAt
 );
 

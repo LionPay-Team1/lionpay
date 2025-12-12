@@ -1,6 +1,6 @@
 namespace LionPay.Wallet.Models;
 
-public class Merchant
+public class MerchantModel
 {
     public Guid MerchantId { get; set; }
     public string MerchantName { get; set; } = string.Empty;

@@ -11,33 +11,53 @@ public static class WalletEndpoints
     public static void MapWalletEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/wallets")
-            .RequireAuthorization()
+            .RequireAuthorization(Policies.UserRole)
             .WithTags("Wallet");
 
         group.MapGet("/me", GetMyWallet)
-            .WithSummary("Get my wallet")
-            .WithDescription("Retrieves the current user's wallet information.")
+            .WithSummary("Get my wallet(s)")
+            .WithDescription(
+                "Retrieves the current user's wallet information. If type is specified, returns a single wallet. Otherwise, returns all wallets.")
+            .Produces<IEnumerable<WalletResponse>>()
             .Produces<WalletResponse>()
             .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
         group.MapPost("/charge", ChargeWallet)
             .WithSummary("Charge wallet")
-            .WithDescription("Charges the user's wallet with the specified amount.")
+            .WithDescription("Charges the user's Money wallet with the specified amount.")
             .Produces<WalletResponse>()
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
     }
 
-    public static async Task<IResult> GetMyWallet(ClaimsPrincipal user, IWalletService walletService)
+    public static async Task<IResult> GetMyWallet(
+        ClaimsPrincipal user,
+        IWalletService walletService,
+        [FromQuery] WalletType? type = null)
     {
         var userId = user.GetUserId();
-        var wallet = await walletService.GetMyWalletAsync(userId);
-        var response = new WalletResponse(
-            wallet.WalletId,
-            wallet.Balance,
-            wallet.WalletType,
-            wallet.UpdatedAt
-        );
-        return Results.Ok(response);
+
+        if (type.HasValue)
+        {
+            var wallet = await walletService.GetMyWalletAsync(userId, type.Value);
+            var response = new WalletResponse(
+                wallet.WalletId,
+                wallet.Balance,
+                wallet.WalletType,
+                wallet.UpdatedAt
+            );
+            return Results.Ok(response);
+        }
+        else
+        {
+            var wallets = await walletService.GetMyWalletsAsync(userId);
+            var response = wallets.Select(w => new WalletResponse(
+                w.WalletId,
+                w.Balance,
+                w.WalletType,
+                w.UpdatedAt
+            ));
+            return Results.Ok(response);
+        }
     }
 
     public static async Task<IResult> ChargeWallet(
