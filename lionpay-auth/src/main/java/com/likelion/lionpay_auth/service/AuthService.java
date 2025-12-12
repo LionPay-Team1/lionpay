@@ -5,6 +5,10 @@ import com.likelion.lionpay_auth.dto.SignInResponse;
 import com.likelion.lionpay_auth.dto.SignUpRequest;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import com.likelion.lionpay_auth.entity.User;
+// 새로 임포트할 예외 추가
+import com.likelion.lionpay_auth.exception.UserNotFoundException; // 🚨 추가
+import com.likelion.lionpay_auth.exception.PasswordMismatchException; // 🚨 추가
+// 기존 예외는 필요 없으면 제거합니다. (단, refreshAccessToken에는 InvalidCredentialsException이 여전히 사용되고 있음)
 import com.likelion.lionpay_auth.exception.InvalidCredentialsException;
 import com.likelion.lionpay_auth.exception.InvalidTokenException;
 import com.likelion.lionpay_auth.exception.UserAlreadyExistsException;
@@ -45,12 +49,13 @@ public class AuthService {
     }
 
     public SignInResponse signIn(SignInRequest request) {
+        // 1. 사용자 존재 여부 확인: UserNotFoundException 사용
         User user = userRepository.findByPhone(request.getPhone())
-                .orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다")); // 🚨 수정: UserNotFoundException
 
-        // 🚨 여기에 브레이크포인트를 설정: 비밀번호 검증 지점
+        // 2. 비밀번호 일치 여부 확인: PasswordMismatchException 사용
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다");
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다"); // 🚨 수정: PasswordMismatchException
         }
 
         String accessToken = jwtService.generateAccessToken(user.getPhone());

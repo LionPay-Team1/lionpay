@@ -15,6 +15,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // 1. 사용자 이미 존재 (409 Conflict)
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException e) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -26,36 +27,43 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidCredentials(InvalidCredentialsException e) {
+    // 2. 사용자 없음 (404 Not Found)
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException e) {
         Map<String, String> errorResponse = new HashMap<>();
-
-        if (e.getMessage().contains("존재하지")) {
-            errorResponse.put("errorCode", "USER_NOT_FOUND");
-            errorResponse.put("message", "존재하지 않는 사용자입니다");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse); // 404
-        } else {
-            errorResponse.put("errorCode", "INVALID_PASSWORD");
-            errorResponse.put("message", "비밀번호가 일치하지 않습니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse); // 401
-        }
+        errorResponse.put("errorCode", "USER_NOT_FOUND");
+        errorResponse.put("message", "존재하지 않는 사용자입니다");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidToken(InvalidTokenException e) {
+    // 3. 비밀번호 불일치 (401 Unauthorized)
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<Map<String, String>> handlePasswordMismatch(PasswordMismatchException e) {
         Map<String, String> errorResponse = new HashMap<>();
-
-        if (e.getMessage().contains("찾을")) {
-            errorResponse.put("errorCode", "TOKEN_NOT_FOUND");
-            errorResponse.put("message", "이미 로그아웃된 사용자입니다");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse); // 404
-        } else {
-            errorResponse.put("errorCode", "INVALID_TOKEN");
-            errorResponse.put("message", "유효하지 않은 토큰입니다");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse); // 401
-        }
+        errorResponse.put("errorCode", "INVALID_PASSWORD");
+        errorResponse.put("message", "비밀번호가 일치하지 않습니다");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    // 4. Refresh Token DB에 없음 (404 Not Found)
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleRefreshTokenNotFound(RefreshTokenNotFoundException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("errorCode", "TOKEN_NOT_FOUND");
+        errorResponse.put("message", "이미 로그아웃되었거나 만료된 토큰입니다");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    // 5. 토큰 형식 오류 또는 유효기간 만료 (401 Unauthorized)
+    @ExceptionHandler(InvalidTokenFormatOrExpiredException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidTokenFormat(InvalidTokenFormatOrExpiredException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("errorCode", "INVALID_TOKEN");
+        errorResponse.put("message", "유효하지 않거나 만료된 토큰입니다");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    // 6. 입력값 유효성 검사 실패 (400 Bad Request)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException e) {
@@ -72,21 +80,18 @@ public class GlobalExceptionHandler {
         errorResponse.put("errors", errors);
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST) // 400
+                .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
     }
 
+    // 7. 기타 서버 오류 (500 Internal Server Error)
+    // ⚠️ 레거시 InvalidCredentialsException 핸들러가 제거되어 UserNotFoundException, PasswordMismatchException이 명확히 처리됩니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception e) {
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-
-        System.out.println("$$$$$$$$$$ GLOBAL EXCEPTION HANDLER CALLED $$$$$$$$$$");
-        System.out.println("$$$$$$$$$$ FULL STACK TRACE START $$$$$$$$$$");
-        System.out.println(sw.toString());
-        System.out.println("$$$$$$$$$$ FULL STACK TRACE END $$$$$$$$$$");
 
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("errorCode", "INTERNAL_SERVER_ERROR");
