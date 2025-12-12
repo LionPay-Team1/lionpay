@@ -1,7 +1,7 @@
 @echo off
-echo [1/3] Building Auth Service...
+echo [1/3] Generating Auth OpenAPI Spec...
 cd lionpay-auth
-call gradlew.bat build -x test -q
+call gradlew.bat generateOpenApiDocs -q
 if %ERRORLEVEL% NEQ 0 (
     echo Gradle build failed.
     exit /b %ERRORLEVEL%

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "[1/3] Building Auth Service..."
+echo "[1/3] Generating Auth OpenAPI Spec..."
 cd lionpay-auth
-./gradlew build -x test -q
+./gradlew generateOpenApiDocs -q
 if [ $? -ne 0 ]; then
     echo "Gradle build failed."
     exit 1
