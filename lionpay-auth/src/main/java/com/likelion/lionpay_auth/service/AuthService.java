@@ -5,10 +5,8 @@ import com.likelion.lionpay_auth.dto.SignInResponse;
 import com.likelion.lionpay_auth.dto.SignUpRequest;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import com.likelion.lionpay_auth.entity.User;
-// 새로 임포트할 예외 추가
-import com.likelion.lionpay_auth.exception.UserNotFoundException; // 🚨 추가
-import com.likelion.lionpay_auth.exception.PasswordMismatchException; // 🚨 추가
-// 기존 예외는 필요 없으면 제거합니다. (단, refreshAccessToken에는 InvalidCredentialsException이 여전히 사용되고 있음)
+import com.likelion.lionpay_auth.exception.UserNotFoundException;
+import com.likelion.lionpay_auth.exception.PasswordMismatchException;
 import com.likelion.lionpay_auth.exception.InvalidCredentialsException;
 import com.likelion.lionpay_auth.exception.InvalidTokenException;
 import com.likelion.lionpay_auth.exception.UserAlreadyExistsException;
@@ -27,109 +25,129 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+	private final UserRepository userRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
-    public User signUp(SignUpRequest request) {
-        if (userRepository.existsByPhone(request.getPhone())) {
-            throw new UserAlreadyExistsException("이미 존재하는 사용자입니다");
-        }
+	// 🚨 수정된 부분: SignInResponse를 반환하도록 변경 (이전 수정 반영)
+	public SignInResponse signUp(SignUpRequest request) {
+		if (userRepository.existsByPhone(request.getPhone())) {
+			throw new UserAlreadyExistsException("이미 존재하는 사용자입니다");
+		}
 
-        User user = User.builder()
-                .phone(request.getPhone())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .name(request.getName())
-                .build();
+		User user = User.builder()
+				.phone(request.getPhone())
+				.password(passwordEncoder.encode(request.getPassword()))
+				.name(request.getName())
+				.build();
 
-        user.prePersist();
+		user.prePersist();
 
-        return userRepository.save(user);
-    }
+		// 1. 사용자 저장 (회원가입)
+		User savedUser = userRepository.save(user);
 
-    public SignInResponse signIn(SignInRequest request) {
-        // 1. 사용자 존재 여부 확인: UserNotFoundException 사용
-        User user = userRepository.findByPhone(request.getPhone())
-                .orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다")); // 🚨 수정: UserNotFoundException
+		// 2. 토큰 생성
+		String accessToken = jwtService.generateAccessToken(savedUser.getPhone());
+		String refreshToken = jwtService.generateRefreshToken(savedUser.getPhone());
 
-        // 2. 비밀번호 일치 여부 확인: PasswordMismatchException 사용
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다"); // 🚨 수정: PasswordMismatchException
-        }
+		// 3. Refresh Token 저장
+		saveRefreshToken(savedUser.getUserId(), refreshToken);
 
-        String accessToken = jwtService.generateAccessToken(user.getPhone());
-        String refreshToken = jwtService.generateRefreshToken(user.getPhone());
+		// 4. 토큰과 사용자 정보를 포함하여 응답
+		return SignInResponse.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.phone(savedUser.getPhone())
+				.name(savedUser.getName())
+				.build();
+	}
 
-        saveRefreshToken(user.getUserId(), refreshToken);
+	public SignInResponse signIn(SignInRequest request) {
+		// 1. 사용자 존재 여부 확인: UserNotFoundException 사용
+		User user = userRepository.findByPhone(request.getPhone())
+				.orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다"));
 
-        return SignInResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .phone(user.getPhone())
-                .name(user.getName())
-                .build();
-    }
+		// 2. 비밀번호 일치 여부 확인: PasswordMismatchException 사용
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new PasswordMismatchException("비밀번호가 일치하지 않습니다");
+		}
 
-    public void signOut(String accessToken) {
-        try {
-            // Bearer 접두사 제거
-            String tokenWithoutBearer = accessToken.startsWith("Bearer ") ? accessToken.substring(7) : accessToken;
+		// 🚨🚨🚨 핵심 수정: 기존 Refresh Token 전체 삭제 (보안 강화)
+		// 로그인 성공 시, 해당 사용자가 보유한 모든 기기의 Refresh Token을 무효화합니다.
+		refreshTokenRepository.deleteAllByUserId(user.getUserId());
 
-            // 전화번호 추출
-            String phone = jwtService.getPhoneFromToken(tokenWithoutBearer);
-            userRepository.findByPhone(phone).ifPresent(user -> {
-                refreshTokenRepository.deleteAllByUserId(user.getUserId());
-            });
-        } catch (Exception e) {
-            log.warn("SignOut failed", e);
-        }
-    }
+		String accessToken = jwtService.generateAccessToken(user.getPhone());
+		String refreshToken = jwtService.generateRefreshToken(user.getPhone());
 
-    public void signOutByRefreshToken(String refreshToken) {
-        refreshTokenRepository.deleteByToken(refreshToken);
-    }
+		saveRefreshToken(user.getUserId(), refreshToken);
 
-    public SignInResponse refreshAccessToken(String refreshToken) {
-        if (!jwtService.validateToken(refreshToken)) {
-            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다");
-        }
+		return SignInResponse.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.phone(user.getPhone())
+				.name(user.getName())
+				.build();
+	}
 
-        RefreshTokenEntity tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new InvalidTokenException("제공되어진 리프레시 토큰을 찾을수 없습니다"));
+	public void signOut(String accessToken) {
+		try {
+			// Bearer 접두사 제거
+			String tokenWithoutBearer = accessToken.startsWith("Bearer ") ? accessToken.substring(7) : accessToken;
 
-        String phone = jwtService.getSubject(refreshToken);
-        User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
+			// 전화번호 추출
+			String phone = jwtService.getPhoneFromToken(tokenWithoutBearer);
+			userRepository.findByPhone(phone).ifPresent(user -> {
+				refreshTokenRepository.deleteAllByUserId(user.getUserId());
+			});
+		} catch (Exception e) {
+			log.warn("SignOut failed", e);
+		}
+	}
 
-        String newAccessToken = jwtService.generateAccessToken(phone);
-        String newRefreshToken = jwtService.generateRefreshToken(phone);
+	public void signOutByRefreshToken(String refreshToken) {
+		refreshTokenRepository.deleteByToken(refreshToken);
+	}
 
-        refreshTokenRepository.delete(tokenEntity);
-        saveRefreshToken(user.getUserId(), newRefreshToken);
+	public SignInResponse refreshAccessToken(String refreshToken) {
+		if (!jwtService.validateToken(refreshToken)) {
+			throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다");
+		}
 
-        return SignInResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .phone(user.getPhone())
-                .name(user.getName())
-                .build();
-    }
+		RefreshTokenEntity tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
+				.orElseThrow(() -> new InvalidTokenException("제공되어진 리프레시 토큰을 찾을수 없습니다"));
 
-    private void saveRefreshToken(String userId, String token) {
-        Date expiresAtDate = jwtService.getExpirationFromToken(token);
-        String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
+		String phone = jwtService.getSubject(refreshToken);
+		User user = userRepository.findByPhone(phone)
+				.orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
 
-        RefreshTokenEntity rt = new RefreshTokenEntity();
+		String newAccessToken = jwtService.generateAccessToken(phone);
+		String newRefreshToken = jwtService.generateRefreshToken(phone);
 
-        // 🛠️ 수정된 부분: RefreshTokenEntity의 PK/SK 필드에 토큰 정보를 할당하여 컴파일 오류 해결
-        rt.setPk("REFRESH_TOKEN#" + userId); // Partition Key 설정
-        rt.setSk(token); // Sort Key 설정 (실제 토큰 값)
+		refreshTokenRepository.delete(tokenEntity);
+		saveRefreshToken(user.getUserId(), newRefreshToken);
 
-        rt.setUserId(userId);
-        rt.setCreatedAt(Instant.now().toString());
-        rt.setExpiresAt(expiresAtString);
+		return SignInResponse.builder()
+				.accessToken(newAccessToken)
+				.refreshToken(newRefreshToken)
+				.phone(user.getPhone())
+				.name(user.getName())
+				.build();
+	}
 
-        refreshTokenRepository.save(rt);
-    }
+	private void saveRefreshToken(String userId, String token) {
+		Date expiresAtDate = jwtService.getExpirationFromToken(token);
+		String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
+
+		RefreshTokenEntity rt = new RefreshTokenEntity();
+
+		rt.setPk("REFRESH_TOKEN#" + userId); // Partition Key 설정
+		rt.setSk(token); // Sort Key 설정 (실제 토큰 값)
+
+		rt.setUserId(userId);
+		rt.setCreatedAt(Instant.now().toString());
+		rt.setExpiresAt(expiresAtString);
+
+		refreshTokenRepository.save(rt);
+	}
 }
