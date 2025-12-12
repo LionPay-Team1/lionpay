@@ -31,7 +31,7 @@ public class DynamoDbInitializer {
         log.info("DynamoDB 테이블 초기화를 시작합니다...");
 
         // User, Admin, RefreshToken 엔티티에 대한 테이블 스키마를 기반으로 테이블 생성
-        //createTable(User.class, "lionpay-user");
+        createTable(User.class, "lionpay-auth-user");
         createTable(AdminEntity.class, "lionpay-auth-admin");
         createTable(RefreshTokenEntity.class, "lionpay-refresh-token");
 

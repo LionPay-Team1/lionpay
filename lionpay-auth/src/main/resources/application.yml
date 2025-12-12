@@ -12,6 +12,7 @@ aws:
     table:
       admin: lionpay-auth-admin
       refresh-token: lionpay-refresh-token
+      user: lionpay-auth-user # suggestion: 사용자 테이블 이름을 설정 파일에서 관리합니다.
 jwt:
   secret: ${JWT_SECRET:SGVsbG9Xb3JsZFRoaXNJc0FTZWNyZXRLZXlGb3JMb2NhbFRlc3Rpbmc=}
   access-token-expiration-minutes: 30
