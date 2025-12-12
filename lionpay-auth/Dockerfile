@@ -22,3 +22,5 @@ FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/app.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+RUN ./gradlew bootJar -x generateOpenApiDocs --no-daemon -x test
