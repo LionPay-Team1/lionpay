@@ -26,8 +26,8 @@ const mockUsers: User[] = [
 export const usersApi = {
   getUsers: async (params?: UserListParams): Promise<User[]> => {
     try {
-      const response = await client.get<User[]>('/users', { params });
-      return response.data;
+      const response = await client.get<{ users: User[], totalCount: number }>('/admin/users', { params });
+      return response.data.users || [];
     } catch (error) {
       // Fallback to mock data for local testing
       console.warn('usersApi.getUsers(): backend request failed, using mock users', error);
@@ -47,7 +47,8 @@ export const usersApi = {
 
   getUser: async (userId: number): Promise<User> => {
     try {
-      const response = await client.get<User>(`/users/${userId}`);
+      // Per spec: GET /api/v1/admin/users?userId=... returns the single user object
+      const response = await client.get<User>('/admin/users', { params: { userId } });
       return response.data;
     } catch (error) {
       console.warn(`usersApi.getUser(${userId}): backend request failed, using mock user`, error);
