@@ -1,7 +1,7 @@
 using LionPay.Wallet.Exceptions;
-using LionPay.Wallet.Repositories;
-using LionPay.Wallet.Models;
 using LionPay.Wallet.Infrastructure;
+using LionPay.Wallet.Models;
+using LionPay.Wallet.Repositories;
 
 
 namespace LionPay.Wallet.Services;
