@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -40,6 +43,8 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
+				.formLogin(AbstractHttpConfigurer::disable)
+				.httpBasic(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
@@ -49,7 +54,9 @@ public class SecurityConfig {
 								"/api/v1/auth/sign-out",
 								"/api/v1/auth/refresh-token",
 								"/api/v1/auth/ping",
-								"/actuator/**")
+								"/actuator/**",
+								"/openapi/**",
+								"/swagger.html")
 						.permitAll()
 						// suggestion: 기존 permitAll()과 anyRequest().authenticated() 사이에 관리자 권한
 						// 설정을 추가합니다.
@@ -70,8 +77,8 @@ public class SecurityConfig {
 		return configuration.getAuthenticationManager();
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }

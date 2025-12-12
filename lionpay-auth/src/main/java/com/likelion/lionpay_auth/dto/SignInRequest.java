@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInRequest {
-    @NotBlank(message = "휴대폰 번호는 필수입니다")
-    private String phone;
+	@NotBlank(message = "휴대폰 번호는 필수입니다")
+	private String phone;
 
-    @NotBlank(message = "비밀번호는 필수입니다")
-    private String password;
+	@NotBlank(message = "비밀번호는 필수입니다")
+	private String password;
 }
