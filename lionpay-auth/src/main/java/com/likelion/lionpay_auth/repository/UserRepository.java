@@ -21,8 +21,10 @@ public class UserRepository {
 
     private final DynamoDbTable<User> userTable;
 
-    public UserRepository(DynamoDbEnhancedClient enhancedClient) {
-        this.userTable = enhancedClient.table("User", TableSchema.fromBean(User.class));
+    // suggestion: 하드코딩된 숫자/문자열을 상수로 추출하세요. 테이블 이름을 설정 파일에서 주입받아 사용하면 유연성이 높아집니다.
+    public UserRepository(DynamoDbEnhancedClient enhancedClient,
+                          @Value("${aws.dynamodb.table.user}") String tableName) {
+        this.userTable = enhancedClient.table(tableName, TableSchema.fromBean(User.class));
     }
 
     public User save(User user) {

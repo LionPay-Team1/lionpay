@@ -2,7 +2,7 @@ package com.likelion.lionpay_auth.config;
 
 import com.likelion.lionpay_auth.entity.AdminEntity;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
-import com.likelion.lionpay_auth.entity.User;
+import com.likelion.lionpay_auth.entity.User; // User 엔티티 import 확인
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 /**
  * 애플리케이션 시작 시 DynamoDB 테이블을 자동으로 생성하는 초기화 컴포넌트.
  */
-@Slf4j // suggestion: 로그를 사용하기 위해 @Slf4j 어노테이션을 추가합니다.
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DynamoDbInitializer {
@@ -23,15 +23,14 @@ public class DynamoDbInitializer {
     private final DynamoDbEnhancedClient enhancedClient;
 
     /**
-     * suggestion: @EventListener(ApplicationReadyEvent.class) 대신 @PostConstruct를 사용하여
-     * 이 Bean이 생성된 직후에 테이블 생성 로직이 실행되도록 변경합니다.
+     * @PostConstruct를 사용하여 이 Bean이 생성된 직후에 테이블 생성 로직이 실행되도록 합니다.
      */
     @PostConstruct
     public void initializeTables() {
         log.info("DynamoDB 테이블 초기화를 시작합니다...");
 
         // User, Admin, RefreshToken 엔티티에 대한 테이블 스키마를 기반으로 테이블 생성
-        //createTable(User.class, "lionpay-user");
+        createTable(User.class, "lionpay-auth-user");
         createTable(AdminEntity.class, "lionpay-auth-admin");
         createTable(RefreshTokenEntity.class, "lionpay-refresh-token");
 

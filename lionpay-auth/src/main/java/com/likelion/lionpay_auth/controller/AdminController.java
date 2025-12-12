@@ -7,7 +7,6 @@ import com.likelion.lionpay_auth.service.AdminAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,6 @@ public class AdminController {
 		return ResponseEntity.ok(adminAuthService.signIn(req));
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/sign-out")
 	public ResponseEntity<ApiResponse<?>> signOut(
 			@AuthenticationPrincipal JwtAuthentication principal,
@@ -33,7 +31,6 @@ public class AdminController {
 		return ResponseEntity.ok(ApiResponse.success("관리자 로그아웃 되었습니다", null));
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/new")
 	public ResponseEntity<ApiResponse<AdminCreateResponse>> createAdmin(@Valid @RequestBody AdminCreateRequest req) {
 		String adminId = adminAuthService.createAdmin(req);

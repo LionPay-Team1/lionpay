@@ -3,6 +3,7 @@ package com.likelion.lionpay_auth.service;
 import com.likelion.lionpay_auth.dto.AdminUserListResponse;
 import com.likelion.lionpay_auth.dto.AdminUserResponse;
 import com.likelion.lionpay_auth.entity.User;
+import com.likelion.lionpay_auth.exception.UserNotFoundException;
 import com.likelion.lionpay_auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,10 @@ public class AdminUserService {
         User user;
         if (phone != null) {
             user = userRepository.findByPhone(phone)
-                    .orElseThrow(() -> new RuntimeException("해당 전화번호의 사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new UserNotFoundException("해당 전화번호의 사용자를 찾을 수 없습니다."));
         } else if (userId != null) {
             user = userRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("해당 ID의 사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new UserNotFoundException("해당 ID의 사용자를 찾을 수 없습니다."));
         } else {
             // 이 경우는 Controller에서 분기 처리되므로 발생하지 않아야 합니다.
             throw new IllegalArgumentException("조회하려면 phone 또는 userId 중 하나가 필요합니다.");

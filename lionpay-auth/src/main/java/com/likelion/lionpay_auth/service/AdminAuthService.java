@@ -4,6 +4,10 @@ import com.likelion.lionpay_auth.dto.AdminCreateRequest;
 import com.likelion.lionpay_auth.dto.AdminSignInRequest;
 import com.likelion.lionpay_auth.dto.TokenResponse;
 import com.likelion.lionpay_auth.entity.AdminEntity;
+import com.likelion.lionpay_auth.exception.AdminNotFoundException;
+import com.likelion.lionpay_auth.exception.DuplicateAdminException;
+import com.likelion.lionpay_auth.exception.PasswordMismatchException;
+import com.likelion.lionpay_auth.exception.RefreshTokenNotFoundException;
 import com.likelion.lionpay_auth.enums.AdminRole;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import com.likelion.lionpay_auth.repository.AdminRepository;
@@ -30,10 +34,10 @@ public class AdminAuthService {
 
     public TokenResponse signIn(AdminSignInRequest req) {
         AdminEntity admin = adminRepository.findByUsername(req.username())
-                .orElseThrow(() -> new RuntimeException("ADMIN_NOT_FOUND"));
+                .orElseThrow(() -> new AdminNotFoundException("존재하지 않는 관리자입니다."));
 
         if (!passwordEncoder.matches(req.password(), admin.getPasswordHash())) {
-            throw new RuntimeException("INVALID_PASSWORD");
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
         String accessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername(), admin.getRole());
@@ -47,13 +51,14 @@ public class AdminAuthService {
     public void logout(String adminId, String refreshToken) {
         String pk = RT_PK_PREFIX + adminId;
         refreshTokenRepository.findByPkAndSk(pk, refreshToken)
-                .ifPresent(refreshTokenRepository::delete);
+                .ifPresentOrElse(refreshTokenRepository::delete,
+                        () -> { throw new RefreshTokenNotFoundException("이미 로그아웃된 사용자입니다."); });
     }
 
     public String createAdmin(AdminCreateRequest req) {
         adminRepository.findByUsername(req.username())
                 .ifPresent(a -> {
-                    throw new RuntimeException("DUPLICATED_ADMIN");
+                    throw new DuplicateAdminException("이미 존재하는 관리자 아이디입니다.");
                 });
 
         AdminEntity admin = new AdminEntity();

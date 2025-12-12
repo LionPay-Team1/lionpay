@@ -1,5 +1,6 @@
 package com.likelion.lionpay_auth.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -88,11 +90,8 @@ public class GlobalExceptionHandler {
     // ⚠️ 레거시 InvalidCredentialsException 핸들러가 제거되어 UserNotFoundException, PasswordMismatchException이 명확히 처리됩니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception e) {
-
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-
+        // suggestion: 예상치 못한 오류 발생 시, 원인 파악을 위해 스택 트레이스를 로그로 남기는 것이 좋습니다.
+        log.error("$$$$$$$$$$ UNHANDLED EXCEPTION OCCURRED $$$$$$$$$$", e);
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("errorCode", "INTERNAL_SERVER_ERROR");
         errorResponse.put("message", "서버 오류가 발생했습니다");
@@ -101,4 +100,31 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);
     }
+
+    // suggestion: 다른 핸들러와 일관성을 유지하기 위해 Map<String, String>을 반환하도록 수정합니다.
+	@ExceptionHandler(AdminNotFoundException.class)
+	public ResponseEntity<Map<String, String>> handleAdminNotFoundException(AdminNotFoundException e) {
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("errorCode", "ADMIN_NOT_FOUND");
+		errorResponse.put("message", e.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	}
+
+    // suggestion: 다른 핸들러와 일관성을 유지하기 위해 Map<String, String>을 반환하도록 수정합니다.
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException e) {
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("errorCode", "INVALID_TOKEN");
+		errorResponse.put("message", e.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+	}
+
+    // suggestion: 다른 핸들러와 일관성을 유지하기 위해 Map<String, String>을 반환하도록 수정합니다.
+	@ExceptionHandler(DuplicateAdminException.class)
+	public ResponseEntity<Map<String, String>> handleDuplicateAdminException(DuplicateAdminException e) {
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("errorCode", "DUPLICATE_ADMIN");
+		errorResponse.put("message", e.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+	}
 }
