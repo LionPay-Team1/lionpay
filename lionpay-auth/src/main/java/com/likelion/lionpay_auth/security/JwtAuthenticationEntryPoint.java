@@ -14,18 +14,18 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Override
-    public void commence(HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException) throws IOException, ServletException {
+	@Override
+	public void commence(HttpServletRequest request,
+						 HttpServletResponse response,
+						 AuthenticationException authException) throws IOException, ServletException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        ApiResponse<?> errorResponse = ApiResponse.error("인증이 필요합니다");
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    }
+		ApiResponse<?> errorResponse = ApiResponse.error("인증이 필요합니다");
+		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+	}
 }

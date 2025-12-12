@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using LionPay.ServiceDefaults;
 using LionPay.Wallet.Models;
 using LionPay.Wallet.Services;
