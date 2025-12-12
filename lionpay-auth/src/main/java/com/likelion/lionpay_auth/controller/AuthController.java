@@ -1,9 +1,6 @@
 package com.likelion.lionpay_auth.controller;
 
-import com.likelion.lionpay_auth.dto.SignInRequest;
-import com.likelion.lionpay_auth.dto.SignInResponse;
-import com.likelion.lionpay_auth.dto.SignOutRequest;
-import com.likelion.lionpay_auth.dto.SignUpRequest;
+import com.likelion.lionpay_auth.dto.*;
 import com.likelion.lionpay_auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -82,12 +79,12 @@ public class AuthController {
 		return ResponseEntity.ok(response);
 	}
 
+	// suggestion: 요청 본문을 String 대신 DTO로 받아 JSON 파싱을 Spring에 위임하고, 유효성 검사를 추가하여 안정성을 높이세요.
 	@PostMapping("/refresh-token")
-	public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody String refreshToken) {
+	public ResponseEntity<Map<String, Object>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
 		log.info("토큰 재발급 요청 수신");
-		String cleanToken = refreshToken.replace("\"", "").trim();
 
-		SignInResponse signInResponse = authService.refreshAccessToken(cleanToken);
+		SignInResponse signInResponse = authService.refreshAccessToken(request.getRefreshToken());
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("accessToken", signInResponse.getAccessToken());

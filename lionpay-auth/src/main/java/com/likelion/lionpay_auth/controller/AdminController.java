@@ -37,6 +37,12 @@ public class AdminController {
 		return ResponseEntity.ok(ApiResponse.success(new AdminCreateResponse(adminId)));
 	}
 
+    // suggestion: 관리자 전용 토큰 재발급 엔드포인트를 추가합니다.
+    @PostMapping("/refresh-token")
+    public ResponseEntity<TokenResponse> refreshAdminToken(@Valid @RequestBody RefreshTokenRequest req) {
+        return ResponseEntity.ok(adminAuthService.refreshAdminToken(req.getRefreshToken()));
+    }
+
     /**
      * 관리자가 사용자를 조회하는 API입니다.
      * phone 또는 userId로 단일 조회하거나, 파라미터가 없으면 전체 목록을 페이징하여 조회합니다.

@@ -4,6 +4,7 @@ import com.likelion.lionpay_auth.dto.AdminCreateRequest;
 import com.likelion.lionpay_auth.dto.AdminSignInRequest;
 import com.likelion.lionpay_auth.dto.TokenResponse;
 import com.likelion.lionpay_auth.entity.AdminEntity;
+import com.likelion.lionpay_auth.exception.InvalidTokenException;
 import com.likelion.lionpay_auth.exception.AdminNotFoundException;
 import com.likelion.lionpay_auth.exception.DuplicateAdminException;
 import com.likelion.lionpay_auth.exception.PasswordMismatchException;
@@ -74,6 +75,33 @@ public class AdminAuthService {
         adminRepository.save(admin);
 
         return admin.getAdminId();
+    }
+
+    // suggestion: 관리자 전용 토큰 재발급 로직을 추가합니다.
+    public TokenResponse refreshAdminToken(String refreshToken) {
+        if (!jwtService.validateToken(refreshToken)) {
+            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        // 1. DynamoDB에서 리프레시 토큰 존재 여부 확인
+        String adminIdFromToken = jwtService.getSubject(refreshToken);
+        String pk = RT_PK_PREFIX + adminIdFromToken;
+        RefreshTokenEntity tokenEntity = refreshTokenRepository.findByPkAndSk(pk, refreshToken)
+                .orElseThrow(() -> new InvalidTokenException("DB에 존재하지 않거나 만료된 토큰입니다."));
+
+        // 2. 토큰의 주체(adminId)로 관리자 정보 조회
+        AdminEntity admin = adminRepository.findByAdminId(adminIdFromToken)
+                .orElseThrow(() -> new AdminNotFoundException("해당 토큰의 관리자를 찾을 수 없습니다."));
+
+        // 3. 새로운 토큰 생성
+        String newAccessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername(), admin.getRole());
+        String newRefreshToken = jwtService.generateRefreshToken(admin.getAdminId());
+
+        // 4. 기존 토큰 삭제 및 새 토큰 저장 (토큰 순환)
+        refreshTokenRepository.delete(tokenEntity);
+        saveRefreshToken(admin.getAdminId(), newRefreshToken);
+
+        return new TokenResponse(newAccessToken, newRefreshToken);
     }
 
     private void saveRefreshToken(String adminId, String token) {

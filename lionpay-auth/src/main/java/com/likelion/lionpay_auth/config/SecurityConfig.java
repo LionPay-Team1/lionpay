@@ -52,7 +52,9 @@ public class SecurityConfig {
 								"/api/v1/auth/sign-out",
 								"/api/v1/auth/refresh-token",
 								"/api/v1/auth/ping")
-						.permitAll() // API 인증 면제
+						.permitAll()
+						// suggestion: 관리자 토큰 재발급 경로를 permitAll()에 추가합니다.
+						.requestMatchers("/api/v1/admin/refresh-token").permitAll()
 						.requestMatchers("/api/v1/admin/sign-in").permitAll()
 						.requestMatchers("/api/v1/admin/new").hasRole("SUPER_ADMIN")
 						.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
