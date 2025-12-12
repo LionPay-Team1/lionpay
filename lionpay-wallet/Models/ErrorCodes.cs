@@ -4,6 +4,9 @@ public static class ErrorCodes
 {
     // Common
     public const string InternalServerError = "INTERNAL_SERVER_ERROR";
+    public const string BadRequest = "BAD_REQUEST";
+    public const string ValidationFailed = "VALIDATION_FAILED";
+    public const string DuplicateEntry = "DUPLICATE_ENTRY";
 
     // Auth
     public const string Unauthenticated = "UNAUTHENTICATED";
@@ -11,11 +14,13 @@ public static class ErrorCodes
 
     // Wallet
     public const string WalletNotFound = "WALLET_NOT_FOUND";
+    public const string WalletProvisioningFailed = "WALLET_PROVISIONING_FAILED";
     public const string InsufficientBalance = "INSUFFICIENT_BALANCE";
     public const string ChargeFailed = "CHARGE_FAILED";
 
     // Merchant
     public const string MerchantNotFound = "MERCHANT_NOT_FOUND";
+    public const string MerchantUpdateFailed = "MERCHANT_UPDATE_FAILED";
 
     // Payment
     public const string PaymentFailed = "PAYMENT_FAILED";

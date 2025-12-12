@@ -5,14 +5,56 @@ namespace LionPay.Wallet.Services;
 
 public interface IMerchantService
 {
-    Task<Merchant> GetMerchantInfoAsync(Guid merchantId);
+    Task<MerchantModel> GetMerchantInfoAsync(Guid merchantId);
+    Task<MerchantModel> CreateMerchantAsync(CreateMerchantRequest request);
+    Task<MerchantModel> UpdateMerchantAsync(Guid merchantId, UpdateMerchantRequest request);
+    Task<MerchantModel> GetMerchantFullInfoAsync(Guid merchantId);
 }
 
 public class MerchantService(IMerchantRepository merchantRepository) : IMerchantService
 {
-    public async Task<Merchant> GetMerchantInfoAsync(Guid merchantId)
+    public async Task<MerchantModel> GetMerchantInfoAsync(Guid merchantId)
     {
-        var merchant = await merchantRepository.GetMerchantAsync(merchantId);
-        return merchant ?? throw new Exceptions.MerchantNotFoundException();
+        var MerchantModel = await merchantRepository.GetMerchantAsync(merchantId);
+        return MerchantModel ?? throw new Exceptions.MerchantNotFoundException();
+    }
+
+    public async Task<MerchantModel> CreateMerchantAsync(CreateMerchantRequest request)
+    {
+        var MerchantModel = new MerchantModel
+        {
+            MerchantId = Guid.NewGuid(),
+            MerchantName = request.MerchantName,
+            CountryCode = request.CountryCode,
+            MerchantCategory = request.MerchantCategory,
+            MerchantStatus = "ACTIVE",
+            CreatedAt = DateTime.UtcNow
+        };
+        return await merchantRepository.CreateMerchantAsync(MerchantModel);
+    }
+
+    public async Task<MerchantModel> UpdateMerchantAsync(Guid merchantId, UpdateMerchantRequest request)
+    {
+        var MerchantModel = await merchantRepository.GetMerchantAsync(merchantId)
+                       ?? throw new Exceptions.MerchantNotFoundException();
+
+        MerchantModel.MerchantName = request.MerchantName;
+        MerchantModel.MerchantCategory = request.MerchantCategory;
+        MerchantModel.MerchantStatus = request.MerchantStatus;
+
+        // CountryCode usually doesn't change easily or requires re-verification, 
+        // but let's assume it's keeping the old one or strictly not updatable via this API as per request DTO.
+
+        var updated = await merchantRepository.UpdateMerchantAsync(MerchantModel);
+        return updated ?? throw new Exceptions.MerchantUpdateFailedException();
+    }
+
+    public async Task<MerchantModel> GetMerchantFullInfoAsync(Guid merchantId)
+    {
+        // For now same as GetMerchantInfoAsync but conceptually distinct for admin
+        return await GetMerchantInfoAsync(merchantId);
     }
 }
+
+
+

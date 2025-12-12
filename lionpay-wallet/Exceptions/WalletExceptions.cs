@@ -11,3 +11,6 @@ public class InsufficientBalanceException()
 
 public class ChargeFailedException(string message = "Charge failed due to high concurrency. Please try again.")
     : DomainException(ErrorCodes.ChargeFailed, message, HttpStatusCode.Conflict);
+
+public class WalletProvisioningFailedException()
+    : DomainException(ErrorCodes.WalletProvisioningFailed, "Failed to provision wallet.");

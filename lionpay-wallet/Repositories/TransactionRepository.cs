@@ -6,14 +6,14 @@ namespace LionPay.Wallet.Repositories;
 
 public interface ITransactionRepository
 {
-    Task CreateTransactionAsync(PaymentTransaction transaction, NpgsqlTransaction? dbTx = null);
-    Task<IEnumerable<PaymentTransaction>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0);
-    Task<PaymentTransaction?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey);
+    Task CreateTransactionAsync(PaymentTransactionModel transaction, NpgsqlTransaction? dbTx = null);
+    Task<IEnumerable<PaymentTransactionModel>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0);
+    Task<PaymentTransactionModel?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey);
 }
 
 public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRepository
 {
-    public async Task CreateTransactionAsync(PaymentTransaction transaction, NpgsqlTransaction? dbTx = null)
+    public async Task CreateTransactionAsync(PaymentTransactionModel transaction, NpgsqlTransaction? dbTx = null)
     {
         const string sql =
             """
@@ -28,11 +28,18 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
             )
             """;
 
-        var connection = dbTx?.Connection ?? dataSource.CreateConnection();
-        await connection.ExecuteAsync(sql, transaction, dbTx);
+        try
+        {
+            var connection = dbTx?.Connection ?? dataSource.CreateConnection();
+            await connection.ExecuteAsync(sql, transaction, dbTx);
+        }
+        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+        {
+            throw new Exceptions.DuplicateException("Transaction with this ID or idempotency key already exists.");
+        }
     }
 
-    public async Task<IEnumerable<PaymentTransaction>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0)
+    public async Task<IEnumerable<PaymentTransactionModel>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0)
     {
         const string sql =
             """
@@ -59,11 +66,11 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
             """;
 
         await using var connection = dataSource.CreateConnection();
-        return await connection.QueryAsync<PaymentTransaction>(sql,
+        return await connection.QueryAsync<PaymentTransactionModel>(sql,
             new { UserId = userId, Limit = limit, Offset = offset });
     }
 
-    public async Task<PaymentTransaction?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey)
+    public async Task<PaymentTransactionModel?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey)
     {
         const string sql =
             """
@@ -88,7 +95,7 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
             """;
 
         await using var connection = dataSource.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync<PaymentTransaction>(sql,
+        return await connection.QuerySingleOrDefaultAsync<PaymentTransactionModel>(sql,
             new { IdempotencyKey = idempotencyKey });
     }
 }
