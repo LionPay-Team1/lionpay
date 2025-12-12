@@ -1,5 +1,6 @@
 package com.likelion.lionpay_auth.repository;
 
+import org.springframework.beans.factory.annotation.Value;
 import com.likelion.lionpay_auth.entity.AdminEntity;
 import com.likelion.lionpay_auth.enums.AdminRole;
 import org.springframework.stereotype.Repository;
@@ -14,14 +15,16 @@ import java.util.Optional;
 @Repository
 public class AdminRepository {
 
-    private final DynamoDbTable<AdminEntity> table;
+    private final DynamoDbTable<AdminEntity> adminTable;
 
-    public AdminRepository(DynamoDbEnhancedClient client) {
-        this.table = client.table("lionpay-auth-admin", TableSchema.fromBean(AdminEntity.class));
+	// suggestion: 하드코딩된 숫자/문자열을 상수로 추출하세요. 테이블 이름을 설정 파일에서 주입받아 사용하면 유연성이 높아집니다.
+	public AdminRepository(DynamoDbEnhancedClient enhancedClient,
+						   @Value("${aws.dynamodb.table.admin}") String tableName) {
+		this.adminTable = enhancedClient.table(tableName, TableSchema.fromBean(AdminEntity.class));
     }
 
     public void save(AdminEntity admin) {
-        table.putItem(admin);
+        adminTable.putItem(admin);
     }
 
     public Optional<AdminEntity> findByUsername(String username) {
@@ -32,7 +35,7 @@ public class AdminRepository {
         // GSI가 아니라 PK 설계를 "ADMIN#{username}"으로 했으므로 getItem 가능
         // 하지만 SK가 "INFO"로 고정되어 있음.
         // getItem을 하려면 SK도 필요함.
-        return Optional.ofNullable(table.getItem(
+        return Optional.ofNullable(adminTable.getItem(
                 Key.builder()
                         .partitionValue("ADMIN#" + username)
                         .sortValue("INFO")
@@ -43,7 +46,7 @@ public class AdminRepository {
         // adminId로 찾으려면 GSI가 필요하거나 Scan을 해야 함.
         // 현재 스키마상 adminId는 속성일 뿐임.
         // TODO: GSI 추가 고려 or Scan (현재는 Scan으로 구현)
-        return table.scan().items().stream()
+        return adminTable.scan().items().stream()
                 .filter(a -> adminId.equals(a.getAdminId()))
                 .findFirst();
     }
@@ -55,6 +58,6 @@ public class AdminRepository {
      * @return 존재 여부
      */
     public boolean existsByRole(AdminRole role) {
-        return table.scan().items().stream().anyMatch(admin -> role.equals(admin.getRole()));
+        return adminTable.scan().items().stream().anyMatch(admin -> role.equals(admin.getRole()));
     }
 }
