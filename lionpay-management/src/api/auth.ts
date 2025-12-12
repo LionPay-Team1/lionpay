@@ -1,11 +1,5 @@
 import client from './client';
 
-export interface AdminProfile {
-  id: number;
-  username: string;
-  role: string;
-}
-
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
@@ -24,15 +18,5 @@ export const authApi = {
         refreshToken: 'mock-refresh-token'
       };
     }
-  },
-  getProfile: async (): Promise<AdminProfile> => {
-    // Note: The Admin API spec does not explicitly provide a 'get profile' endpoint.
-    // We are retaining this for now to support the frontend logic.
-    // If needed, this should likely call a specific admin info endpoint.
-    return {
-      id: 1,
-      username: 'admin',
-      role: 'ADMIN',
-    };
   },
 };
