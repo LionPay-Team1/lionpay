@@ -1,6 +1,7 @@
 using System.Text;
 using LionPay.Wallet.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LionPay.Wallet.Extensions;
@@ -11,9 +12,13 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection AddWalletAuthentication(IConfiguration configuration)
         {
+            JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove(JwtRegisteredClaimNames.Sub);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false;
+
                     var jwtSecret = configuration["JWT:Secret"];
                     if (string.IsNullOrEmpty(jwtSecret))
                     {
@@ -29,7 +34,7 @@ public static class ServiceCollectionExtensions
                         ValidateLifetime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                         ValidIssuer = configuration["JWT:Issuer"],
-                        ValidAudience = configuration["JWT:Audience"]
+                        ValidAudiences = configuration["JWT:Audiences"]?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? []
                     };
 
                     options.Events = new JwtBearerEvents
@@ -43,20 +48,22 @@ public static class ServiceCollectionExtensions
                         OnForbidden = _ => throw new PermissionDeniedException()
                     };
                 });
-
             return services;
         }
 
         public IServiceCollection AddWalletAuthorization()
         {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policies.UserRole, policy =>
-                    policy.RequireAuthenticatedUser());
-
-                options.AddPolicy(Policies.AdminRole, policy =>
-                    policy.RequireClaim("role", "ADMIN", "SUPER_ADMIN"));
-            });
+            services.AddAuthorizationBuilder()
+                .AddPolicy(Policies.UserRole, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-app");
+                })
+                .AddPolicy(Policies.AdminRole, policy =>
+                {
+                    policy.RequireClaim("role", "ADMIN", "SUPER_ADMIN");
+                    policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-management");
+                });
             return services;
         }
     }

@@ -50,8 +50,7 @@ public class PaymentService(
                 // 4. WalletModel & Balance Check
                 var wallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
 
-                wallet = await walletRepository.GetWalletForUpdateAsync(wallet?.WalletId ?? Guid.Empty,
-                    transaction);
+                wallet = await walletRepository.GetWalletForUpdateAsync(wallet?.WalletId ?? Guid.Empty, transaction);
 
                 if (wallet == null)
                 {

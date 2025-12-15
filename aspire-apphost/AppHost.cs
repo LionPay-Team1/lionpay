@@ -46,7 +46,10 @@ var walletService = builder.AddProject<LionPay_Wallet>("wallet-service")
     .WaitForCompletion(walletDbMigrations)
     .WithReference(walletCache)
     .WithReference(walletdb)
-    .WithEnvironment("JWT_SECRET", jwtSecret)
+    .WithReference(walletdb)
+    .WithEnvironment("JWT__Secret", jwtSecret)
+    .WithEnvironment("JWT__Issuer", "lionpay-auth")
+    .WithEnvironment("JWT__Audiences", "lionpay-app,lionpay-management")
     .WithHttpHealthCheck("/health")
     .WithUrls(c =>
     {

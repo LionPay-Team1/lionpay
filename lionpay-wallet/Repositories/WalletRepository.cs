@@ -72,6 +72,7 @@ public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
                 updated_at AS UpdatedAt
             FROM wallets
             WHERE wallet_id = @WalletId
+            FOR UPDATE
             """;
 
         var connection = transaction?.Connection ?? dataSource.CreateConnection();

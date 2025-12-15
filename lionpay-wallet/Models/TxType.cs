@@ -2,9 +2,9 @@ namespace LionPay.Wallet.Models;
 
 public enum TxType
 {
-    Payment,
-    Charge,
-    AdminCharge,
-    AdminDeduct
+    Payment = 0,
+    Charge = 1,
+    AdminCharge = 2,
+    AdminDeduct = 3
 }
 

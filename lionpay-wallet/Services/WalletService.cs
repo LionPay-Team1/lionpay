@@ -8,11 +8,10 @@ namespace LionPay.Wallet.Services;
 
 public interface IWalletService
 {
-    Task<IEnumerable<WalletModel>> GetMyWalletsAsync(Guid userId);
-    Task<WalletModel> GetMyWalletAsync(Guid userId, WalletType walletType);
+    Task<WalletModel> GetMyWalletAsync(Guid userId);
     Task<WalletModel> ChargeAsync(Guid userId, decimal amount);
-    Task<WalletModel> GetWalletByUserIdAsync(Guid userId, WalletType walletType);
-    Task<WalletModel> AdjustBalanceAsync(Guid userId, WalletType walletType, decimal amount, string reason);
+    Task<WalletModel> GetWalletByUserIdAsync(Guid userId);
+    Task<WalletModel> AdjustBalanceAsync(Guid userId, decimal amount, string reason);
 }
 
 public class WalletService(
@@ -21,46 +20,28 @@ public class WalletService(
     IOccExecutionStrategy executionStrategy)
     : IWalletService
 {
-    public async Task<IEnumerable<WalletModel>> GetMyWalletsAsync(Guid userId)
+    public async Task<WalletModel> GetMyWalletAsync(Guid userId)
     {
-        var wallets = await walletRepository.GetWalletsAsync(userId);
-        var walletList = wallets.ToList();
-
-        // Lazy Provisioning: Create Money wallet if none exist
-        if (walletList.Count == 0)
-        {
-            var moneyWallet = await ProvisionWalletAsync(userId, WalletType.Money);
-            walletList.Add(moneyWallet);
-        }
-
-        return walletList;
-    }
-
-    public async Task<WalletModel> GetMyWalletAsync(Guid userId, WalletType walletType)
-    {
-        var wallet = await walletRepository.GetWalletAsync(userId, walletType);
+        var wallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
         if (wallet != null)
         {
             return wallet;
         }
 
-        // Lazy Provisioning for requested wallet type
-        return await ProvisionWalletAsync(userId, walletType);
+        // Lazy Provisioning for Money wallet
+        return await ProvisionWalletAsync(userId);
     }
 
     public async Task<WalletModel> ChargeAsync(Guid userId, decimal amount)
     {
         if (amount <= 0) throw new ValidationException("Amount must be positive.");
 
-        // Charge is Money-only
-        const WalletType walletType = WalletType.Money;
-
         // Ensure wallet exists (Lazy provisioning)
-        await GetMyWalletAsync(userId, walletType);
+        await GetMyWalletAsync(userId);
 
         return await executionStrategy.ExecuteAsync(async () =>
         {
-            var currentWallet = await walletRepository.GetWalletAsync(userId, walletType);
+            var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
             if (currentWallet == null) throw new WalletNotFoundException();
 
             var newBalance = currentWallet.Balance + amount;
@@ -93,19 +74,19 @@ public class WalletService(
         });
     }
 
-    public async Task<WalletModel> GetWalletByUserIdAsync(Guid userId, WalletType walletType)
+    public async Task<WalletModel> GetWalletByUserIdAsync(Guid userId)
     {
-        return await GetMyWalletAsync(userId, walletType);
+        return await GetMyWalletAsync(userId);
     }
 
-    public async Task<WalletModel> AdjustBalanceAsync(Guid userId, WalletType walletType, decimal amount, string reason)
+    public async Task<WalletModel> AdjustBalanceAsync(Guid userId, decimal amount, string reason)
     {
         return await executionStrategy.ExecuteAsync(async () =>
         {
-            var currentWallet = await walletRepository.GetWalletAsync(userId, walletType);
+            var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
             if (currentWallet == null)
             {
-                currentWallet = await ProvisionWalletAsync(userId, walletType);
+                currentWallet = await ProvisionWalletAsync(userId);
             }
 
             var newBalance = currentWallet.Balance + amount;
@@ -143,13 +124,13 @@ public class WalletService(
         });
     }
 
-    private async Task<WalletModel> ProvisionWalletAsync(Guid userId, WalletType walletType)
+    private async Task<WalletModel> ProvisionWalletAsync(Guid userId)
     {
         var newWallet = new WalletModel
         {
             WalletId = Guid.NewGuid(),
             UserId = userId,
-            WalletType = walletType,
+            WalletType = WalletType.Money,
             Balance = 0,
             Version = 1,
             CreatedAt = DateTime.UtcNow,
@@ -165,10 +146,7 @@ public class WalletService(
             // Ignore - wallet was created by another concurrent request (Lazy provisioning)
         }
 
-        var createdWallet = await walletRepository.GetWalletAsync(userId, walletType);
+        var createdWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
         return createdWallet ?? throw new WalletProvisioningFailedException();
     }
 }
-
-
-

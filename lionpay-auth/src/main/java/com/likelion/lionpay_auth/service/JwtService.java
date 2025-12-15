@@ -26,38 +26,40 @@ public class JwtService {
     public JwtService(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
         // Support both Base64 encoded secret (from JwtUtil) or raw string
-        byte[] keyBytes;
-        try {
-            keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
-        } catch (IllegalArgumentException e) {
-            // Fallback if not base64
-            keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
-        }
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     // User Access Token
     public String generateAccessToken(String phone) {
-        return generateToken(phone, Map.of(), jwtProperties.getAccessTokenExpirationMinutes(), ChronoUnit.MINUTES);
+        return generateToken(phone, Map.of(), jwtProperties.getUserAudience(),
+                jwtProperties.getAccessTokenExpirationMinutes(), ChronoUnit.MINUTES);
     }
 
     // Admin Access Token
     public String generateAccessToken(String adminId, String username, AdminRole role) {
         return generateToken(adminId, Map.of("username", username, "role", role.name()),
+                jwtProperties.getAdminAudience(),
                 jwtProperties.getAccessTokenExpirationMinutes(), ChronoUnit.MINUTES);
     }
 
     // Refresh Token
     public String generateRefreshToken(String subject) {
-        return generateToken(subject, Map.of(), jwtProperties.getRefreshTokenExpirationDays(), ChronoUnit.DAYS);
+        // Refresh token can share user audience or have its own. Using user audience as
+        // default.
+        return generateToken(subject, Map.of(), jwtProperties.getUserAudience(),
+                jwtProperties.getRefreshTokenExpirationDays(), ChronoUnit.DAYS);
     }
 
-    private String generateToken(String subject, Map<String, Object> claims, long duration, ChronoUnit unit) {
+    private String generateToken(String subject, Map<String, Object> claims, String audience, long duration,
+            ChronoUnit unit) {
         Instant now = Instant.now();
         Instant expiration = now.plus(duration, unit);
 
         return Jwts.builder()
                 .setSubject(subject)
+                .setIssuer(jwtProperties.getIssuer())
+                .setAudience(audience)
                 .addClaims(claims)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
