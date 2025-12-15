@@ -9,10 +9,8 @@ aws:
     endpoint: ${DYNAMODB_URL:http://localhost:8000}
     access-key: ${AWS_ACCESS_KEY_ID:local}
     secret-key: ${AWS_SECRET_ACCESS_KEY:local}
-    table:
-      admin: lionpay-auth-admin
-      refresh-token: lionpay-refresh-token
-      user: lionpay-auth-user # suggestion: 사용자 테이블 이름을 설정 파일에서 관리합니다.
+    table-name: ${DYNAMODB_TABLE_NAME:lionpay-auth}
+
 jwt:
   secret: ${JWT_SECRET:SGVsbG9Xb3JsZFRoaXNJc0FTZWNyZXRLZXlGb3JMb2NhbFRlc3Rpbmc=}
   access-token-expiration-minutes: 30

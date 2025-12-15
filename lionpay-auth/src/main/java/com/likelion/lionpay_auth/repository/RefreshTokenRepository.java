@@ -1,5 +1,6 @@
 package com.likelion.lionpay_auth.repository;
 
+import com.likelion.lionpay_auth.entity.DynamoDBConstants;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -20,9 +21,11 @@ public class RefreshTokenRepository {
 	private final DynamoDbIndex<RefreshTokenEntity> byRefreshTokenIndex;
 
 	public RefreshTokenRepository(DynamoDbEnhancedClient client,
-								  @Value("${aws.dynamodb.table.refresh-token:RefreshTokens}") String tableName) {
-		this.table = client.table(tableName, TableSchema.fromBean(RefreshTokenEntity.class));
-		this.byRefreshTokenIndex = table.index("byRefreshToken");
+								  @Value("${aws.dynamodb.table-name}") String tableName) {
+		// 1. 실제 데이터 매핑은 RefreshTokenEntity 클래스를 기준으로 테이블 객체를 생성합니다.
+		DynamoDbTable<RefreshTokenEntity> refreshTokenTable = client.table(tableName, TableSchema.fromBean(RefreshTokenEntity.class));
+		this.table = refreshTokenTable;
+		this.byRefreshTokenIndex = refreshTokenTable.index("byRefreshToken");
 	}
 
 	public void save(RefreshTokenEntity token) {
@@ -30,7 +33,8 @@ public class RefreshTokenRepository {
 	}
 
 	public void deleteAllByUserId(String userId) {
-		String pk = "REFRESH_TOKEN#" + userId;
+		// suggestion: AuthService에서 저장한 PK 형식과 일치하도록 DynamoDBConstants를 사용합니다.
+		String pk = DynamoDBConstants.USER_PREFIX + userId;
 		PageIterable<RefreshTokenEntity> pages = table.query(r -> r.queryConditional(
 				QueryConditional.keyEqualTo(Key.builder().partitionValue(pk).build())));
 		pages.items().forEach(table::deleteItem);
