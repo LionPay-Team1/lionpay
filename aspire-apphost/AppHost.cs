@@ -42,11 +42,13 @@ var walletService = builder.AddProject<LionPay_Wallet>("wallet-service")
     .WithHttpHealthCheck("/health");
 
 builder.AddViteApp("app", "../lionpay-app")
+    .WithNpmPackageInstallation()
     .WithReference(authService, "AUTH_SERVER")
     .WithReference(walletService, "WALLET_SERVER")
     .WithExternalHttpEndpoints();
 
 builder.AddViteApp("management", "../lionpay-management")
+    .WithNpmPackageInstallation()
     .WithReference(authService, "AUTH_SERVER")
     .WithReference(walletService, "WALLET_SERVER")
     .WithExternalHttpEndpoints();
