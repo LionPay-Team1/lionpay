@@ -1,6 +1,7 @@
 package com.likelion.lionpay_auth.controller;
 
 import com.likelion.lionpay_auth.dto.*;
+import com.likelion.lionpay_auth.entity.AdminEntity;
 import com.likelion.lionpay_auth.security.JwtAuthentication;
 import com.likelion.lionpay_auth.service.AdminUserService;
 import com.likelion.lionpay_auth.service.AdminAuthService;
@@ -31,10 +32,11 @@ public class AdminController {
 		return ResponseEntity.ok(ApiResponse.success("관리자 로그아웃 되었습니다", null));
 	}
 
+	// suggestion: API 응답 형식을 요청사항에 맞게 상세 정보 DTO로 직접 반환하도록 수정합니다.
 	@PostMapping("/new")
-	public ResponseEntity<ApiResponse<AdminCreateResponse>> createAdmin(@Valid @RequestBody AdminCreateRequest req) {
-		String adminId = adminAuthService.createAdmin(req);
-		return ResponseEntity.ok(ApiResponse.success(new AdminCreateResponse(adminId)));
+	public ResponseEntity<AdminDetailResponse> createAdmin(@Valid @RequestBody AdminCreateRequest req) {
+		AdminEntity createdAdmin = adminAuthService.createAdmin(req);
+		return ResponseEntity.ok(AdminDetailResponse.from(createdAdmin));
 	}
 
     // suggestion: 관리자 전용 토큰 재발급 엔드포인트를 추가합니다.

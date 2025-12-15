@@ -1,58 +1,50 @@
 package com.likelion.lionpay_auth.config;
 
-import com.likelion.lionpay_auth.entity.AdminEntity;
-import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
-import com.likelion.lionpay_auth.entity.User; // User 엔티티 import 확인
+import com.likelion.lionpay_auth.entity.LionPayTableItem;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 
 /**
- * 애플리케이션 시작 시 DynamoDB 테이블을 자동으로 생성하는 초기화 컴포넌트.
+ * 애플리케이션 시작 시 DynamoDB 단일 테이블을 자동으로 생성하는 초기화 컴포넌트.
  */
 @Slf4j
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class DynamoDbInitializer {
 
     private final DynamoDbEnhancedClient enhancedClient;
+    // suggestion: @Value 어노테이션을 필드에 직접 사용하여 생성자 코드를 단순화합니다.
+    @Value("${aws.dynamodb.table-name}")
+    private String tableName;
+    private final AdminInitializer adminInitializer; // 기존 AdminInitializer를 그대로 사용
 
-    /**
-     * @PostConstruct를 사용하여 이 Bean이 생성된 직후에 테이블 생성 로직이 실행되도록 합니다.
-     */
     @PostConstruct
     public void initializeTables() {
-        log.info("DynamoDB 테이블 초기화를 시작합니다...");
+        log.info("DynamoDB 테이블({}) 초기화를 시작합니다...", tableName);
 
-        // User, Admin, RefreshToken 엔티티에 대한 테이블 스키마를 기반으로 테이블 생성
-        createTable(User.class, "lionpay-auth-user");
-        createTable(AdminEntity.class, "lionpay-auth-admin");
-        createTable(RefreshTokenEntity.class, "lionpay-refresh-token");
+        // suggestion: 모든 속성과 GSI를 포함하는 마스터 엔티티(LionPayTableItem)를 사용하여 테이블 스키마를 생성합니다.
+        // 이렇게 하면 모든 키 구조가 테이블 메타데이터에 올바르게 반영됩니다.
+        DynamoDbTable<LionPayTableItem> table = enhancedClient.table(tableName, TableSchema.fromBean(LionPayTableItem.class));
 
-        log.info("DynamoDB 테이블 초기화가 완료되었습니다.");
-    }
-
-    /**
-     * 제네릭 메서드를 사용하여 테이블 생성 로직을 공통화합니다.
-     * @param beanClass 테이블 스키마를 정의하는 엔티티 클래스
-     * @param tableName 생성할 DynamoDB 테이블 이름
-     * @param <T> 엔티티 타입
-     */
-    private <T> void createTable(Class<T> beanClass, String tableName) {
-        DynamoDbTable<T> table = enhancedClient.table(tableName, TableSchema.fromBean(beanClass));
         try {
+            // 마스터 스키마에 GSI 정보가 모두 포함되어 있으므로,
+            // 별도의 설정 없이 createTable()을 호출하면 SDK가 알아서 GSI를 포함하여 테이블을 생성합니다.
             table.createTable();
             log.info("'{}' 테이블이 성공적으로 생성되었습니다.", tableName);
         } catch (ResourceInUseException e) {
-            // 테이블이 이미 존재하면 예외가 발생하므로, 이를 무시하고 로그를 남깁니다.
             log.info("'{}' 테이블은 이미 존재합니다.", tableName);
         } catch (Exception e) {
             log.error("'{}' 테이블 생성 중 오류가 발생했습니다.", tableName, e);
         }
+
+		adminInitializer.initializeSuperAdmin();
+        log.info("DynamoDB 테이블 초기화가 완료되었습니다.");
     }
 }

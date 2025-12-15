@@ -2,6 +2,7 @@ package com.likelion.lionpay_auth.service;
 
 import com.likelion.lionpay_auth.dto.SignInRequest;
 import com.likelion.lionpay_auth.dto.SignInResponse;
+import com.likelion.lionpay_auth.entity.DynamoDBConstants;
 import com.likelion.lionpay_auth.dto.SignUpRequest;
 import com.likelion.lionpay_auth.entity.RefreshTokenEntity;
 import com.likelion.lionpay_auth.entity.User;
@@ -140,11 +141,13 @@ public class AuthService {
 		String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
 
 		RefreshTokenEntity rt = new RefreshTokenEntity();
-
-		rt.setPk("REFRESH_TOKEN#" + userId); // Partition Key 설정
-		rt.setSk(token); // Sort Key 설정 (실제 토큰 값)
-
+		
+		// suggestion: 단일 테이블 설계에 맞게 PK와 SK를 설정합니다.
+		rt.setPk(DynamoDBConstants.USER_PREFIX + userId);
+		rt.setSk(DynamoDBConstants.REFRESH_TOKEN_SK);
+		
 		rt.setUserId(userId);
+		rt.setToken(token); // 실제 토큰은 별도 속성에 저장
 		rt.setCreatedAt(Instant.now().toString());
 		rt.setExpiresAt(expiresAtString);
 

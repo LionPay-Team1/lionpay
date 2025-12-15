@@ -1,6 +1,8 @@
 package com.likelion.lionpay_auth.repository;
 
 import org.springframework.beans.factory.annotation.Value;
+import com.likelion.lionpay_auth.entity.DynamoDBConstants;
+import com.likelion.lionpay_auth.entity.User;
 import com.likelion.lionpay_auth.entity.AdminEntity;
 import com.likelion.lionpay_auth.enums.AdminRole;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,9 @@ public class AdminRepository {
 
 	// suggestion: 하드코딩된 숫자/문자열을 상수로 추출하세요. 테이블 이름을 설정 파일에서 주입받아 사용하면 유연성이 높아집니다.
 	public AdminRepository(DynamoDbEnhancedClient enhancedClient,
-						   @Value("${aws.dynamodb.table.admin}") String tableName) {
+						   @Value("${aws.dynamodb.table-name}") String tableName) {
+		// suggestion: 단일 테이블의 전체 스키마를 정의하는 User.class를 기준으로 테이블을 인식하도록 수정합니다.
+		// 실제 데이터 매핑은 AdminEntity로 이루어지지만, 테이블 구조 인식은 User 클래스를 따릅니다.
 		this.adminTable = enhancedClient.table(tableName, TableSchema.fromBean(AdminEntity.class));
     }
 
@@ -28,17 +32,11 @@ public class AdminRepository {
     }
 
     public Optional<AdminEntity> findByUsername(String username) {
-        Key key = Key.builder()
-                .partitionValue("ADMIN#" + username)
-                .build();
-
-        // GSI가 아니라 PK 설계를 "ADMIN#{username}"으로 했으므로 getItem 가능
-        // 하지만 SK가 "INFO"로 고정되어 있음.
-        // getItem을 하려면 SK도 필요함.
+        // suggestion: 단일 테이블 설계에 맞게 PK와 SK를 사용하여 조회합니다.
         return Optional.ofNullable(adminTable.getItem(
                 Key.builder()
-                        .partitionValue("ADMIN#" + username)
-                        .sortValue("INFO")
+                        .partitionValue(DynamoDBConstants.ADMIN_PREFIX + username)
+                        .sortValue(DynamoDBConstants.INFO_SK)
                         .build()));
     }
 
