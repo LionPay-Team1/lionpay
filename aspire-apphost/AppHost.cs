@@ -25,7 +25,16 @@ var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
     .WithEnvironment("DYNAMODB_URL", dynamodb.GetEndpoint("http"))
     .WithEnvironment("AWS_ACCESS_KEY_ID", "local")
     .WithEnvironment("AWS_SECRET_ACCESS_KEY", "local")
-    .WithEnvironment("JWT_SECRET", jwtSecret);
+    .WithEnvironment("JWT_SECRET", jwtSecret)
+    .WithUrls(c =>
+    {
+        var item = new ResourceUrlAnnotation
+        {
+            Url = $"{c.Urls.First().Url}/swagger.html",
+            DisplayText = "Swagger"
+        };
+        c.Urls.Add(item);
+    });
 
 var walletDbMigrations = builder.AddProject<LionPay_Wallet_Migrations>("wallet-db-migrations")
     .WaitFor(walletdb)
@@ -38,7 +47,16 @@ var walletService = builder.AddProject<LionPay_Wallet>("wallet-service")
     .WithReference(walletCache)
     .WithReference(walletdb)
     .WithEnvironment("JWT_SECRET", jwtSecret)
-    .WithHttpHealthCheck("/health");
+    .WithHttpHealthCheck("/health")
+    .WithUrls(c =>
+    {
+        var item = new ResourceUrlAnnotation
+        {
+            Url = $"{c.Urls.First().Url}/scalar",
+            DisplayText = "Scalar"
+        };
+        c.Urls.Add(item);
+    });
 
 builder.AddBunApp("app", "../lionpay-app", "dev", watch: true)
     .WithBunPackageInstallation()
