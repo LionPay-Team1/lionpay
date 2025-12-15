@@ -26,13 +26,7 @@ public class JwtService {
     public JwtService(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
         // Support both Base64 encoded secret (from JwtUtil) or raw string
-        byte[] keyBytes;
-        try {
-            keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
-        } catch (IllegalArgumentException e) {
-            // Fallback if not base64
-            keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
-        }
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 

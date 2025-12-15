@@ -49,8 +49,8 @@ public class AuthService {
 		User savedUser = userRepository.save(user);
 
 		// 2. 토큰 생성
-		String accessToken = jwtService.generateAccessToken(savedUser.getPhone());
-		String refreshToken = jwtService.generateRefreshToken(savedUser.getPhone());
+		String accessToken = jwtService.generateAccessToken(savedUser.getUserId());
+		String refreshToken = jwtService.generateRefreshToken(savedUser.getUserId());
 
 		// 3. Refresh Token 저장
 		saveRefreshToken(savedUser.getUserId(), refreshToken);
@@ -78,8 +78,8 @@ public class AuthService {
 		// 로그인 성공 시, 해당 사용자가 보유한 모든 기기의 Refresh Token을 무효화합니다.
 		refreshTokenRepository.deleteAllByUserId(user.getUserId());
 
-		String accessToken = jwtService.generateAccessToken(user.getPhone());
-		String refreshToken = jwtService.generateRefreshToken(user.getPhone());
+		String accessToken = jwtService.generateAccessToken(user.getUserId());
+		String refreshToken = jwtService.generateRefreshToken(user.getUserId());
 
 		saveRefreshToken(user.getUserId(), refreshToken);
 
@@ -118,12 +118,12 @@ public class AuthService {
 		RefreshTokenEntity tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
 				.orElseThrow(() -> new InvalidTokenException("제공되어진 리프레시 토큰을 찾을수 없습니다"));
 
-		String phone = jwtService.getSubject(refreshToken);
-		User user = userRepository.findByPhone(phone)
+		String userId = jwtService.getSubject(refreshToken);
+		User user = userRepository.findByUserId(userId) // Note: This repository method needs to be checked/added
 				.orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다"));
 
-		String newAccessToken = jwtService.generateAccessToken(phone);
-		String newRefreshToken = jwtService.generateRefreshToken(phone);
+		String newAccessToken = jwtService.generateAccessToken(userId);
+		String newRefreshToken = jwtService.generateRefreshToken(userId);
 
 		refreshTokenRepository.delete(tokenEntity);
 		saveRefreshToken(user.getUserId(), newRefreshToken);
@@ -141,11 +141,11 @@ public class AuthService {
 		String expiresAtString = String.valueOf(expiresAtDate.toInstant().getEpochSecond());
 
 		RefreshTokenEntity rt = new RefreshTokenEntity();
-		
+
 		// suggestion: 단일 테이블 설계에 맞게 PK와 SK를 설정합니다.
 		rt.setPk(DynamoDBConstants.USER_PREFIX + userId);
 		rt.setSk(DynamoDBConstants.REFRESH_TOKEN_SK);
-		
+
 		rt.setUserId(userId);
 		rt.setToken(token); // 실제 토큰은 별도 속성에 저장
 		rt.setCreatedAt(Instant.now().toString());

@@ -12,9 +12,13 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection AddWalletAuthentication(IConfiguration configuration)
         {
+            JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove(JwtRegisteredClaimNames.Sub);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false;
+
                     var jwtSecret = configuration["JWT:Secret"];
                     if (string.IsNullOrEmpty(jwtSecret))
                     {
@@ -44,26 +48,22 @@ public static class ServiceCollectionExtensions
                         OnForbidden = _ => throw new PermissionDeniedException()
                     };
                 });
-
             return services;
         }
 
         public IServiceCollection AddWalletAuthorization()
         {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policies.UserRole, policy =>
+            services.AddAuthorizationBuilder()
+                .AddPolicy(Policies.UserRole, policy =>
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-app");
-                });
-
-                options.AddPolicy(Policies.AdminRole, policy =>
+                })
+                .AddPolicy(Policies.AdminRole, policy =>
                 {
                     policy.RequireClaim("role", "ADMIN", "SUPER_ADMIN");
                     policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-management");
                 });
-            });
             return services;
         }
     }
