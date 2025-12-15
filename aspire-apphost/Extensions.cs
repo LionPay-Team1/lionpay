@@ -1,28 +1,28 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Aspire.Hosting.ApplicationModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+namespace LionPay.AppHost;
 
 public static class Extensions
 {
     extension(IDistributedApplicationBuilder builder)
     {
-        public IResourceBuilder<DynamoDBResource> AddLocalDynamoDB(string name)
+        public IResourceBuilder<DynamoDbResource> AddLocalDynamoDb(string name)
         {
             // Configure dynamodb container used for local development
-            var dynamodb = new DynamoDBResource(name);
+            var dynamodb = new DynamoDbResource(name);
 
             return builder.AddResource(dynamodb)
                 .WithImage("amazon/dynamodb-local:latest")
                 .WithImageRegistry("docker.io")
-                .WithArgs("-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/home/dynamodblocal/data")
-                .WithVolume("dynamodb-data", "/home/dynamodblocal/data")
+                .WithArgs("-jar", "DynamoDBLocal.jar", "-inMemory")
                 .WithHttpEndpoint(targetPort: 8000, name: "http");
         }
     }
 
-    public sealed class DynamoDBResource(string name) : ContainerResource(name), IResourceWithConnectionString
+    public sealed class DynamoDbResource(string name) : ContainerResource(name), IResourceWithConnectionString
     {
         public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create($"http://{{{Name}}}");
     }
@@ -66,7 +66,7 @@ public static class Extensions
                     }
                 };
 
-                process.OutputDataReceived += async (sender, args) =>
+                process.OutputDataReceived += async (_, args) =>
                 {
                     if (!string.IsNullOrWhiteSpace(args.Data))
                     {
@@ -79,7 +79,7 @@ public static class Extensions
                     }
                 };
 
-                process.ErrorDataReceived += async (sender, args) =>
+                process.ErrorDataReceived += (_, args) =>
                 {
                     if (!string.IsNullOrWhiteSpace(args.Data))
                     {
