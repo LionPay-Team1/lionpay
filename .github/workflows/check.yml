@@ -51,32 +51,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20.x'
-          cache: 'npm'
-          cache-dependency-path: lionpay-app/package-lock.json
+          bun-version: latest
       - name: Install dependencies
         working-directory: ./lionpay-app
-        run: npm ci
+        run: bun install --frozen-lockfile
       - name: Run lint
         working-directory: ./lionpay-app
-        run: npm run lint
+        run: bun run lint
 
   lint-lionpay-management:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20.x'
-          cache: 'npm'
-          cache-dependency-path: lionpay-management/package-lock.json
+          bun-version: latest
       - name: Install dependencies
         working-directory: ./lionpay-management
-        run: npm ci
+        run: bun install --frozen-lockfile
       - name: Run lint
         working-directory: ./lionpay-management
-        run: npm run lint
+        run: bun run lint
