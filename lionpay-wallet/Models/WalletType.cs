@@ -2,6 +2,6 @@ namespace LionPay.Wallet.Models;
 
 public enum WalletType
 {
-    Money,
-    Point
+    Money = 0,
+    Point = 1
 }

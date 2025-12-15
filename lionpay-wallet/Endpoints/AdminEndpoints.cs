@@ -48,31 +48,16 @@ public static class AdminEndpoints
 
     public static async Task<IResult> GetUserWallet(
         Guid userId,
-        IWalletService walletService,
-        [FromQuery] WalletType? type = null)
+        IWalletService walletService)
     {
-        if (type.HasValue)
-        {
-            var wallet = await walletService.GetWalletByUserIdAsync(userId, type.Value);
-            var response = new WalletResponse(
-                wallet.WalletId,
-                wallet.Balance,
-                wallet.WalletType,
-                wallet.UpdatedAt
-            );
-            return Results.Ok(response);
-        }
-        else
-        {
-            var wallets = await walletService.GetMyWalletsAsync(userId);
-            var response = wallets.Select(w => new WalletResponse(
-                w.WalletId,
-                w.Balance,
-                w.WalletType,
-                w.UpdatedAt
-            ));
-            return Results.Ok(response);
-        }
+        var wallet = await walletService.GetWalletByUserIdAsync(userId);
+        var response = new WalletResponse(
+            wallet.WalletId,
+            wallet.Balance,
+            wallet.WalletType,
+            wallet.UpdatedAt
+        );
+        return Results.Ok(response);
     }
 
     public static async Task<IResult> AdjustBalance(
@@ -80,7 +65,7 @@ public static class AdminEndpoints
         [FromBody] AdjustBalanceRequest request,
         IWalletService walletService)
     {
-        var wallet = await walletService.AdjustBalanceAsync(userId, request.WalletType, request.Amount, request.Reason);
+        var wallet = await walletService.AdjustBalanceAsync(userId, request.Amount, request.Reason);
         var response = new WalletResponse(
             wallet.WalletId,
             wallet.Balance,
@@ -132,4 +117,3 @@ public static class AdminEndpoints
         return Results.Ok(merchant);
     }
 }
-

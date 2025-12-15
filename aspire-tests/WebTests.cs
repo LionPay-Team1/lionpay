@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-[assembly: DoNotParallelize]
+[assembly: Parallelize]
 
 namespace LionPay.Tests;
 

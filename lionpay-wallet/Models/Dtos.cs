@@ -12,8 +12,7 @@ public record ChargeRequest(
 public record PaymentRequest(
     Guid MerchantId,
     decimal AmountCash,
-    string Currency, // KRW, USD, etc. (Mocked)
-    string AssetType // "MONEY"
+    string Currency // KRW, USD, etc. (Mocked)
 );
 
 public record PaymentResponse(

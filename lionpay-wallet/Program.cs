@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
-using Dapper;
 using LionPay.Wallet;
 using LionPay.Wallet.Endpoints;
 using LionPay.Wallet.Extensions;
 using LionPay.Wallet.Infrastructure;
-using LionPay.Wallet.Models;
+using LionPay.Wallet.Options;
 using LionPay.Wallet.Repositories;
 using LionPay.Wallet.Services;
 using Scalar.AspNetCore;
@@ -20,12 +19,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// Register Dapper TypeHandlers for enums (must be before first DB usage)
-SqlMapper.AddTypeHandler(new DapperEnumHandler<WalletType>());
-SqlMapper.AddTypeHandler(new DapperEnumHandler<TxType>());
-SqlMapper.AddTypeHandler(new DapperEnumHandler<TxStatus>());
-
 builder.AddNpgsqlDataSource(connectionName: "walletdb");
+
+// Configure Options
+builder.Services.Configure<WalletOptions>(builder.Configuration.GetSection(WalletOptions.SectionName));
 
 // Add Services & Repositories
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
@@ -64,7 +61,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapDefaultEndpoints();
 
