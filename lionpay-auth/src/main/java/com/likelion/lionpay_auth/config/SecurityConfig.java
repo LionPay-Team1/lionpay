@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,15 +27,6 @@ public class SecurityConfig {
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		// 🚨 수정: API 경로는 securityFilterChain에서 처리하도록 제거
-		return (web) -> web.ignoring().requestMatchers(
-				"/openapi/**", // Swagger/OpenAPI 경로
-				"/swagger.html", // Swagger UI 경로
-				"/actuator/**"); // 액츄에이터 경로만 필터 체인에서 완전히 제외
-	}
-
-	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
@@ -45,15 +35,22 @@ public class SecurityConfig {
 				.sessionManagement(session -> session
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						// Swagger/OpenAPI 경로 허용
 						.requestMatchers(
-								// 🚨 이 목록은 그대로 유지
+								"/openapi/**",
+								"/swagger-ui/**",
+								"/swagger.html",
+								"/actuator/**")
+						.permitAll()
+						.requestMatchers(
+								// 인증 API 경로
 								"/api/v1/auth/sign-up",
 								"/api/v1/auth/sign-in",
 								"/api/v1/auth/sign-out",
 								"/api/v1/auth/refresh-token",
 								"/api/v1/auth/ping")
 						.permitAll()
-						// suggestion: 관리자 토큰 재발급 경로를 permitAll()에 추가합니다.
+						// 관리자 토큰 재발급 경로
 						.requestMatchers("/api/v1/admin/refresh-token").permitAll()
 						.requestMatchers("/api/v1/admin/sign-in").permitAll()
 						.requestMatchers("/api/v1/admin/new").hasRole("SUPER_ADMIN")
