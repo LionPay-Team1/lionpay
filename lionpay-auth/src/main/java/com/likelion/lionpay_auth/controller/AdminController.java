@@ -19,25 +19,25 @@ public class AdminController {
     private final AdminAuthService adminAuthService;
     private final AdminUserService adminUserService;
 
-	@PostMapping("/sign-in")
-	public ResponseEntity<TokenResponse> signIn(@Valid @RequestBody AdminSignInRequest req) {
-		return ResponseEntity.ok(adminAuthService.signIn(req));
-	}
+    @PostMapping("/sign-in")
+    public ResponseEntity<TokenResponse> signIn(@Valid @RequestBody AdminSignInRequest req) {
+        return ResponseEntity.ok(adminAuthService.signIn(req));
+    }
 
-	@PostMapping("/sign-out")
-	public ResponseEntity<ApiResponse<?>> signOut(
-			@AuthenticationPrincipal JwtAuthentication principal,
-			@Valid @RequestBody SignOutRequest req) {
-		adminAuthService.logout(principal.adminId(), req.getRefreshToken());
-		return ResponseEntity.ok(ApiResponse.success("관리자 로그아웃 되었습니다", null));
-	}
+    @PostMapping("/sign-out")
+    public ResponseEntity<Void> signOut(
+            @AuthenticationPrincipal JwtAuthentication principal,
+            @Valid @RequestBody SignOutRequest req) {
+        adminAuthService.logout(principal.adminId(), req.getRefreshToken());
+        return ResponseEntity.ok().build();
+    }
 
-	// suggestion: API 응답 형식을 요청사항에 맞게 상세 정보 DTO로 직접 반환하도록 수정합니다.
-	@PostMapping("/new")
-	public ResponseEntity<AdminDetailResponse> createAdmin(@Valid @RequestBody AdminCreateRequest req) {
-		AdminEntity createdAdmin = adminAuthService.createAdmin(req);
-		return ResponseEntity.ok(AdminDetailResponse.from(createdAdmin));
-	}
+    // suggestion: API 응답 형식을 요청사항에 맞게 상세 정보 DTO로 직접 반환하도록 수정합니다.
+    @PostMapping("/new")
+    public ResponseEntity<AdminDetailResponse> createAdmin(@Valid @RequestBody AdminCreateRequest req) {
+        AdminEntity createdAdmin = adminAuthService.createAdmin(req);
+        return ResponseEntity.ok(AdminDetailResponse.from(createdAdmin));
+    }
 
     // suggestion: 관리자 전용 토큰 재발급 엔드포인트를 추가합니다.
     @PostMapping("/refresh-token")
