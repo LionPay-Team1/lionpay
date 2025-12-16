@@ -1,7 +1,6 @@
 import { adminWalletApi } from './client';
 
-// @ts-ignore
-const WALLET_BASE_URL = process.env.WALLET_SERVICE_URL || 'http://localhost:8081';
+
 
 export const walletApi = {
   getUserBalance: async (userId: string): Promise<{ userId: string; balance: number; currency?: string }> => {
@@ -9,8 +8,7 @@ export const walletApi = {
       // Use Admin API to get user wallet
       const response = await adminWalletApi.apiV1AdminWalletsUserIdGet({ userId });
       const wallet = response.data;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const amountVal = (wallet.balance as any)?.amount ?? 0;
+      const amountVal = (wallet.balance as unknown as { amount: number })?.amount ?? 0;
 
       return {
         userId,

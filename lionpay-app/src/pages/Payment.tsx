@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { paymentApi, merchantApi } from '../lib/api';
-import type { MerchantResponse } from '../generated-api/wallet';
+import type { MerchantResponse, PaymentRequest } from '../generated-api/wallet';
 import { AlertModal } from '../components/ui/AlertModal';
+import type { AxiosError } from 'axios';
 
 type Step = 'shop' | 'amount' | 'summary' | 'processing' | 'success';
 
@@ -20,7 +21,7 @@ interface Shop {
 
 export default function Payment() {
     const navigate = useNavigate();
-    const { country, money, fetchWallet, fetchTransactions } = useAppStore();
+    const { country, fetchWallet, fetchTransactions } = useAppStore();
 
     const [step, setStep] = useState<Step>('shop');
     const [shops, setShops] = useState<Shop[]>([]);
@@ -85,13 +86,14 @@ export default function Payment() {
 
         try {
             // Call actual payment API
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response = await paymentApi.apiV1PaymentsPost({
+
+
+            await paymentApi.apiV1PaymentsPost({
                 paymentRequest: {
                     merchantId: selectedShop!.id,
                     amountCash: payAmount,
                     currency: country.currency
-                } as any
+                } as PaymentRequest
             });
 
             // Set Result State - usedMoney should be the deducted amount from wallet
@@ -114,19 +116,21 @@ export default function Payment() {
             await fetchTransactions();
 
             setStep('success');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Payment failed:', err);
             let errorMessage = '결제에 실패했습니다. 다시 시도해주세요.';
 
-            if (err.response && err.response.data) {
-                console.error('Error response data:', JSON.stringify(err.response.data));
+            const error = err as AxiosError<{ detail?: string; message?: string; title?: string }>;
+
+            if (error.response && error.response.data) {
+                console.error('Error response data:', JSON.stringify(error.response.data));
                 // Assuming standard error response structure { code, message, ... }
-                if (err.response.data.detail) {
-                    errorMessage = err.response.data.detail;
-                } else if (err.response.data.message) {
-                    errorMessage = err.response.data.message;
-                } else if (err.response.data.title) {
-                    errorMessage = err.response.data.title;
+                if (error.response.data.detail) {
+                    errorMessage = error.response.data.detail;
+                } else if (error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                } else if (error.response.data.title) {
+                    errorMessage = error.response.data.title;
                 }
             }
 

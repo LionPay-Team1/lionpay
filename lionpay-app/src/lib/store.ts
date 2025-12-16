@@ -63,12 +63,9 @@ const mapTxType = (type: string): 'charge' | 'use' | 'earn' => {
 
 const mapTransaction = (tx: TransactionResponse): Transaction => {
     const dateObj = new Date(tx.createdAt);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const amountVal = (typeof tx.amount === 'number') ? tx.amount : ((tx.amount as any)?.amount ?? 0);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const balanceAfter = (typeof tx.balanceAfter === 'number') ? tx.balanceAfter : ((tx.balanceAfter as any)?.amount ?? 0);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const originalAmountVal = (typeof tx.originalAmount === 'number') ? tx.originalAmount : ((tx.originalAmount as any)?.amount ?? 0);
+    const amountVal = (typeof tx.amount === 'number') ? tx.amount : ((tx.amount as unknown as { amount: number })?.amount ?? 0);
+    const balanceAfter = (typeof tx.balanceAfter === 'number') ? tx.balanceAfter : ((tx.balanceAfter as unknown as { amount: number })?.amount ?? 0);
+    const originalAmountVal = (typeof tx.originalAmount === 'number') ? tx.originalAmount : ((tx.originalAmount as unknown as { amount: number })?.amount ?? 0);
 
     return {
         id: tx.txId,
@@ -125,9 +122,8 @@ export const useAppStore = create<AppState>((set) => ({
         try {
             const response = await walletApi.apiV1WalletsMeGet();
             const wallet = response.data;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const balanceVal = (typeof wallet.balance === 'number') ? wallet.balance : ((wallet.balance as any)?.amount ?? 0);
+
+            const balanceVal = (typeof wallet.balance === 'number') ? wallet.balance : ((wallet.balance as unknown as { amount: number })?.amount ?? 0);
             // Also handling wallet type check carefully if enum
             if (wallet.walletType === 'Money') {
                 set({ money: Number(balanceVal) });

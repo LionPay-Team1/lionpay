@@ -3,7 +3,7 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const process: any;
 
-import { AuthControllerApi, Configuration, UserControllerApi } from '../generated-api/auth';
+import { AuthControllerApi, UserControllerApi } from '../generated-api/auth';
 import { WalletApi, TransactionApi, PaymentApi, MerchantApi } from '../generated-api/wallet';
 
 // Use relative paths - nginx will proxy API requests to backend services
@@ -44,9 +44,9 @@ walletAxios.interceptors.request.use(attachTokenInterceptor);
 
 // Shared Response Interceptor: Handle 401 & Refresh
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: { resolve: (token: string | null) => void; reject: (error: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue.forEach(prom => {
         if (error) {
             prom.reject(error);

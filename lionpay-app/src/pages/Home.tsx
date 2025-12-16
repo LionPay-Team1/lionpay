@@ -53,7 +53,7 @@ export default function Home() {
                             <span>라이언 페이 머니</span>
                             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">{country.currency}</span>
                         </p>
-                        <h3 className="text-3xl font-bold mb-6">
+                        <h3 className="text-3xl font-bold mb-6">ㅋ
                             {currencySym} {convertedMoney}
                             <span className="text-lg font-normal ml-1">{currencyName}</span>
                         </h3>

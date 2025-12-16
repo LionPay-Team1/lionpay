@@ -27,8 +27,7 @@ const mapTx = (tx: TransactionResponse): PointTransaction => {
     type = 'EARN';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const amountVal = (tx.amount as any)?.amount ?? 0;
+  const amountVal = (tx.amount as unknown as { amount: number })?.amount ?? 0;
 
   return {
     id: tx.txId,
@@ -45,7 +44,7 @@ const mapTx = (tx: TransactionResponse): PointTransaction => {
 };
 
 export const pointsApi = {
-  getAllHistory: async (params?: PointHistoryParams): Promise<PointTransaction[]> => {
+  getAllHistory: async (_params?: PointHistoryParams): Promise<PointTransaction[]> => {
     // Admin API to get ALL transactions? 
     // Not found in typical generated code yet. 
     console.warn('pointsApi.getAllHistory not implemented in backend');
@@ -56,8 +55,8 @@ export const pointsApi = {
     try {
       const response = await adminWalletApi.apiV1AdminTransactionsUserIdGet({
         userId,
-        limit: params?.size as any,
-        offset: params?.page as any
+        limit: params?.size,
+        offset: params?.page
       });
 
       const list = response.data;

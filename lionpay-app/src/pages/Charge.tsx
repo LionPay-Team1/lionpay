@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../lib/store';
 import { walletApi } from '../lib/api';
 import { AlertModal } from '../components/ui/AlertModal';
+import type { AdjustBalanceRequestAmount } from '../generated-api/wallet';
+import type { AxiosError } from 'axios';
 
 export default function Charge() {
     const navigate = useNavigate();
@@ -25,9 +27,8 @@ export default function Charge() {
         try {
             await walletApi.apiV1WalletsChargePost({
                 chargeRequest: {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    amount: parseInt(amount)
-                } as any
+                    amount: parseInt(amount) as unknown as AdjustBalanceRequestAmount
+                }
             });
 
             // Refresh wallet balance and transactions after charge
@@ -35,10 +36,11 @@ export default function Charge() {
             await fetchTransactions();
 
             setShowAlert(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Charge failed:', err);
-            if (err.response) {
-                console.error('Error response data:', JSON.stringify(err.response.data));
+            const error = err as AxiosError<{ detail?: string; message?: string }>;
+            if (error.response) {
+                console.error('Error response data:', JSON.stringify(error.response.data));
             }
             setError('충전에 실패했습니다. 다시 시도해주세요.');
         } finally {

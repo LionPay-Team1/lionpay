@@ -20,7 +20,7 @@ const mapUser = (u: UserResponse): User => {
     id: u.userId || '',
     name: u.phone || 'Unknown', // Backend doesn't return name for generic users list?
     email: u.phone || '',
-    status: (u.status as any) || 'ACTIVE',
+    status: (u.status as unknown as 'ACTIVE') || 'ACTIVE',
     joinedAt: u.createdAt || new Date().toISOString()
   };
 };
@@ -41,7 +41,7 @@ export const usersApi = {
       // Let's assume it's a Page object { content: [], ... } or just array.
       // Based on typical Spring Data or similar, it's Page.
       // But generated code said `object`. I'll try to treat it as { content: UserResponse[] } or UserResponse[]
-      const data = response.data as any;
+      const data = response.data as { content?: UserResponse[] };
       const list = Array.isArray(data) ? data : (data.content || []);
       return list.map(mapUser);
     } catch (error) {
@@ -54,7 +54,7 @@ export const usersApi = {
     try {
       // API supports filtering by userId in getUsers
       const response = await adminAuthApi.getUsers({ userId: userId });
-      const data = response.data as any;
+      const data = response.data as { content?: UserResponse[] };
       const list = Array.isArray(data) ? data : (data.content || []);
       if (list.length > 0) {
         return mapUser(list[0]);
@@ -66,7 +66,7 @@ export const usersApi = {
     }
   },
 
-  updateUser: async (userId: string, data: Partial<User>): Promise<User> => {
+  updateUser: async (_userId: string, _data: Partial<User>): Promise<User> => {
     // AdminController doesn't seem to have updateUser endpoint in the snippet I saw? 
     // Only createAdmin, getUsers, signIn, signOut. 
     // If missing, throw error.

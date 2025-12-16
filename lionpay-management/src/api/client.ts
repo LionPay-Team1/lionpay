@@ -3,9 +3,10 @@ import { AdminControllerApi, AuthControllerApi } from '../generated-api/auth';
 import { WalletApi, TransactionApi, PaymentApi, AdminApi as AdminWalletApi } from '../generated-api/wallet';
 
 // Environment variables exposed by Vite define
-// @ts-ignore
+
+declare const process: { env: { [key: string]: string | undefined } };
+
 const AUTH_BASE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:8080';
-// @ts-ignore
 const WALLET_BASE_URL = process.env.WALLET_SERVICE_URL || 'http://localhost:8081';
 
 // Token storage keys
@@ -34,9 +35,9 @@ walletAxios.interceptors.request.use(attachTokenInterceptor);
 
 // Shared Response Interceptor: Handle 401 & Refresh
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: { resolve: (token: string | null) => void; reject: (error: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach(prom => {
     if (error) {
       prom.reject(error);
