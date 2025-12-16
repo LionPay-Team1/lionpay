@@ -10,7 +10,7 @@ All URIs are relative to *http://localhost*
 # **apiV1WalletsChargePost**
 > WalletResponse apiV1WalletsChargePost(chargeRequest)
 
-Charges the user\'s wallet with the specified amount.
+Charges the user\'s Money wallet with the specified amount.
 
 ### Example
 
@@ -64,7 +64,7 @@ No authorization required
 # **apiV1WalletsMeGet**
 > WalletResponse apiV1WalletsMeGet()
 
-Retrieves the current user\'s wallet information.
+Retrieves the current user\'s Money wallet information.
 
 ### Example
 

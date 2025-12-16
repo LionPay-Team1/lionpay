@@ -58,9 +58,15 @@ export function TransactionDetailModal({ isOpen, onClose, transaction }: Transac
                                 <span className="text-gray-500">결제 수단</span>
                                 <span className="font-medium">라이언 페이 머니</span>
                             </div>
+                            {transaction.currency && transaction.currency !== 'KRW' && transaction.originalAmount && (
+                                <div className="flex justify-between py-3 border-b border-gray-100">
+                                    <span className="text-gray-500">현지 결제 금액</span>
+                                    <span className="font-medium">{transaction.originalAmount.toLocaleString()} {transaction.currency}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between py-3 border-b border-gray-100">
                                 <span className="text-gray-500">거래 후 잔액</span>
-                                <span className="font-medium">120,500원</span>
+                                <span className="font-medium">{transaction.balanceAfter.toLocaleString()}원</span>
                             </div>
                         </div>
 

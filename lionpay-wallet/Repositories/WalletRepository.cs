@@ -54,7 +54,7 @@ public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
             """;
 
         await using var connection = dataSource.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync<WalletModel>(sql, new { UserId = userId, WalletType = walletType });
+        return await connection.QuerySingleOrDefaultAsync<WalletModel>(sql, new { UserId = userId, WalletType = (int)walletType });
     }
 
     public async Task<WalletModel?> GetWalletForUpdateAsync(Guid walletId,

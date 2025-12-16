@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**amount** | [**ChargeRequestAmount**](ChargeRequestAmount.md) |  | [default to undefined]
+**amount** | [**AdjustBalanceRequestAmount**](AdjustBalanceRequestAmount.md) |  | [default to undefined]
 
 ## Example
 

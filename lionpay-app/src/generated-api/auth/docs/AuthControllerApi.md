@@ -4,55 +4,11 @@ All URIs are relative to *http://localhost:8080*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**getCurrentUser**](#getcurrentuser) | **GET** /api/v1/auth/users/me | |
 |[**ping**](#ping) | **GET** /api/v1/auth/ping | |
 |[**refreshToken**](#refreshtoken) | **POST** /api/v1/auth/refresh-token | |
 |[**signIn**](#signin) | **POST** /api/v1/auth/sign-in | |
 |[**signOut**](#signout) | **POST** /api/v1/auth/sign-out | |
 |[**signUp**](#signup) | **POST** /api/v1/auth/sign-up | |
-
-# **getCurrentUser**
-> { [key: string]: any; } getCurrentUser()
-
-
-### Example
-
-```typescript
-import {
-    AuthControllerApi,
-    Configuration
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new AuthControllerApi(configuration);
-
-const { status, data } = await apiInstance.getCurrentUser();
-```
-
-### Parameters
-This endpoint does not have any parameters.
-
-
-### Return type
-
-**{ [key: string]: any; }**
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: */*
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | OK |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ping**
 > string ping()
@@ -98,7 +54,7 @@ This endpoint does not have any parameters.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **refreshToken**
-> { [key: string]: any; } refreshToken(body)
+> TokenResponse refreshToken(refreshTokenRequest)
 
 
 ### Example
@@ -106,16 +62,17 @@ This endpoint does not have any parameters.
 ```typescript
 import {
     AuthControllerApi,
-    Configuration
+    Configuration,
+    RefreshTokenRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AuthControllerApi(configuration);
 
-let body: string; //
+let refreshTokenRequest: RefreshTokenRequest; //
 
 const { status, data } = await apiInstance.refreshToken(
-    body
+    refreshTokenRequest
 );
 ```
 
@@ -123,12 +80,12 @@ const { status, data } = await apiInstance.refreshToken(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **string**|  | |
+| **refreshTokenRequest** | **RefreshTokenRequest**|  | |
 
 
 ### Return type
 
-**{ [key: string]: any; }**
+**TokenResponse**
 
 ### Authorization
 
@@ -148,7 +105,7 @@ const { status, data } = await apiInstance.refreshToken(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **signIn**
-> { [key: string]: any; } signIn(signInRequest)
+> TokenResponse signIn(signInRequest)
 
 
 ### Example
@@ -179,7 +136,7 @@ const { status, data } = await apiInstance.signIn(
 
 ### Return type
 
-**{ [key: string]: any; }**
+**TokenResponse**
 
 ### Authorization
 
@@ -199,7 +156,7 @@ const { status, data } = await apiInstance.signIn(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **signOut**
-> { [key: string]: string; } signOut()
+> signOut()
 
 
 ### Example
@@ -233,7 +190,7 @@ const { status, data } = await apiInstance.signOut(
 
 ### Return type
 
-**{ [key: string]: string; }**
+void (empty response body)
 
 ### Authorization
 
@@ -242,7 +199,7 @@ const { status, data } = await apiInstance.signOut(
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: */*
+ - **Accept**: Not defined
 
 
 ### HTTP response details
@@ -253,7 +210,7 @@ const { status, data } = await apiInstance.signOut(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **signUp**
-> { [key: string]: any; } signUp(signUpRequest)
+> TokenResponse signUp(signUpRequest)
 
 
 ### Example
@@ -284,7 +241,7 @@ const { status, data } = await apiInstance.signUp(
 
 ### Return type
 
-**{ [key: string]: any; }**
+**TokenResponse**
 
 ### Authorization
 

@@ -30,6 +30,9 @@ public record TransactionResponse(
     TxType TxType,
     TxStatus TxStatus,
     string MerchantName,
+    decimal BalanceAfter,
+    string Currency,
+    decimal OriginalAmount,
     DateTime CreatedAt
 );
 

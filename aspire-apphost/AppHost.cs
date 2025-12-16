@@ -63,14 +63,18 @@ var walletService = builder.AddProject<LionPay_Wallet>("wallet-service")
 
 builder.AddBunApp("app", "../lionpay-app", "dev", watch: true)
     .WithBunPackageInstallation()
-    .WithReference(authService, "AUTH_SERVER")
-    .WithReference(walletService, "WALLET_SERVER")
+    .WithReference(authService)
+    .WithEnvironment("AUTH_SERVICE_URL", authService.GetEndpoint("http"))
+    .WithReference(walletService)
+    .WithEnvironment("WALLET_SERVICE_URL", walletService.GetEndpoint("http"))
     .WithHttpEndpoint(port: 5173, env: "PORT");
 
 builder.AddBunApp("management", "../lionpay-management", "dev", watch: true)
     .WithBunPackageInstallation()
-    .WithReference(authService, "AUTH_SERVER")
-    .WithReference(walletService, "WALLET_SERVER")
+    .WithReference(authService)
+    .WithEnvironment("AUTH_SERVICE_URL", authService.GetEndpoint("http"))
+    .WithReference(walletService)
+    .WithEnvironment("WALLET_SERVICE_URL", walletService.GetEndpoint("http"))
     .WithHttpEndpoint(port: 5174, env: "PORT");
 
 builder.Build().Run();

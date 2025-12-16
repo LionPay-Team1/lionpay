@@ -1,22 +1,17 @@
-import client from './client';
+import { adminAuthApi } from './client';
+import type { TokenResponse } from '../generated-api/auth';
 
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+export type LoginResponse = TokenResponse;
 
 export const authApi = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
-      const response = await client.post<LoginResponse>('/admin/sign-in', { username, password });
+      // Use signIn1 for Admin login based on generated code checks
+      const response = await adminAuthApi.signIn1({ adminSignInRequest: { username, password } });
       return response.data;
     } catch (error) {
-      console.warn('authApi.login(): backend request failed, using mock token', error);
-      // Return a mock token for development
-      return { 
-        accessToken: 'mock-admin-token-standalone',
-        refreshToken: 'mock-refresh-token'
-      };
+      console.error('authApi.login(): backend request failed', error);
+      throw error;
     }
   },
 };

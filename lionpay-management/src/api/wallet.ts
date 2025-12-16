@@ -1,23 +1,25 @@
-import axios from 'axios';
+import { adminWalletApi } from './client';
 
-// Wallet service base URL (separate from auth/users API)
-// Use Vite env var `VITE_WALLET_BASE_URL` when available
-const WALLET_BASE_URL = import.meta.env?.VITE_WALLET_BASE_URL ?? 'http://localhost:8081/api/v1';
+// @ts-ignore
+const WALLET_BASE_URL = process.env.WALLET_SERVICE_URL || 'http://localhost:8081';
 
 export const walletApi = {
-  getUserBalance: async (userId: number): Promise<{ userId: number; balance: number; currency?: string }> => {
+  getUserBalance: async (userId: string): Promise<{ userId: string; balance: number; currency?: string }> => {
     try {
-      const url = `${WALLET_BASE_URL}/users/${userId}/balance`;
-      const response = await axios.get(url, { timeout: 3000 });
-      return response.data;
-    } catch (error) {
-      console.warn(`walletApi.getUserBalance(${userId}): backend request failed, using mock balance`, error);
-      // Deterministic mock balance based on userId
+      // Use Admin API to get user wallet
+      const response = await adminWalletApi.apiV1AdminWalletsUserIdGet({ userId });
+      const wallet = response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const amountVal = (wallet.balance as any)?.amount ?? 0;
+
       return {
         userId,
-        balance: userId * 15000 + 5000,
+        balance: Number(amountVal),
         currency: 'KRW'
       };
+    } catch (error) {
+      console.warn(`walletApi.getUserBalance(${userId}) failed`, error);
+      throw error;
     }
   },
 };

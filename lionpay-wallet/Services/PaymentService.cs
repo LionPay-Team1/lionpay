@@ -89,6 +89,8 @@ public class PaymentService(
                     MerchantCategory = merchant?.MerchantCategory ?? "Unknown",
                     RegionCode = merchant?.CountryCode ?? "KR", // Default
                     TxStatus = TxStatus.Success,
+                    Currency = request.Currency,
+                    OriginalAmount = request.AmountCash,
                     IdempotencyKey = idempotencyKey,
                     CreatedAt = DateTime.UtcNow,
                     OrderName = $"Payment to {merchant?.MerchantName ?? "Unknown"}"

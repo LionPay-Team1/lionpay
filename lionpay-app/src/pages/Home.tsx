@@ -1,4 +1,5 @@
-import { Plus, CreditCard, Send, Coins } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, CreditCard, Send, RefreshCw } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Link } from 'react-router-dom';
@@ -6,11 +7,22 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '../lib/store';
 
 export default function Home() {
-    const { country, money, points, paymentPriority, setPaymentPriority } = useAppStore();
+    const { country, money, fetchWallet, fetchTransactions, transactions } = useAppStore();
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    // Refresh handler
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await fetchWallet();
+            await fetchTransactions();
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     // Exchange Rate Logic
     const convertedMoney = Math.floor(money * country.rate).toLocaleString();
-    const convertedPoints = Math.floor(points * country.rate).toLocaleString();
 
     const currencySym = country.currency === 'KRW' ? '' : country.currency === 'USD' ? '$' : '¥';
     const currencyName = country.currency === 'KRW' ? '원' : '';
@@ -21,11 +33,19 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6 pt-4"
         >
-
-
             {/* Money Card (Main) */}
             <section className="space-y-2">
-                <h2 className="text-lg font-bold text-gray-900 px-1">내 지갑</h2>
+                <div className="flex items-center justify-between px-1">
+                    <h2 className="text-lg font-bold text-gray-900">내 지갑</h2>
+                    <button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        className="p-2 text-gray-500 hover:text-primary-600 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50"
+                        title="새로고침"
+                    >
+                        <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    </button>
+                </div>
                 <Card className="p-6 bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-xl shadow-primary-500/20 border-none relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
                     <div className="relative z-10">
@@ -54,51 +74,6 @@ export default function Home() {
                 </Card>
             </section>
 
-            {/* Payment Priority Toggle */}
-            <section className="px-1">
-                <div className="bg-gray-100 p-1 rounded-xl flex gap-1">
-                    <button
-                        onClick={() => setPaymentPriority('money')}
-                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${paymentPriority === 'money'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        머니 우선 사용
-                    </button>
-                    <button
-                        onClick={() => setPaymentPriority('points')}
-                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${paymentPriority === 'points'
-                            ? 'bg-white text-primary-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        포인트 우선 사용
-                    </button>
-                </div>
-            </section>
-
-            {/* Points Card (Secondary) */}
-            <section className="space-y-2">
-                <Card className="p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
-                            <Coins className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <p className="font-bold text-gray-900">라이언 페이 포인트</p>
-                            <p className="text-sm text-gray-500">결제 시 1% 적립</p>
-                        </div>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-xl font-bold text-gray-900">
-                            {currencySym} {convertedPoints}
-                            <span className="text-sm font-normal ml-1">{currencyName}</span>
-                        </p>
-                    </div>
-                </Card>
-            </section>
-
             <section className="space-y-3">
                 <div className="flex items-center justify-between px-1">
                     <h2 className="text-lg font-bold text-gray-900">최근 내역</h2>
@@ -106,28 +81,22 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-3">
-                    {useAppStore().transactions.slice(0, 3).map((tx) => (
+                    {transactions.slice(0, 3).map((tx) => (
                         <Card key={tx.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer group active:scale-[0.98]">
                             <div className="flex items-center gap-4">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${tx.type === 'charge' ? 'bg-blue-50 text-blue-500' :
-                                    tx.type === 'earn' ? 'bg-yellow-50 text-yellow-600' :
-                                        'bg-primary-50 text-primary-500 group-hover:bg-primary-100'
+                                    'bg-primary-50 text-primary-500 group-hover:bg-primary-100'
                                     }`}>
                                     {tx.type === 'charge' ? <Plus className="w-5 h-5" /> :
-                                        tx.type === 'earn' ? <Coins className="w-5 h-5" /> :
-                                            <Send className="w-5 h-5" />}
+                                        <Send className="w-5 h-5" />}
                                 </div>
                                 <div>
                                     <p className="font-bold text-gray-900">{tx.title}</p>
                                     <p className="text-sm text-gray-500">{tx.date} {tx.time}</p>
                                 </div>
                             </div>
-                            <p className={`font-bold ${tx.type === 'charge' ? 'text-blue-600' :
-                                tx.type === 'earn' ? 'text-yellow-600' :
-                                    'text-gray-900'
-                                }`}>
-                                {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()}
-                                {tx.type === 'earn' ? ' P' : '원'}
+                            <p className={`font-bold ${tx.type === 'charge' ? 'text-blue-600' : 'text-gray-900'}`}>
+                                {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()}원
                             </p>
                         </Card>
                     ))}

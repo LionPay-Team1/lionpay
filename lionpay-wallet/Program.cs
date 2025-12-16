@@ -42,6 +42,17 @@ builder.Services.AddWalletAuthorization();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        corsBuilder =>
+        {
+            corsBuilder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -58,6 +69,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();

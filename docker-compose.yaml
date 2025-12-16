@@ -43,6 +43,9 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
       JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: lionpay-auth
+      JWT_USER_AUDIENCE: lionpay-app
+      JWT_ADMIN_AUDIENCE: lionpay-management
       SUPER_ADMIN_USERNAME: ${SUPER_ADMIN_USERNAME}
       SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD}
     depends_on:
@@ -74,6 +77,9 @@ services:
       - "8855:8080"
     environment:
       ConnectionStrings__walletdb: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      JWT__Secret: ${JWT_SECRET}
+      JWT__Issuer: lionpay-auth
+      JWT__Audiences: lionpay-app,lionpay-management
     depends_on:
       postgres:
         condition: service_started
@@ -88,6 +94,9 @@ services:
       context: lionpay-app
       dockerfile: Dockerfile
     container_name: app-service
+    environment:
+      AUTH_SERVICE_URL: http://auth-service
+      WALLET_SERVICE_URL: http://wallet-service
     ports:
       - "8866:80"
     depends_on:
@@ -102,6 +111,9 @@ services:
       context: lionpay-management
       dockerfile: Dockerfile
     container_name: management-service
+    environment:
+      AUTH_SERVICE_URL: http://auth-service
+      WALLET_SERVICE_URL: http://wallet-service
     ports:
       - "8877:80"
     depends_on:

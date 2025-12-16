@@ -44,35 +44,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (jwtService.validateToken(token)) {
-                // Determine if Admin or User based on extracted claims (or lack thereof)
                 // Note: JwtService.validateToken parses parsing internally, but we might parse
                 // again here
                 // Optimization: JwtService could return claims, but let's stick to using helper
                 // methods.
 
-                String username = jwtService.getUsername(token); // Returns null if not present
+                String role = jwtService.getRole(token);
 
-                if (username != null) {
-                    // It's an ADMIN token
-                    String adminId = jwtService.getSubject(token);
-                    String role = jwtService.getRole(token);
-                    String authority = "ROLE_" + role;
-
-                    JwtAuthentication principal = new JwtAuthentication(adminId, username);
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            principal, null, List.of(() -> authority));
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                } else {
+                if ("USER".equals(role)) {
                     // It's a USER token
-                    String phone = jwtService.getSubject(token);
-                    User user = userRepository.findByPhone(phone).orElse(null);
+                    String userId = jwtService.getSubject(token);
+                    User user = null;
+
+                    if (userId != null) {
+                        user = userRepository.findByUserId(userId).orElse(null);
+                    }
 
                     if (user != null) {
                         CustomUserDetails userDetails = new CustomUserDetails(user);
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
+                } else if ("ADMIN".equals(role) || "SUPER_ADMIN".equals(role)) {
+                    // It's an ADMIN token
+                    String adminId = jwtService.getSubject(token);
+                    String username = jwtService.getUsername(token); // Should be present for admin
+                    String authority = "ROLE_" + role;
+
+                    if (username != null) {
+                        JwtAuthentication principal = new JwtAuthentication(adminId, username);
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                principal, null, List.of(() -> authority));
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }

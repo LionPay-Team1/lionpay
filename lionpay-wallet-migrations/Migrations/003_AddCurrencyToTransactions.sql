@@ -1,0 +1,4 @@
+ALTER TABLE transactions
+ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'KRW';
+ALTER TABLE transactions
+ADD COLUMN IF NOT EXISTS original_amount DECIMAL(18, 2);

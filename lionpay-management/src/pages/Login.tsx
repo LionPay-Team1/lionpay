@@ -20,8 +20,12 @@ export function Login() {
 
     try {
       const { accessToken } = await authApi.login(username, password);
-      await login(accessToken);
-      navigate('/');
+      if (accessToken) {
+        await login(accessToken);
+        navigate('/');
+      } else {
+        throw new Error('No access token');
+      }
     } catch {
       setError('잘못된 ID 또는 Password입니다.');
     } finally {

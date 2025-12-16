@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import Home from './pages/Home';
@@ -18,24 +18,37 @@ function RequireAuth({ children }: { children: React.ReactElement }) {
   return children;
 }
 
+function AppContent() {
+  const { initializeData } = useAppStore();
+
+  // Initialize data on app mount (handles F5 refresh)
+  useEffect(() => {
+    initializeData();
+  }, [initializeData]);
+
+  return (
+    <Routes>
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route element={
+        <RequireAuth>
+          <Layout />
+        </RequireAuth>
+      }>
+        <Route path="/" element={<Home />} />
+        <Route path="/charge" element={<Charge />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/my" element={<My />} />
+        <Route path="/payment" element={<Payment />} />
+      </Route>
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route element={
-          <RequireAuth>
-            <Layout />
-          </RequireAuth>
-        }>
-          <Route path="/" element={<Home />} />
-          <Route path="/charge" element={<Charge />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/my" element={<My />} />
-          <Route path="/payment" element={<Payment />} />
-        </Route>
-      </Routes>
+      <AppContent />
     </BrowserRouter>
   );
 }

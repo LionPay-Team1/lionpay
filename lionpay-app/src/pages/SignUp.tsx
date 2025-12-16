@@ -4,6 +4,8 @@ import { Input } from '../components/ui/Input';
 import { formatPhoneNumber, toE164 } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { authApi, setAuthToken } from '../lib/api';
+import { useAppStore } from '../lib/store';
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -26,7 +28,7 @@ export default function SignUp() {
         setError('');
     };
 
-    const handleSignUp = (e: React.FormEvent) => {
+    const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.password !== formData.passwordConfirm) {
             setError('비밀번호가 일치하지 않습니다.');
@@ -40,15 +42,35 @@ export default function SignUp() {
 
         setIsLoading(true);
 
-        // Convert to E.164
-        const e164Phone = toE164(formData.phone);
-        console.log('Sending to backend:', { ...formData, phone: e164Phone });
+        try {
+            // Convert to E.164
+            const e164Phone = toE164(formData.phone);
+            console.log('Sending to backend:', { ...formData, phone: e164Phone });
 
-        // Mock SignUp with delay
-        setTimeout(() => {
+            const response = await authApi.signUp({
+                signUpRequest: {
+                    name: formData.name,
+                    phone: e164Phone,
+                    password: formData.password,
+                }
+            });
+
+            // Store auth tokens and navigate to home page
+            if (response.data.accessToken && response.data.refreshToken) {
+                setAuthToken(response.data.accessToken, response.data.refreshToken);
+                // Update store state and fetch initial data
+                const store = useAppStore.getState();
+                useAppStore.setState({ isAuthenticated: true });
+                await store.fetchWallet();
+                await store.fetchTransactions();
+                navigate('/');
+            }
+        } catch (err) {
+            console.error('SignUp failed:', err);
+            setError('회원가입에 실패했습니다. 다시 시도해주세요.');
+        } finally {
             setIsLoading(false);
-            navigate('/');
-        }, 500);
+        }
     };
 
     return (

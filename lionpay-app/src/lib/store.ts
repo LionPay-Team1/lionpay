@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import { authApi, walletApi, transactionApi, userApi, setAuthToken, clearAuthToken, isAuthenticated } from './api';
+import type { TransactionResponse } from '../generated-api/wallet';
+import { TxType } from '../generated-api/wallet';
 
 export type Country = {
     id: string;
@@ -14,63 +17,157 @@ export const COUNTRIES: Country[] = [
 ];
 
 export type Transaction = {
-    id: number;
+    id: string;
     type: 'charge' | 'use' | 'earn';
     title: string;
     date: string;
     time: string;
     amount: number;
+    balanceAfter: number;
     earned?: number;
+    currency?: string;
+    originalAmount?: number;
 };
 
 interface AppState {
     country: Country;
     setCountry: (country: Country) => void;
     money: number;
-    points: number;
     transactions: Transaction[];
-    paymentPriority: 'money' | 'points';
-    setPaymentPriority: (priority: 'money' | 'points') => void;
+    userName: string;
 
     isAuthenticated: boolean;
-    login: () => void;
-    logout: () => void;
+    login: (phone: string, pin: string) => Promise<void>;
+    logout: () => Promise<void>;
 
+    fetchWallet: () => Promise<void>;
+    fetchTransactions: () => Promise<void>;
+    fetchUserInfo: () => Promise<void>;
+    initializeData: () => Promise<void>;
+
+    // Optimistic updates or internal state helpers
     setMoney: (amount: number) => void;
     addMoney: (amount: number) => void;
     deductMoney: (amount: number) => void;
-    addPoints: (amount: number) => void;
-    deductPoints: (amount: number) => void;
     addTransaction: (tx: Transaction) => void;
 }
 
-const INITIAL_TRANSACTIONS: Transaction[] = [
-    { id: 1, type: 'use', title: '스타벅스 강남점', date: '2023.12.08', time: '12:30', amount: -4500, earned: 45 },
-    { id: 11, type: 'earn', title: '스타벅스 강남점 적립', date: '2023.12.08', time: '12:30', amount: 45 },
-    { id: 2, type: 'charge', title: '포인트 충전', date: '2023.12.07', time: '18:20', amount: 50000 },
-    { id: 3, type: 'use', title: 'GS25 편의점', date: '2023.12.06', time: '09:15', amount: -3200, earned: 32 },
-    { id: 31, type: 'earn', title: 'GS25 편의점 적립', date: '2023.12.06', time: '09:15', amount: 32 },
-    { id: 4, type: 'use', title: '택시비', date: '2023.12.05', time: '23:40', amount: -12500, earned: 125 },
-];
+const mapTxType = (type: string): 'charge' | 'use' | 'earn' => {
+    switch (type) {
+        case TxType.Charge: return 'charge';
+        case TxType.Payment: return 'use';
+        case TxType.AdminCharge: return 'earn'; // Assuming admin charge is roughly equivalent to earn/points for now
+        default: return 'use';
+    }
+};
+
+const mapTransaction = (tx: TransactionResponse): Transaction => {
+    const dateObj = new Date(tx.createdAt);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const amountVal = (typeof tx.amount === 'number') ? tx.amount : ((tx.amount as any)?.amount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const balanceAfter = (typeof tx.balanceAfter === 'number') ? tx.balanceAfter : ((tx.balanceAfter as any)?.amount ?? 0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const originalAmountVal = (typeof tx.originalAmount === 'number') ? tx.originalAmount : ((tx.originalAmount as any)?.amount ?? 0);
+
+    return {
+        id: tx.txId,
+        type: mapTxType(tx.txType),
+        title: tx.merchantName,
+        date: dateObj.toLocaleDateString(),
+        time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        amount: Number(amountVal),
+        balanceAfter: Number(balanceAfter),
+        earned: 0,
+        currency: tx.currency,
+        originalAmount: Number(originalAmountVal)
+    };
+};
 
 export const useAppStore = create<AppState>((set) => ({
     country: COUNTRIES[0],
     setCountry: (country) => set({ country }),
 
-    money: 1250000,
-    points: 1540,
-    transactions: INITIAL_TRANSACTIONS,
-    paymentPriority: 'money', // Default
-    setPaymentPriority: (priority) => set({ paymentPriority: priority }),
+    money: 0,
+    transactions: [],
+    userName: '',
 
-    isAuthenticated: false,
-    login: () => set({ isAuthenticated: true }),
-    logout: () => set({ isAuthenticated: false }),
+    isAuthenticated: isAuthenticated(),
+
+    login: async (phone, pin) => {
+        try {
+            const response = await authApi.signIn({ signInRequest: { phone, password: pin } });
+            if (response.data.accessToken && response.data.refreshToken) {
+                setAuthToken(response.data.accessToken, response.data.refreshToken);
+                set({ isAuthenticated: true });
+                // Fetch initial data
+                await useAppStore.getState().fetchWallet();
+                await useAppStore.getState().fetchTransactions();
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            throw error;
+        }
+    },
+
+    logout: async () => {
+        try {
+            await authApi.signOut();
+        } catch (e) {
+            console.warn('Logout failed', e);
+        } finally {
+            clearAuthToken();
+            set({ isAuthenticated: false, money: 0, transactions: [] });
+        }
+    },
+
+    fetchWallet: async () => {
+        try {
+            const response = await walletApi.apiV1WalletsMeGet();
+            const wallet = response.data;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const balanceVal = (typeof wallet.balance === 'number') ? wallet.balance : ((wallet.balance as any)?.amount ?? 0);
+            // Also handling wallet type check carefully if enum
+            if (wallet.walletType === 'Money') {
+                set({ money: Number(balanceVal) });
+            }
+        } catch (error) {
+            console.error('Fetch wallet failed:', error);
+        }
+    },
+
+    fetchTransactions: async () => {
+        try {
+            const response = await transactionApi.apiV1TransactionsGet();
+            const transactions = response.data.map(mapTransaction);
+            set({ transactions });
+        } catch (error) {
+            console.error('Fetch transactions failed:', error);
+        }
+    },
+
+    fetchUserInfo: async () => {
+        try {
+            const response = await userApi.getCurrentUser();
+            set({ userName: response.data.name || '' });
+        } catch (error) {
+            console.error('Fetch user info failed:', error);
+        }
+    },
+
+    initializeData: async () => {
+        const state = useAppStore.getState();
+        if (state.isAuthenticated) {
+            await state.fetchUserInfo();
+            await state.fetchWallet();
+            await state.fetchTransactions();
+        }
+    },
 
     setMoney: (money) => set({ money }),
-    addMoney: (amount) => set((state) => ({ money: state.money + amount })),
-    deductMoney: (amount) => set((state) => ({ money: state.money - amount })),
-    addPoints: (amount) => set((state) => ({ points: state.points + amount })),
-    deductPoints: (amount) => set((state) => ({ points: state.points - amount })),
+    // Optimistic / Helper actions
+    addMoney: (amount: number) => set((state) => ({ money: state.money + amount })),
+    deductMoney: (amount: number) => set((state) => ({ money: state.money - amount })),
     addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
 }));
