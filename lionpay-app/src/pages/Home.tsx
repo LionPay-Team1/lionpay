@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '../lib/store';
 
 export default function Home() {
-    const { country, money, fetchWallet, fetchTransactions, transactions } = useAppStore();
+    const { country, money, fetchWallet, fetchTransactions, fetchExchangeRates, transactions } = useAppStore();
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Refresh handler
@@ -17,6 +17,7 @@ export default function Home() {
             await Promise.all([
                 fetchWallet(),
                 fetchTransactions(),
+                fetchExchangeRates(),
                 new Promise(resolve => setTimeout(resolve, 1000)) // Min 1 sec delay
             ]);
         } finally {
@@ -25,7 +26,12 @@ export default function Home() {
     };
 
     // Exchange Rate Logic
-    const convertedMoney = Math.floor(money * country.rate).toLocaleString();
+    const convertedAmount = money * country.rate;
+    const precision = country.precision ?? 0;
+    const convertedMoney = convertedAmount.toLocaleString(undefined, {
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision
+    });
 
     const currencySym = country.currency === 'KRW' ? '' : '¥';
     const currencyName = country.currency === 'KRW' ? '원' : '';

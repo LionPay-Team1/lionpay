@@ -66,4 +66,26 @@ public class AdminController {
             return ResponseEntity.ok(userListResponse);
         }
     }
+
+    /**
+     * 관리자 목록을 조회합니다 (SUPER_ADMIN만 가능).
+     */
+    @GetMapping("/admins")
+    public ResponseEntity<java.util.List<AdminDetailResponse>> getAdmins() {
+        java.util.List<AdminDetailResponse> admins = adminAuthService.findAllAdmins().stream()
+                .map(AdminDetailResponse::from)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(admins);
+    }
+
+    /**
+     * 관리자 정보를 업데이트합니다 (SUPER_ADMIN만 가능).
+     */
+    @PutMapping("/admins/{adminId}")
+    public ResponseEntity<AdminDetailResponse> updateAdmin(
+            @PathVariable String adminId,
+            @Valid @RequestBody AdminUpdateRequest req) {
+        AdminEntity updatedAdmin = adminAuthService.updateAdmin(adminId, req);
+        return ResponseEntity.ok(AdminDetailResponse.from(updatedAdmin));
+    }
 }

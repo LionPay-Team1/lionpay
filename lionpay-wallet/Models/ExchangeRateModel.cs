@@ -6,8 +6,8 @@ public class ExchangeRateModel
     public string SourceCurrency { get; set; } = string.Empty;
     public string TargetCurrency { get; set; } = string.Empty;
     public decimal Rate { get; set; }
-    public string RateType { get; set; } = "CLOSE";
-    public string Source { get; set; } = "MANUAL";
+    public RateType RateType { get; set; } = RateType.Close;
+    public ExchangeRateSource Source { get; set; } = ExchangeRateSource.Manual;
     public DateTime UpdatedAt { get; set; }
     public Guid? UpdatedBy { get; set; }
 }

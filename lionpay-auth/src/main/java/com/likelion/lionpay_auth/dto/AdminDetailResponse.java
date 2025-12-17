@@ -11,8 +11,8 @@ public record AdminDetailResponse(
         String adminId,
         String username,
         String name,
-        String createdAt
-) {
+        String role,
+        String createdAt) {
     /**
      * AdminEntity 객체를 AdminDetailResponse DTO로 변환합니다.
      */
@@ -21,6 +21,7 @@ public record AdminDetailResponse(
                 .adminId(admin.getAdminId())
                 .username(admin.getUsername())
                 .name(admin.getName())
+                .role(admin.getRole() != null ? admin.getRole().name() : "ADMIN")
                 .createdAt(admin.getCreatedAt())
                 .build();
     }

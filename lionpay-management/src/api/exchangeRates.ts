@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const process: { env: { [key: string]: string | undefined } };
 
 const WALLET_BASE_URL = process.env.WALLET_SERVICE_URL || 'http://localhost:8081';
 
-// Token storage keys
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);

@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**apiV1AdminExchangeRatesCurrenciesGet**](#apiv1adminexchangeratescurrenciesget) | **GET** /api/v1/admin/exchange-rates/currencies | Get all currencies (admin)|
 |[**apiV1AdminExchangeRatesGet**](#apiv1adminexchangeratesget) | **GET** /api/v1/admin/exchange-rates | Get all exchange rates (admin)|
 |[**apiV1AdminExchangeRatesHistoryGet**](#apiv1adminexchangerateshistoryget) | **GET** /api/v1/admin/exchange-rates/history | Get exchange rate history|
 |[**apiV1AdminExchangeRatesPut**](#apiv1adminexchangeratesput) | **PUT** /api/v1/admin/exchange-rates | Update exchange rate|
@@ -11,9 +12,53 @@ All URIs are relative to *http://localhost*
 |[**apiV1AdminMerchantsIdGet**](#apiv1adminmerchantsidget) | **GET** /api/v1/admin/merchants/{id} | Get merchant full info|
 |[**apiV1AdminMerchantsIdPut**](#apiv1adminmerchantsidput) | **PUT** /api/v1/admin/merchants/{id} | Update merchant|
 |[**apiV1AdminMerchantsPost**](#apiv1adminmerchantspost) | **POST** /api/v1/admin/merchants | Create merchant|
+|[**apiV1AdminSummaryGet**](#apiv1adminsummaryget) | **GET** /api/v1/admin/summary | Get admin dashboard summary|
 |[**apiV1AdminTransactionsUserIdGet**](#apiv1admintransactionsuseridget) | **GET** /api/v1/admin/transactions/{userId} | Get user transactions|
 |[**apiV1AdminWalletsUserIdAdjustPost**](#apiv1adminwalletsuseridadjustpost) | **POST** /api/v1/admin/wallets/{userId}/adjust | Adjust user wallet balance|
 |[**apiV1AdminWalletsUserIdGet**](#apiv1adminwalletsuseridget) | **GET** /api/v1/admin/wallets/{userId} | Get user wallet|
+
+# **apiV1AdminExchangeRatesCurrenciesGet**
+> Array<CurrencyResponse> apiV1AdminExchangeRatesCurrenciesGet()
+
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+const { status, data } = await apiInstance.apiV1AdminExchangeRatesCurrenciesGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**Array<CurrencyResponse>**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiV1AdminExchangeRatesGet**
 > Array<ExchangeRateResponse> apiV1AdminExchangeRatesGet()
@@ -368,6 +413,49 @@ No authorization required
 |-------------|-------------|------------------|
 |**201** | Created |  -  |
 |**400** | Bad Request |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiV1AdminSummaryGet**
+> AdminSummaryModel apiV1AdminSummaryGet()
+
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+const { status, data } = await apiInstance.apiV1AdminSummaryGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**AdminSummaryModel**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

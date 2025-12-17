@@ -102,6 +102,22 @@ public class JwtService {
         return parseToken(token).getExpiration();
     }
 
+    public String getIssuer(String token) {
+        return parseToken(token).getIssuer();
+    }
+
+    public String getAudience(String token) {
+        return parseToken(token).getAudience();
+    }
+
+    /**
+     * 토큰의 issuer가 올바른지 검증합니다.
+     */
+    public boolean validateIssuer(String token) {
+        String issuer = getIssuer(token);
+        return jwtProperties.getIssuer().equals(issuer);
+    }
+
     private Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(signingKey)

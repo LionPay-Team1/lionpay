@@ -13,6 +13,8 @@ public interface IWalletRepository
 
     Task<bool> UpdateBalanceAsync(Guid walletId, decimal newBalance, int currentVersion,
         NpgsqlTransaction? transaction = null);
+
+    Task<long> CountWalletsAsync();
 }
 
 public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
@@ -122,4 +124,12 @@ public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
 
         return affected > 0;
     }
+
+    public async Task<long> CountWalletsAsync()
+    {
+        const string sql = "SELECT COUNT(*) FROM wallets";
+        await using var connection = dataSource.CreateConnection();
+        return await connection.ExecuteScalarAsync<long>(sql);
+    }
 }
+

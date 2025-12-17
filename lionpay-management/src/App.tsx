@@ -1,48 +1,60 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { UserList } from './pages/UserList';
-import { PointHistory } from './pages/PointHistory';
+import { UserDetail } from './pages/UserDetail';
+import { TransactionHistory } from './pages/TransactionHistory';
 import { ExchangeRates } from './pages/ExchangeRates';
+import { Merchants } from './pages/Merchants';
+import { AdminList } from './pages/AdminList';
+import { Home } from './pages/Home';
+import { RefreshProvider } from './contexts/RefreshContext';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div className="loading-screen">Loading...</div>;
-  }
+    if (isLoading) {
+        return (
+            <div className="h-screen flex items-center justify-center bg-background">
+                <div className="text-muted-foreground">Loading...</div>
+            </div>
+        );
+    }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-  return children;
+    return children;
 }
 
 function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+    return (
+        <AuthProvider>
+            <RefreshProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
 
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/users" replace />} />
-            <Route path="users" element={<UserList />} />
-            <Route path="points/history" element={<PointHistory />} />
-            <Route path="exchange-rates" element={<ExchangeRates />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
+                        <Route path="/" element={
+                            <ProtectedRoute>
+                                <Layout />
+                            </ProtectedRoute>
+                        }>
+                            <Route index element={<Home />} />
+                            <Route path="users" element={<UserList />} />
+                            <Route path="users/:userId" element={<UserDetail />} />
+                            <Route path="merchants" element={<Merchants />} />
+                            <Route path="transactions" element={<TransactionHistory />} />
+                            <Route path="exchange-rates" element={<ExchangeRates />} />
+                            <Route path="admins" element={<AdminList />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </RefreshProvider>
+        </AuthProvider>
+    );
 }
 
 export default App;
-

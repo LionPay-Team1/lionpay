@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **adminId** | **string** |  | [optional] [default to undefined]
 **username** | **string** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
+**role** | **string** |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [optional] [default to undefined]
 
 ## Example
@@ -19,6 +20,7 @@ const instance: AdminDetailResponse = {
     adminId,
     username,
     name,
+    role,
     createdAt,
 };
 ```

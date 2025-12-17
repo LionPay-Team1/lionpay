@@ -9,6 +9,7 @@ public interface ITransactionRepository
     Task CreateTransactionAsync(PaymentTransactionModel transaction, NpgsqlTransaction? dbTx = null);
     Task<IEnumerable<PaymentTransactionModel>> GetTransactionsAsync(Guid userId, int limit = 10, int offset = 0);
     Task<PaymentTransactionModel?> GetTransactionByIdempotencyKeyAsync(string idempotencyKey);
+    Task<long> CountTransactionsAsync();
 }
 
 public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRepository
@@ -102,4 +103,12 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
         return await connection.QuerySingleOrDefaultAsync<PaymentTransactionModel>(sql,
             new { IdempotencyKey = idempotencyKey });
     }
+
+    public async Task<long> CountTransactionsAsync()
+    {
+        const string sql = "SELECT COUNT(*) FROM transactions";
+        await using var connection = dataSource.CreateConnection();
+        return await connection.ExecuteScalarAsync<long>(sql);
+    }
 }
+

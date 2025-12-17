@@ -12,6 +12,7 @@ public interface IMerchantRepository
     Task<IEnumerable<MerchantModel>> GetActiveMerchantsByCountryAsync(string countryCode);
     Task<MerchantModel> CreateMerchantAsync(MerchantModel merchant);
     Task<MerchantModel?> UpdateMerchantAsync(MerchantModel merchant);
+    Task<long> CountMerchantsAsync();
 }
 
 public class MerchantRepository(NpgsqlDataSource dataSource) : IMerchantRepository
@@ -140,5 +141,13 @@ public class MerchantRepository(NpgsqlDataSource dataSource) : IMerchantReposito
         await using var connection = dataSource.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<MerchantModel>(sql, merchant);
     }
+
+    public async Task<long> CountMerchantsAsync()
+    {
+        const string sql = "SELECT COUNT(*) FROM merchants";
+        await using var connection = dataSource.CreateConnection();
+        return await connection.ExecuteScalarAsync<long>(sql);
+    }
 }
+
 

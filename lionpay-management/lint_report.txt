@@ -1,0 +1,38 @@
+$ eslint .
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\components\ui\badge.tsx
+  45:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\components\ui\button.tsx
+  60:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\components\ui\combobox.tsx
+  293:3  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\contexts\RefreshContext.tsx
+  24:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\generated-api\auth\configuration.ts
+   34:19  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   35:30  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   80:19  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   88:30  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  118:45  error  Unexpected control character(s) in regular expression: \x09, \x09, \x09  no-control-regex
+  118:59  error  Unnecessary escape character: \/                                         no-useless-escape
+  118:75  error  Unnecessary escape character: \/                                         no-useless-escape
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\generated-api\wallet\configuration.ts
+   34:19  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   35:30  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   80:19  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+   88:30  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  118:45  error  Unexpected control character(s) in regular expression: \x09, \x09, \x09  no-control-regex
+  118:59  error  Unnecessary escape character: \/                                         no-useless-escape
+  118:75  error  Unnecessary escape character: \/                                         no-useless-escape
+
+D:\workspace\likelion-cloud\project3\lionpay\lionpay-management\src\pages\UserList.tsx
+  39:8  warning  React Hook useEffect has a missing dependency: 'search'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 19 problems (18 errors, 1 warning)
+
+error: script "lint" exited with code 1

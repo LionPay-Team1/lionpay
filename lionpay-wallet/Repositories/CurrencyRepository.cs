@@ -8,6 +8,7 @@ public interface ICurrencyRepository
 {
     Task<IEnumerable<CurrencyModel>> GetAllAsync();
     Task<CurrencyModel?> GetByCodeAsync(string currencyCode);
+    Task<int> CountActiveCurrenciesAsync();
 }
 
 public class CurrencyRepository(NpgsqlDataSource dataSource) : ICurrencyRepository
@@ -46,4 +47,12 @@ public class CurrencyRepository(NpgsqlDataSource dataSource) : ICurrencyReposito
 
         return await connection.QueryFirstOrDefaultAsync<CurrencyModel>(sql, new { CurrencyCode = currencyCode });
     }
+
+    public async Task<int> CountActiveCurrenciesAsync()
+    {
+        const string sql = "SELECT COUNT(*) FROM currencies WHERE is_active = TRUE";
+        await using var connection = dataSource.CreateConnection();
+        return await connection.ExecuteScalarAsync<int>(sql);
+    }
 }
+

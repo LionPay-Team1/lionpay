@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS exchange_rates (
     source_currency VARCHAR(3) NOT NULL,
     target_currency VARCHAR(3) NOT NULL,
     rate DECIMAL(20, 10) NOT NULL,
-    rate_type VARCHAR(20) DEFAULT 'CLOSE',
-    source VARCHAR(50) DEFAULT 'MANUAL',
+    rate_type SMALLINT DEFAULT 0,
+    source SMALLINT DEFAULT 0,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_by UUID,
     CONSTRAINT pk_exchange_rates PRIMARY KEY (id),
@@ -87,10 +87,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_exchange_rate_history_changed_at ON 
 -- Currencies
 INSERT INTO currencies (currency_code, currency_name, symbol, is_active)
 VALUES ('KRW', 'Korean Won', '₩', TRUE),
-    ('JPY', 'Japanese Yen', '¥', TRUE),
-    ('USD', 'United States Dollar', '$', TRUE),
-    ('EUR', 'Euro', '€', TRUE),
-    ('CNY', 'Chinese Yuan', '¥', TRUE) ON CONFLICT (currency_code) DO NOTHING;
+    ('JPY', 'Japanese Yen', '¥', TRUE) ON CONFLICT (currency_code) DO NOTHING;
 -- Default Exchange Rates
 INSERT INTO exchange_rates (
         id,
@@ -106,8 +103,10 @@ VALUES (
         'KRW',
         'KRW',
         1.0,
-        'CLOSE',
-        'SYSTEM',
+        0,
+        -- CLOSE
+        1,
+        -- SYSTEM
         NOW()
     ),
     (
@@ -115,35 +114,10 @@ VALUES (
         'JPY',
         'KRW',
         9.12,
-        'CLOSE',
-        'SYSTEM',
-        NOW()
-    ),
-    (
-        '00000000-0000-0000-0000-000000000003',
-        'USD',
-        'KRW',
-        1400.0,
-        'CLOSE',
-        'SYSTEM',
-        NOW()
-    ),
-    (
-        '00000000-0000-0000-0000-000000000004',
-        'EUR',
-        'KRW',
-        1500.0,
-        'CLOSE',
-        'SYSTEM',
-        NOW()
-    ),
-    (
-        '00000000-0000-0000-0000-000000000005',
-        'CNY',
-        'KRW',
-        195.0,
-        'CLOSE',
-        'SYSTEM',
+        0,
+        -- CLOSE
+        1,
+        -- SYSTEM
         NOW()
     ) ON CONFLICT (source_currency, target_currency) DO NOTHING;
 -- Merchants
@@ -210,34 +184,5 @@ VALUES -- 한국 상점 (KR)
         'セブンイレブン 秋葉原店',
         'JP',
         'コンビニ',
-        1
-    ),
-    -- 미국 상점 (US)
-    (
-        '99999999-9999-9999-9999-999999999999',
-        'Starbucks Times Square',
-        'US',
-        'Cafe',
-        1
-    ),
-    (
-        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-        '7-Eleven Manhattan',
-        'US',
-        'Convenience',
-        1
-    ),
-    (
-        'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
-        'McDonald''s Wall Street',
-        'US',
-        'Restaurant',
-        1
-    ),
-    (
-        'cccccccc-cccc-cccc-cccc-cccccccccccc',
-        'Whole Foods Brooklyn',
-        'US',
-        'Grocery',
         1
     ) ON CONFLICT (merchant_id) DO NOTHING;

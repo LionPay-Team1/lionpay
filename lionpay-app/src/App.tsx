@@ -9,6 +9,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Payment from './pages/Payment';
 import { useAppStore } from './lib/store';
+import { AlertModal } from './components/ui/AlertModal';
 
 function RequireAuth({ children }: { children: React.ReactElement }) {
   const { isAuthenticated } = useAppStore();
@@ -19,7 +20,7 @@ function RequireAuth({ children }: { children: React.ReactElement }) {
 }
 
 function AppContent() {
-  const { initializeData } = useAppStore();
+  const { initializeData, isGlobalErrorOpen, globalErrorMessage, closeGlobalError } = useAppStore();
 
   // Initialize data on app mount (handles F5 refresh)
   useEffect(() => {
@@ -27,21 +28,29 @@ function AppContent() {
   }, [initializeData]);
 
   return (
-    <Routes>
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route element={
-        <RequireAuth>
-          <Layout />
-        </RequireAuth>
-      }>
-        <Route path="/" element={<Home />} />
-        <Route path="/charge" element={<Charge />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/my" element={<My />} />
-        <Route path="/payment" element={<Payment />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>
+        }>
+          <Route path="/" element={<Home />} />
+          <Route path="/charge" element={<Charge />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/my" element={<My />} />
+          <Route path="/payment" element={<Payment />} />
+        </Route>
+      </Routes>
+      <AlertModal
+        isOpen={isGlobalErrorOpen}
+        onClose={closeGlobalError}
+        title="오류"
+        message={globalErrorMessage}
+      />
+    </>
   );
 }
 

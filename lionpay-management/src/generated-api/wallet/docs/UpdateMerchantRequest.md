@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **merchantName** | **string** |  | [default to undefined]
 **merchantCategory** | **string** |  | [default to undefined]
-**merchantStatus** | **string** |  | [default to undefined]
+**merchantStatus** | [**MerchantStatus**](MerchantStatus.md) |  | [default to undefined]
 
 ## Example
 

@@ -48,7 +48,7 @@ public record MerchantResponse(
     string MerchantName,
     string CountryCode,
     string MerchantCategory,
-    string MerchantStatus,
+    MerchantStatus MerchantStatus,
     DateTime CreatedAt
 );
 
@@ -57,8 +57,8 @@ public record ExchangeRateResponse(
     string SourceCurrency,
     string TargetCurrency,
     decimal Rate,
-    string RateType,
-    string Source,
+    RateType RateType,
+    ExchangeRateSource Source,
     DateTime UpdatedAt
 );
 
