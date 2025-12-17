@@ -29,6 +29,8 @@ export interface AdjustBalanceRequest {
 }
 export interface AdjustBalanceRequestAmount {
 }
+export interface ApiV1AdminExchangeRatesHistoryGetLimitParameter {
+}
 export interface ApiV1TransactionsGetLimitParameter {
 }
 export interface ApiV1TransactionsGetOffsetParameter {
@@ -44,6 +46,25 @@ export interface CreateMerchantRequest {
 export interface ErrorResponse {
     'errorCode': string;
     'errorMessage': string;
+}
+export interface ExchangeRateHistoryResponse {
+    'id': string;
+    'exchangeRateId': string;
+    'sourceCurrency': string;
+    'targetCurrency': string;
+    'oldRate': ExchangeRateHistoryResponseOldRate | null;
+    'newRate': AdjustBalanceRequestAmount;
+    'changedAt': string;
+    'changedBy': string | null;
+}
+export interface ExchangeRateHistoryResponseOldRate {
+}
+export interface ExchangeRateResponse {
+    'id': string;
+    'sourceCurrency': string;
+    'targetCurrency': string;
+    'rate': AdjustBalanceRequestAmount;
+    'updatedAt': string;
 }
 export interface MerchantModel {
     'merchantId'?: string;
@@ -109,6 +130,11 @@ export const TxType = {
 export type TxType = typeof TxType[keyof typeof TxType];
 
 
+export interface UpdateExchangeRateRequest {
+    'sourceCurrency': string;
+    'targetCurrency': string;
+    'rate': AdjustBalanceRequestAmount;
+}
 export interface UpdateMerchantRequest {
     'merchantName': string;
     'merchantCategory': string;
@@ -137,6 +163,119 @@ export type WalletType = typeof WalletType[keyof typeof WalletType];
  */
 export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary Get all exchange rates (admin)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admin/exchange-rates`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns the history of exchange rate changes.
+         * @summary Get exchange rate history
+         * @param {ApiV1AdminExchangeRatesHistoryGetLimitParameter} limit 
+         * @param {string} [sourceCurrency] 
+         * @param {string} [targetCurrency] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesHistoryGet: async (limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'limit' is not null or undefined
+            assertParamExists('apiV1AdminExchangeRatesHistoryGet', 'limit', limit)
+            const localVarPath = `/api/v1/admin/exchange-rates/history`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (sourceCurrency !== undefined) {
+                localVarQueryParameter['sourceCurrency'] = sourceCurrency;
+            }
+
+            if (targetCurrency !== undefined) {
+                localVarQueryParameter['targetCurrency'] = targetCurrency;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create or update an exchange rate between two currencies.
+         * @summary Update exchange rate
+         * @param {UpdateExchangeRateRequest} updateExchangeRateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesPut: async (updateExchangeRateRequest: UpdateExchangeRateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'updateExchangeRateRequest' is not null or undefined
+            assertParamExists('apiV1AdminExchangeRatesPut', 'updateExchangeRateRequest', updateExchangeRateRequest)
+            const localVarPath = `/api/v1/admin/exchange-rates`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateExchangeRateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * Retrieves all merchants including inactive ones.
          * @summary Get all merchants
@@ -405,6 +544,46 @@ export const AdminApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
     return {
         /**
+         * 
+         * @summary Get all exchange rates (admin)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Returns the history of exchange rate changes.
+         * @summary Get exchange rate history
+         * @param {ApiV1AdminExchangeRatesHistoryGetLimitParameter} limit 
+         * @param {string} [sourceCurrency] 
+         * @param {string} [targetCurrency] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV1AdminExchangeRatesHistoryGet(limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateHistoryResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesHistoryGet(limit, sourceCurrency, targetCurrency, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesHistoryGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Create or update an exchange rate between two currencies.
+         * @summary Update exchange rate
+         * @param {UpdateExchangeRateRequest} updateExchangeRateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV1AdminExchangeRatesPut(updateExchangeRateRequest: UpdateExchangeRateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExchangeRateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesPut(updateExchangeRateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Retrieves all merchants including inactive ones.
          * @summary Get all merchants
          * @param {*} [options] Override http request option.
@@ -508,6 +687,35 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
     const localVarFp = AdminApiFp(configuration)
     return {
         /**
+         * 
+         * @summary Get all exchange rates (admin)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
+            return localVarFp.apiV1AdminExchangeRatesGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns the history of exchange rate changes.
+         * @summary Get exchange rate history
+         * @param {AdminApiApiV1AdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1AdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateHistoryResponse>> {
+            return localVarFp.apiV1AdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create or update an exchange rate between two currencies.
+         * @summary Update exchange rate
+         * @param {AdminApiApiV1AdminExchangeRatesPutRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1AdminExchangeRatesPut(requestParameters: AdminApiApiV1AdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<ExchangeRateResponse> {
+            return localVarFp.apiV1AdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves all merchants including inactive ones.
          * @summary Get all merchants
          * @param {*} [options] Override http request option.
@@ -580,6 +788,24 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
 };
 
 /**
+ * Request parameters for apiV1AdminExchangeRatesHistoryGet operation in AdminApi.
+ */
+export interface AdminApiApiV1AdminExchangeRatesHistoryGetRequest {
+    readonly limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter
+
+    readonly sourceCurrency?: string
+
+    readonly targetCurrency?: string
+}
+
+/**
+ * Request parameters for apiV1AdminExchangeRatesPut operation in AdminApi.
+ */
+export interface AdminApiApiV1AdminExchangeRatesPutRequest {
+    readonly updateExchangeRateRequest: UpdateExchangeRateRequest
+}
+
+/**
  * Request parameters for apiV1AdminMerchantsIdGet operation in AdminApi.
  */
 export interface AdminApiApiV1AdminMerchantsIdGetRequest {
@@ -633,6 +859,38 @@ export interface AdminApiApiV1AdminWalletsUserIdGetRequest {
  * AdminApi - object-oriented interface
  */
 export class AdminApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get all exchange rates (admin)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns the history of exchange rate changes.
+     * @summary Get exchange rate history
+     * @param {AdminApiApiV1AdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiV1AdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1AdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create or update an exchange rate between two currencies.
+     * @summary Update exchange rate
+     * @param {AdminApiApiV1AdminExchangeRatesPutRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiV1AdminExchangeRatesPut(requestParameters: AdminApiApiV1AdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Retrieves all merchants including inactive ones.
      * @summary Get all merchants
@@ -707,6 +965,100 @@ export class AdminApi extends BaseAPI {
      */
     public apiV1AdminWalletsUserIdGet(requestParameters: AdminApiApiV1AdminWalletsUserIdGetRequest, options?: RawAxiosRequestConfig) {
         return AdminApiFp(this.configuration).apiV1AdminWalletsUserIdGet(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * ExchangeRatesApi - axios parameter creator
+ */
+export const ExchangeRatesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Returns all available exchange rates for currency conversion.
+         * @summary Get all exchange rates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1ExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/exchange-rates`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ExchangeRatesApi - functional programming interface
+ */
+export const ExchangeRatesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ExchangeRatesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Returns all available exchange rates for currency conversion.
+         * @summary Get all exchange rates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1ExchangeRatesGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ExchangeRatesApi.apiV1ExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * ExchangeRatesApi - factory interface
+ */
+export const ExchangeRatesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ExchangeRatesApiFp(configuration)
+    return {
+        /**
+         * Returns all available exchange rates for currency conversion.
+         * @summary Get all exchange rates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
+            return localVarFp.apiV1ExchangeRatesGet(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ExchangeRatesApi - object-oriented interface
+ */
+export class ExchangeRatesApi extends BaseAPI {
+    /**
+     * Returns all available exchange rates for currency conversion.
+     * @summary Get all exchange rates
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig) {
+        return ExchangeRatesApiFp(this.configuration).apiV1ExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

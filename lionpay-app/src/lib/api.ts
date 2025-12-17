@@ -4,7 +4,7 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 declare const process: any;
 
 import { AuthControllerApi, UserControllerApi } from '../generated-api/auth';
-import { WalletApi, TransactionApi, PaymentApi, MerchantApi } from '../generated-api/wallet';
+import { WalletApi, TransactionApi, PaymentApi, MerchantApi, ExchangeRatesApi } from '../generated-api/wallet';
 
 // Use relative paths - nginx will proxy API requests to backend services
 // When running in Docker, nginx proxies /api/v1/auth/* to auth-service and /api/v1/* to wallet-service
@@ -147,6 +147,7 @@ export const walletApi = new WalletApi(undefined, '', walletAxios);
 export const transactionApi = new TransactionApi(undefined, '', walletAxios);
 export const paymentApi = new PaymentApi(undefined, '', walletAxios);
 export const merchantApi = new MerchantApi(undefined, '', walletAxios);
+export const exchangeRateApi = new ExchangeRatesApi(undefined, '', walletAxios);
 
 export const setAuthToken = (token: string, refreshToken: string) => {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);

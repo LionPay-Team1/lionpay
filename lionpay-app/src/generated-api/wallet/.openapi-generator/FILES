@@ -7,11 +7,16 @@ configuration.ts
 docs/AdjustBalanceRequest.md
 docs/AdjustBalanceRequestAmount.md
 docs/AdminApi.md
+docs/ApiV1AdminExchangeRatesHistoryGetLimitParameter.md
 docs/ApiV1TransactionsGetLimitParameter.md
 docs/ApiV1TransactionsGetOffsetParameter.md
 docs/ChargeRequest.md
 docs/CreateMerchantRequest.md
 docs/ErrorResponse.md
+docs/ExchangeRateHistoryResponse.md
+docs/ExchangeRateHistoryResponseOldRate.md
+docs/ExchangeRateResponse.md
+docs/ExchangeRatesApi.md
 docs/MerchantApi.md
 docs/MerchantModel.md
 docs/MerchantResponse.md
@@ -22,6 +27,7 @@ docs/TransactionApi.md
 docs/TransactionResponse.md
 docs/TxStatus.md
 docs/TxType.md
+docs/UpdateExchangeRateRequest.md
 docs/UpdateMerchantRequest.md
 docs/WalletApi.md
 docs/WalletResponse.md

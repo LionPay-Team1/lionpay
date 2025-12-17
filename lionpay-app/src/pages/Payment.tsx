@@ -120,17 +120,51 @@ export default function Payment() {
             console.error('Payment failed:', err);
             let errorMessage = '결제에 실패했습니다. 다시 시도해주세요.';
 
-            const error = err as AxiosError<{ detail?: string; message?: string; title?: string }>;
+            const error = err as AxiosError<{
+                detail?: string;
+                message?: string;
+                title?: string;
+                errorCode?: string;
+                errorMessage?: string;
+            }>;
 
             if (error.response && error.response.data) {
                 console.error('Error response data:', JSON.stringify(error.response.data));
-                // Assuming standard error response structure { code, message, ... }
-                if (error.response.data.detail) {
-                    errorMessage = error.response.data.detail;
-                } else if (error.response.data.message) {
-                    errorMessage = error.response.data.message;
-                } else if (error.response.data.title) {
-                    errorMessage = error.response.data.title;
+                const data = error.response.data;
+
+                // Use ErrorCode from backend if available
+                if (data.errorCode) {
+                    switch (data.errorCode) {
+                        case 'INSUFFICIENT_BALANCE':
+                            errorMessage = '잔액이 부족합니다. 충전 후 다시 시도해주세요.';
+                            break;
+                        case 'MERCHANT_NOT_FOUND':
+                            errorMessage = '상점 정보를 찾을 수 없습니다.';
+                            break;
+                        case 'WALLET_NOT_FOUND':
+                            errorMessage = '지갑 정보를 찾을 수 없습니다. 관리자에게 문의하세요.';
+                            break;
+                        case 'PAYMENT_FAILED':
+                            errorMessage = '결제 처리에 실패했습니다. 잠시 후 다시 시도해주세요.';
+                            break;
+                        case 'BAD_REQUEST':
+                            errorMessage = '잘못된 요청입니다.';
+                            break;
+                        case 'INTERNAL_SERVER_ERROR':
+                            errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                            break;
+                        default:
+                            // Fallback to server message if available
+                            errorMessage = data.errorMessage || errorMessage;
+                    }
+                } else if (data.errorMessage) {
+                    errorMessage = data.errorMessage;
+                } else if (data.detail) {
+                    errorMessage = data.detail;
+                } else if (data.message) {
+                    errorMessage = data.message;
+                } else if (data.title) {
+                    errorMessage = data.title;
                 }
             }
 
@@ -163,7 +197,7 @@ export default function Payment() {
                         <div className="text-center mb-6">
                             <span className="text-gray-500 text-sm mb-1 block">총 결제금액</span>
                             <span className="text-3xl font-bold text-gray-900">
-                                {country.currency === 'KRW' ? '' : country.currency === 'USD' ? '$' : '¥'}
+                                {country.currency === 'KRW' ? '' : '¥'}
                                 {parseInt(amount).toLocaleString()}
                                 {country.currency === 'KRW' ? '원' : ''}
                             </span>

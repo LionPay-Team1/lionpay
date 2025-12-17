@@ -14,8 +14,11 @@ export default function Home() {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
-            await fetchWallet();
-            await fetchTransactions();
+            await Promise.all([
+                fetchWallet(),
+                fetchTransactions(),
+                new Promise(resolve => setTimeout(resolve, 1000)) // Min 1 sec delay
+            ]);
         } finally {
             setIsRefreshing(false);
         }
@@ -24,7 +27,7 @@ export default function Home() {
     // Exchange Rate Logic
     const convertedMoney = Math.floor(money * country.rate).toLocaleString();
 
-    const currencySym = country.currency === 'KRW' ? '' : country.currency === 'USD' ? '$' : '¥';
+    const currencySym = country.currency === 'KRW' ? '' : '¥';
     const currencyName = country.currency === 'KRW' ? '원' : '';
 
     return (
@@ -53,7 +56,7 @@ export default function Home() {
                             <span>라이언 페이 머니</span>
                             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">{country.currency}</span>
                         </p>
-                        <h3 className="text-3xl font-bold mb-6">ㅋ
+                        <h3 className="text-3xl font-bold mb-6">
                             {currencySym} {convertedMoney}
                             <span className="text-lg font-normal ml-1">{currencyName}</span>
                         </h3>

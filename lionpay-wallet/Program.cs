@@ -28,11 +28,14 @@ builder.Services.Configure<WalletOptions>(builder.Configuration.GetSection(Walle
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IMerchantRepository, MerchantRepository>();
+builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 builder.Services.AddScoped<IOccExecutionStrategy, OccExecutionStrategy>();
 
 // Add Authentication/Authorization
@@ -82,5 +85,6 @@ app.MapPaymentEndpoints();
 app.MapTransactionEndpoints();
 app.MapMerchantEndpoints();
 app.MapAdminEndpoints();
+app.MapExchangeRateEndpoints();
 
 app.Run();

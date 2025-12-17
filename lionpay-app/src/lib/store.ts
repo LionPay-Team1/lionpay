@@ -10,10 +10,10 @@ export type Country = {
     rate: number;
 };
 
+// Default countries without rates - rates will be fetched from API
 export const COUNTRIES: Country[] = [
     { id: 'kr', name: '대한민국', currency: 'KRW', rate: 1 },
-    { id: 'jp', name: '일본', currency: 'JPY', rate: 0.11 },
-    { id: 'us', name: '미국', currency: 'USD', rate: 0.00076 },
+    { id: 'jp', name: '일본', currency: 'JPY', rate: 1 }, // Will be updated from API
 ];
 
 export type Transaction = {
@@ -32,6 +32,8 @@ export type Transaction = {
 interface AppState {
     country: Country;
     setCountry: (country: Country) => void;
+
+    countries: Country[];
     money: number;
     transactions: Transaction[];
     userName: string;
@@ -43,6 +45,7 @@ interface AppState {
     fetchWallet: () => Promise<void>;
     fetchTransactions: () => Promise<void>;
     fetchUserInfo: () => Promise<void>;
+
     initializeData: () => Promise<void>;
 
     // Optimistic updates or internal state helpers
@@ -85,6 +88,8 @@ export const useAppStore = create<AppState>((set) => ({
     country: COUNTRIES[0],
     setCountry: (country) => set({ country }),
 
+    countries: COUNTRIES,
+
     money: 0,
     transactions: [],
     userName: '',
@@ -98,6 +103,7 @@ export const useAppStore = create<AppState>((set) => ({
                 setAuthToken(response.data.accessToken, response.data.refreshToken);
                 set({ isAuthenticated: true });
                 // Fetch initial data
+                await useAppStore.getState().fetchUserInfo();
                 await useAppStore.getState().fetchWallet();
                 await useAppStore.getState().fetchTransactions();
             }
@@ -152,8 +158,11 @@ export const useAppStore = create<AppState>((set) => ({
         }
     },
 
+
+
     initializeData: async () => {
         const state = useAppStore.getState();
+
         if (state.isAuthenticated) {
             await state.fetchUserInfo();
             await state.fetchWallet();

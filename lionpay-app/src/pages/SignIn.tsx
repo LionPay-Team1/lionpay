@@ -71,12 +71,12 @@ export default function SignIn() {
                     </div>
 
                     <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                        SignIn
+                        로그인
                     </Button>
                 </form>
 
                 <p className="text-center text-sm text-gray-500">
-                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">SignUp</Link>
+                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">회원가입</Link>
                 </p>
             </div>
         </div>

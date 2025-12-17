@@ -61,6 +61,7 @@ export default function SignUp() {
                 // Update store state and fetch initial data
                 const store = useAppStore.getState();
                 useAppStore.setState({ isAuthenticated: true });
+                await store.fetchUserInfo();
                 await store.fetchWallet();
                 await store.fetchTransactions();
                 navigate('/');
@@ -79,7 +80,7 @@ export default function SignUp() {
                 <button onClick={() => navigate('/signin')} className="p-2 -ml-2 text-gray-600">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-xl font-bold">SignUp</h1>
+                <h1 className="text-xl font-bold">회원가입</h1>
             </div>
 
             <form onSubmit={handleSignUp} className="space-y-6">
@@ -122,7 +123,7 @@ export default function SignUp() {
                 />
 
                 <Button type="submit" className="w-full mt-8" size="lg" isLoading={isLoading}>
-                    SignUp
+                    회원가입
                 </Button>
             </form>
         </div>

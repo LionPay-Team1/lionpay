@@ -54,7 +54,7 @@ export default function My() {
                 className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
                 onClick={handleLogout}
             >
-                <LogOut className="w-4 h-4 mr-2" /> SignOut
+                <LogOut className="w-4 h-4 mr-2" /> 로그아웃
             </Button>
 
             <AlertModal
