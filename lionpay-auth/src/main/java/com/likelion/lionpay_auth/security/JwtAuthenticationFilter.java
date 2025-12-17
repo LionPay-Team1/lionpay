@@ -44,10 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (jwtService.validateToken(token)) {
-                // Note: JwtService.validateToken parses parsing internally, but we might parse
-                // again here
-                // Optimization: JwtService could return claims, but let's stick to using helper
-                // methods.
+                // 토큰 issuer 검증 - lionpay-auth에서 발급한 토큰인지 확인
+                if (!jwtService.validateIssuer(token)) {
+                    log.warn("JWT issuer validation failed");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 String role = jwtService.getRole(token);
 

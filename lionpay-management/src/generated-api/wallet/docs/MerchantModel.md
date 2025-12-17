@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **merchantName** | **string** |  | [optional] [default to undefined]
 **countryCode** | **string** |  | [optional] [default to undefined]
 **merchantCategory** | **string** |  | [optional] [default to undefined]
-**merchantStatus** | **string** |  | [optional] [default to undefined]
+**merchantStatus** | [**MerchantStatus**](MerchantStatus.md) |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [optional] [default to undefined]
 
 ## Example

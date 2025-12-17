@@ -55,6 +55,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/v1/admin/refresh-token").permitAll()
 						.requestMatchers("/api/v1/admin/sign-in").permitAll()
 						.requestMatchers("/api/v1/admin/new").hasRole("SUPER_ADMIN")
+						.requestMatchers("/api/v1/admin/admins/**").hasRole("SUPER_ADMIN")
+						.requestMatchers("/api/v1/admin/admins").hasRole("SUPER_ADMIN")
 						.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception

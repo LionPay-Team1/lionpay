@@ -9,6 +9,8 @@ Name | Type | Description | Notes
 **sourceCurrency** | **string** |  | [default to undefined]
 **targetCurrency** | **string** |  | [default to undefined]
 **rate** | [**AdjustBalanceRequestAmount**](AdjustBalanceRequestAmount.md) |  | [default to undefined]
+**rateType** | [**RateType**](RateType.md) |  | [default to undefined]
+**source** | [**ExchangeRateSource**](ExchangeRateSource.md) |  | [default to undefined]
 **updatedAt** | **string** |  | [default to undefined]
 
 ## Example
@@ -21,6 +23,8 @@ const instance: ExchangeRateResponse = {
     sourceCurrency,
     targetCurrency,
     rate,
+    rateType,
+    source,
     updatedAt,
 };
 ```

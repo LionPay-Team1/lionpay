@@ -56,8 +56,9 @@ public class AdminAuthService {
                 .filter(tokenEntity -> tokenEntity.getToken().equals(refreshToken)) // DB의 토큰과 요청의 토큰이 일치하는지 확인
                 .ifPresentOrElse(
                         refreshTokenRepository::delete, // 토큰이 존재하고 일치하면 삭제
-                        () -> { throw new RefreshTokenNotFoundException("이미 로그아웃되었거나 유효하지 않은 토큰입니다."); }
-                );
+                        () -> {
+                            throw new RefreshTokenNotFoundException("이미 로그아웃되었거나 유효하지 않은 토큰입니다.");
+                        });
     }
 
     public AdminEntity createAdmin(AdminCreateRequest req) {
@@ -82,6 +83,42 @@ public class AdminAuthService {
         return admin;
     }
 
+    /**
+     * 모든 관리자 목록을 조회합니다.
+     * 
+     * @return 관리자 목록
+     */
+    public java.util.List<AdminEntity> findAllAdmins() {
+        return adminRepository.findAll();
+    }
+
+    /**
+     * 관리자 정보를 업데이트합니다.
+     *
+     * @param adminId 업데이트할 관리자 ID
+     * @param req     업데이트 요청
+     * @return 업데이트된 관리자 정보
+     */
+    public AdminEntity updateAdmin(String adminId, com.likelion.lionpay_auth.dto.AdminUpdateRequest req) {
+        AdminEntity admin = adminRepository.findByAdminId(adminId)
+                .orElseThrow(() -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        if (req.name() != null && !req.name().isBlank()) {
+            admin.setName(req.name());
+        }
+
+        if (req.password() != null && !req.password().isBlank()) {
+            admin.setPasswordHash(passwordEncoder.encode(req.password()));
+        }
+
+        if (req.role() != null) {
+            admin.setRole(req.role());
+        }
+
+        adminRepository.save(admin);
+        return admin;
+    }
+
     // suggestion: 관리자 전용 토큰 재발급 로직을 추가합니다.
     public TokenResponse refreshAdminToken(String refreshToken) {
         if (!jwtService.validateToken(refreshToken)) {
@@ -98,7 +135,8 @@ public class AdminAuthService {
                 .orElseThrow(() -> new AdminNotFoundException("해당 토큰의 관리자를 찾을 수 없습니다."));
 
         // 3. 새로운 토큰 생성
-        String newAccessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername(), admin.getRole());
+        String newAccessToken = jwtService.generateAccessToken(admin.getAdminId(), admin.getUsername(),
+                admin.getRole());
         String newRefreshToken = jwtService.generateRefreshToken(admin.getAdminId());
 
         // 4. 기존 토큰 삭제 및 새 토큰 저장 (토큰 순환)

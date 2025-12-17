@@ -5,10 +5,12 @@ All URIs are relative to *http://localhost:8080*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**createAdmin**](#createadmin) | **POST** /api/v1/admin/new | |
+|[**getAdmins**](#getadmins) | **GET** /api/v1/admin/admins | |
 |[**getUsers**](#getusers) | **GET** /api/v1/admin/users | |
 |[**refreshAdminToken**](#refreshadmintoken) | **POST** /api/v1/admin/refresh-token | |
 |[**signIn1**](#signin1) | **POST** /api/v1/admin/sign-in | |
 |[**signOut1**](#signout1) | **POST** /api/v1/admin/sign-out | |
+|[**updateAdmin**](#updateadmin) | **PUT** /api/v1/admin/admins/{adminId} | |
 
 # **createAdmin**
 > AdminDetailResponse createAdmin(adminCreateRequest)
@@ -51,6 +53,49 @@ const { status, data } = await apiInstance.createAdmin(
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getAdmins**
+> Array<AdminDetailResponse> getAdmins()
+
+
+### Example
+
+```typescript
+import {
+    AdminControllerApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminControllerApi(configuration);
+
+const { status, data } = await apiInstance.getAdmins();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**Array<AdminDetailResponse>**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: */*
 
 
@@ -264,6 +309,60 @@ void (empty response body)
 
  - **Content-Type**: application/json
  - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateAdmin**
+> AdminDetailResponse updateAdmin(adminUpdateRequest)
+
+
+### Example
+
+```typescript
+import {
+    AdminControllerApi,
+    Configuration,
+    AdminUpdateRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminControllerApi(configuration);
+
+let adminId: string; // (default to undefined)
+let adminUpdateRequest: AdminUpdateRequest; //
+
+const { status, data } = await apiInstance.updateAdmin(
+    adminId,
+    adminUpdateRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **adminUpdateRequest** | **AdminUpdateRequest**|  | |
+| **adminId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**AdminDetailResponse**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
 
 
 ### HTTP response details

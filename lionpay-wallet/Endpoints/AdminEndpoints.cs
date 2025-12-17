@@ -1,4 +1,5 @@
 using LionPay.Wallet.Models;
+using LionPay.Wallet.Repositories;
 using LionPay.Wallet.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,7 +50,12 @@ public static class AdminEndpoints
             .WithSummary("Get merchant full info")
             .Produces<MerchantModel>()
             .Produces<ErrorResponse>(StatusCodes.Status404NotFound);
+
+        group.MapGet("/summary", GetSummary)
+            .WithSummary("Get admin dashboard summary")
+            .Produces<AdminSummaryModel>();
     }
+
 
     public static async Task<IResult> GetUserWallet(
         Guid userId,
@@ -138,4 +144,30 @@ public static class AdminEndpoints
         ));
         return Results.Ok(response);
     }
+
+
+    public static async Task<IResult> GetSummary(
+        IWalletRepository walletRepository,
+        IMerchantRepository merchantRepository,
+        ITransactionRepository transactionRepository,
+        ICurrencyRepository currencyRepository)
+    {
+        // Execute in parallel for performance
+        var walletsTask = walletRepository.CountWalletsAsync();
+        var merchantsTask = merchantRepository.CountMerchantsAsync();
+        var transactionsTask = transactionRepository.CountTransactionsAsync();
+        var currenciesTask = currencyRepository.CountActiveCurrenciesAsync();
+
+        await Task.WhenAll(walletsTask, merchantsTask, transactionsTask, currenciesTask);
+
+        var summary = new AdminSummaryModel(
+            walletsTask.Result,
+            merchantsTask.Result,
+            transactionsTask.Result,
+            currenciesTask.Result
+        );
+
+        return Results.Ok(summary);
+    }
 }
+

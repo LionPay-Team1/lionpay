@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi, walletApi, transactionApi, userApi, setAuthToken, clearAuthToken, isAuthenticated } from './api';
+import { authApi, walletApi, transactionApi, userApi, exchangeRatesApi, setAuthToken, clearAuthToken, isAuthenticated } from './api';
 import type { TransactionResponse } from '../generated-api/wallet';
 import { TxType } from '../generated-api/wallet';
 
@@ -8,12 +8,13 @@ export type Country = {
     name: string;
     currency: string;
     rate: number;
+    precision?: number;
 };
 
 // Default countries without rates - rates will be fetched from API
 export const COUNTRIES: Country[] = [
-    { id: 'kr', name: '대한민국', currency: 'KRW', rate: 1 },
-    { id: 'jp', name: '일본', currency: 'JPY', rate: 1 }, // Will be updated from API
+    { id: 'kr', name: '대한민국', currency: 'KRW', rate: 1, precision: 0 },
+    { id: 'jp', name: '일본', currency: 'JPY', rate: 0.1, precision: 0 }, // Initial fallback
 ];
 
 export type Transaction = {
@@ -38,6 +39,12 @@ interface AppState {
     transactions: Transaction[];
     userName: string;
 
+    // Global Error State
+    isGlobalErrorOpen: boolean;
+    globalErrorMessage: string;
+    openGlobalError: (message: string) => void;
+    closeGlobalError: () => void;
+
     isAuthenticated: boolean;
     login: (phone: string, pin: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -45,6 +52,7 @@ interface AppState {
     fetchWallet: () => Promise<void>;
     fetchTransactions: () => Promise<void>;
     fetchUserInfo: () => Promise<void>;
+    fetchExchangeRates: () => Promise<void>;
 
     initializeData: () => Promise<void>;
 
@@ -84,7 +92,7 @@ const mapTransaction = (tx: TransactionResponse): Transaction => {
     };
 };
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
     country: COUNTRIES[0],
     setCountry: (country) => set({ country }),
 
@@ -93,6 +101,15 @@ export const useAppStore = create<AppState>((set) => ({
     money: 0,
     transactions: [],
     userName: '',
+
+    isGlobalErrorOpen: false,
+    globalErrorMessage: '',
+    openGlobalError: (message) => set((state) => {
+        // Prevent opening if already open to avoid stacking or re-rendering unnecessarily
+        if (state.isGlobalErrorOpen) return {};
+        return { isGlobalErrorOpen: true, globalErrorMessage: message };
+    }),
+    closeGlobalError: () => set({ isGlobalErrorOpen: false, globalErrorMessage: '' }),
 
     isAuthenticated: isAuthenticated(),
 
@@ -103,9 +120,7 @@ export const useAppStore = create<AppState>((set) => ({
                 setAuthToken(response.data.accessToken, response.data.refreshToken);
                 set({ isAuthenticated: true });
                 // Fetch initial data
-                await useAppStore.getState().fetchUserInfo();
-                await useAppStore.getState().fetchWallet();
-                await useAppStore.getState().fetchTransactions();
+                await useAppStore.getState().initializeData();
             }
         } catch (error) {
             console.error('Login failed:', error);
@@ -158,15 +173,64 @@ export const useAppStore = create<AppState>((set) => ({
         }
     },
 
+    fetchExchangeRates: async () => {
+        try {
+            const response = await exchangeRatesApi.apiV1ExchangeRatesGet();
+            const rates = response.data;
 
+            const newCountries = get().countries.map(c => {
+                if (c.currency === 'KRW') return c;
+
+                // 1. Try direct rate: KRW -> Target
+                let rateObj = rates.find(r =>
+                    r.sourceCurrency === 'KRW' && r.targetCurrency === c.currency
+                );
+
+                if (rateObj) {
+                    const rateVal = (typeof rateObj.rate === 'number') ? rateObj.rate : ((rateObj.rate as unknown as { amount: number })?.amount ?? 0);
+                    return { ...c, rate: Number(rateVal) };
+                }
+
+                // 2. Try inverse rate: Target -> KRW
+                rateObj = rates.find(r =>
+                    r.sourceCurrency === c.currency && r.targetCurrency === 'KRW'
+                );
+
+                if (rateObj) {
+                    const rateVal = (typeof rateObj.rate === 'number') ? rateObj.rate : ((rateObj.rate as unknown as { amount: number })?.amount ?? 0);
+                    const val = Number(rateVal);
+                    if (val > 0) {
+                        return { ...c, rate: 1 / val };
+                    }
+                }
+
+                return c;
+            });
+
+            set({ countries: newCountries });
+
+            // Update current country if it was updated
+            const currentCountryId = get().country.id;
+            const updatedCountry = newCountries.find(c => c.id === currentCountryId);
+            if (updatedCountry) {
+                set({ country: updatedCountry });
+            }
+
+        } catch (error) {
+            console.error('Fetch exchange rates failed:', error);
+        }
+    },
 
     initializeData: async () => {
         const state = useAppStore.getState();
 
         if (state.isAuthenticated) {
-            await state.fetchUserInfo();
-            await state.fetchWallet();
-            await state.fetchTransactions();
+            await Promise.all([
+                state.fetchUserInfo(),
+                state.fetchWallet(),
+                state.fetchTransactions(),
+                state.fetchExchangeRates()
+            ]);
         }
     },
 

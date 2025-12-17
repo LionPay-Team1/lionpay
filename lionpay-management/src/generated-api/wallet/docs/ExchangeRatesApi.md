@@ -4,12 +4,11 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1ExchangeRatesGet**](#apiv1exchangeratesget) | **GET** /api/v1/exchange-rates | Get all exchange rates|
+|[**apiV1ExchangeRatesGet**](#apiv1exchangeratesget) | **GET** /api/v1/exchange-rates | Get applied exchange rates|
 
 # **apiV1ExchangeRatesGet**
 > Array<ExchangeRateResponse> apiV1ExchangeRatesGet()
 
-Returns all available exchange rates for currency conversion.
 
 ### Example
 

@@ -4,7 +4,8 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 declare const process: any;
 
 import { AuthControllerApi, UserControllerApi } from '../generated-api/auth';
-import { WalletApi, TransactionApi, PaymentApi, MerchantApi, ExchangeRatesApi } from '../generated-api/wallet';
+import { WalletApi, TransactionApi, PaymentApi, MerchantApi, AdminApi, ExchangeRatesApi } from '../generated-api/wallet';
+import { useAppStore } from './store';
 
 // Use relative paths - nginx will proxy API requests to backend services
 // When running in Docker, nginx proxies /api/v1/auth/* to auth-service and /api/v1/* to wallet-service
@@ -59,6 +60,12 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 const handleErrorInterceptor = async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // Check for network errors
+    if (!error.response || error.code === 'ERR_NETWORK') {
+        useAppStore.getState().openGlobalError('서버와의 연결이 원활하지 않습니다.\n잠시 후 다시 시도해주세요.');
+        return Promise.reject(error);
+    }
 
     // If error is 401 and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -147,7 +154,8 @@ export const walletApi = new WalletApi(undefined, '', walletAxios);
 export const transactionApi = new TransactionApi(undefined, '', walletAxios);
 export const paymentApi = new PaymentApi(undefined, '', walletAxios);
 export const merchantApi = new MerchantApi(undefined, '', walletAxios);
-export const exchangeRateApi = new ExchangeRatesApi(undefined, '', walletAxios);
+export const adminApi = new AdminApi(undefined, '', walletAxios);
+export const exchangeRatesApi = new ExchangeRatesApi(undefined, '', walletAxios);
 
 export const setAuthToken = (token: string, refreshToken: string) => {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);

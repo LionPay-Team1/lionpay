@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection AddWalletAuthentication(IConfiguration configuration)
         {
-            JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove(JwtRegisteredClaimNames.Sub);
+            JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -57,12 +57,14 @@ public static class ServiceCollectionExtensions
                 .AddPolicy(Policies.UserRole, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-app");
+                    policy.RequireClaim("role", "USER");
                 })
                 .AddPolicy(Policies.AdminRole, policy =>
                 {
+                    policy.RequireAuthenticatedUser();
+                    // Audience is already validated by JwtBearer middleware (ValidAudiences)
+                    // Only check role claim for authorization
                     policy.RequireClaim("role", "ADMIN", "SUPER_ADMIN");
-                    policy.RequireClaim(JwtRegisteredClaimNames.Aud, "lionpay-management");
                 });
             return services;
         }

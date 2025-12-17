@@ -32,12 +32,26 @@ export interface AdminDetailResponse {
     'adminId'?: string;
     'username'?: string;
     'name'?: string;
+    'role'?: string;
     'createdAt'?: string;
 }
 export interface AdminSignInRequest {
     'username': string;
     'password': string;
 }
+export interface AdminUpdateRequest {
+    'name'?: string;
+    'password'?: string;
+    'role'?: AdminUpdateRequestRoleEnum;
+}
+
+export const AdminUpdateRequestRoleEnum = {
+    SuperAdmin: 'SUPER_ADMIN',
+    Admin: 'ADMIN'
+} as const;
+
+export type AdminUpdateRequestRoleEnum = typeof AdminUpdateRequestRoleEnum[keyof typeof AdminUpdateRequestRoleEnum];
+
 export interface RefreshTokenRequest {
     'refreshToken': string;
 }
@@ -103,6 +117,39 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(adminCreateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAdmins: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admin/admins`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -279,6 +326,49 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {string} adminId 
+         * @param {AdminUpdateRequest} adminUpdateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAdmin: async (adminId: string, adminUpdateRequest: AdminUpdateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'adminId' is not null or undefined
+            assertParamExists('updateAdmin', 'adminId', adminId)
+            // verify required parameter 'adminUpdateRequest' is not null or undefined
+            assertParamExists('updateAdmin', 'adminUpdateRequest', adminUpdateRequest)
+            const localVarPath = `/api/v1/admin/admins/{adminId}`
+                .replace(`{${"adminId"}}`, encodeURIComponent(String(adminId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(adminUpdateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -298,6 +388,17 @@ export const AdminControllerApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAdmin(adminCreateRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AdminControllerApi.createAdmin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAdmins(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AdminDetailResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAdmins(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminControllerApi.getAdmins']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -351,6 +452,19 @@ export const AdminControllerApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AdminControllerApi.signOut1']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @param {string} adminId 
+         * @param {AdminUpdateRequest} adminUpdateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateAdmin(adminId: string, adminUpdateRequest: AdminUpdateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminDetailResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAdmin(adminId, adminUpdateRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AdminControllerApi.updateAdmin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -368,6 +482,14 @@ export const AdminControllerApiFactory = function (configuration?: Configuration
          */
         createAdmin(requestParameters: AdminControllerApiCreateAdminRequest, options?: RawAxiosRequestConfig): AxiosPromise<AdminDetailResponse> {
             return localVarFp.createAdmin(requestParameters.adminCreateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAdmins(options?: RawAxiosRequestConfig): AxiosPromise<Array<AdminDetailResponse>> {
+            return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -404,6 +526,15 @@ export const AdminControllerApiFactory = function (configuration?: Configuration
          */
         signOut1(requestParameters: AdminControllerApiSignOut1Request, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.signOut1(requestParameters.signOutRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AdminControllerApiUpdateAdminRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAdmin(requestParameters: AdminControllerApiUpdateAdminRequest, options?: RawAxiosRequestConfig): AxiosPromise<AdminDetailResponse> {
+            return localVarFp.updateAdmin(requestParameters.adminId, requestParameters.adminUpdateRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -450,6 +581,15 @@ export interface AdminControllerApiSignOut1Request {
 }
 
 /**
+ * Request parameters for updateAdmin operation in AdminControllerApi.
+ */
+export interface AdminControllerApiUpdateAdminRequest {
+    readonly adminId: string
+
+    readonly adminUpdateRequest: AdminUpdateRequest
+}
+
+/**
  * AdminControllerApi - object-oriented interface
  */
 export class AdminControllerApi extends BaseAPI {
@@ -461,6 +601,15 @@ export class AdminControllerApi extends BaseAPI {
      */
     public createAdmin(requestParameters: AdminControllerApiCreateAdminRequest, options?: RawAxiosRequestConfig) {
         return AdminControllerApiFp(this.configuration).createAdmin(requestParameters.adminCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getAdmins(options?: RawAxiosRequestConfig) {
+        return AdminControllerApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -501,6 +650,16 @@ export class AdminControllerApi extends BaseAPI {
      */
     public signOut1(requestParameters: AdminControllerApiSignOut1Request, options?: RawAxiosRequestConfig) {
         return AdminControllerApiFp(this.configuration).signOut1(requestParameters.signOutRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AdminControllerApiUpdateAdminRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public updateAdmin(requestParameters: AdminControllerApiUpdateAdminRequest, options?: RawAxiosRequestConfig) {
+        return AdminControllerApiFp(this.configuration).updateAdmin(requestParameters.adminId, requestParameters.adminUpdateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

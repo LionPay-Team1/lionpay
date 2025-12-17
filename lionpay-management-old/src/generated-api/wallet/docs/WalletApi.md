@@ -1,0 +1,108 @@
+# WalletApi
+
+All URIs are relative to *http://localhost*
+
+|Method | HTTP request | Description|
+|------------- | ------------- | -------------|
+|[**apiV1WalletsChargePost**](#apiv1walletschargepost) | **POST** /api/v1/wallets/charge | Charge wallet|
+|[**apiV1WalletsMeGet**](#apiv1walletsmeget) | **GET** /api/v1/wallets/me | Get my wallet|
+
+# **apiV1WalletsChargePost**
+> WalletResponse apiV1WalletsChargePost(chargeRequest)
+
+Charges the user\'s Money wallet with the specified amount.
+
+### Example
+
+```typescript
+import {
+    WalletApi,
+    Configuration,
+    ChargeRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new WalletApi(configuration);
+
+let chargeRequest: ChargeRequest; //
+
+const { status, data } = await apiInstance.apiV1WalletsChargePost(
+    chargeRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **chargeRequest** | **ChargeRequest**|  | |
+
+
+### Return type
+
+**WalletResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiV1WalletsMeGet**
+> WalletResponse apiV1WalletsMeGet()
+
+Retrieves the current user\'s Money wallet information.
+
+### Example
+
+```typescript
+import {
+    WalletApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new WalletApi(configuration);
+
+const { status, data } = await apiInstance.apiV1WalletsMeGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**WalletResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**401** | Unauthorized |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+

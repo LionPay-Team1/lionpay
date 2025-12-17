@@ -8,6 +8,7 @@ docs/AdminControllerApi.md
 docs/AdminCreateRequest.md
 docs/AdminDetailResponse.md
 docs/AdminSignInRequest.md
+docs/AdminUpdateRequest.md
 docs/AuthControllerApi.md
 docs/RefreshTokenRequest.md
 docs/SignInRequest.md

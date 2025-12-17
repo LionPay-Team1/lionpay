@@ -44,7 +44,7 @@ public class MerchantService(IMerchantRepository merchantRepository) : IMerchant
             MerchantName = request.MerchantName,
             CountryCode = request.CountryCode,
             MerchantCategory = request.MerchantCategory,
-            MerchantStatus = "ACTIVE",
+            MerchantStatus = MerchantStatus.Active,
             CreatedAt = DateTime.UtcNow
         };
         return await merchantRepository.CreateMerchantAsync(MerchantModel);

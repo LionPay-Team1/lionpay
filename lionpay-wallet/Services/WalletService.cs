@@ -143,7 +143,7 @@ public class WalletService(
                     UserId = userId,
                     TxType = amount > 0 ? TxType.AdminCharge : TxType.AdminDeduct,
                     OrderName = reason,
-                    Amount = Math.Abs(amount),
+                    Amount = amount,
                     BalanceSnapshot = newBalance,
                     TxStatus = TxStatus.Success,
                     CreatedAt = DateTime.UtcNow

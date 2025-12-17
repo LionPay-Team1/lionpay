@@ -1,25 +1,27 @@
 import { adminWalletApi } from './client';
 
-
+export interface WalletBalance {
+    balance: number;
+    currency: string;
+}
 
 export const walletApi = {
-  getUserBalance: async (userId: string): Promise<{ userId: string; balance: number; currency?: string }> => {
-    try {
-      // Use Admin API to get user wallet
-      const response = await adminWalletApi.apiV1AdminWalletsUserIdGet({ userId });
-      const wallet = response.data;
-      const amountVal = (wallet.balance as unknown as { amount: number })?.amount ?? 0;
+    getUserBalance: async (userId: string): Promise<WalletBalance | null> => {
+        try {
+            const response = await adminWalletApi.apiV1AdminWalletsUserIdGet({ userId });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const data = response.data as any;
 
-      return {
-        userId,
-        balance: Number(amountVal),
-        currency: 'KRW'
-      };
-    } catch (error) {
-      console.warn(`walletApi.getUserBalance(${userId}) failed`, error);
-      throw error;
+            // Handle the balance response which may have nested amount object
+            const balanceVal = data?.balance?.amount ?? data?.balance ?? 0;
+
+            return {
+                balance: Number(balanceVal),
+                currency: data?.currency || 'KRW'
+            };
+        } catch (error) {
+            console.error(`walletApi.getUserBalance(${userId}) failed`, error);
+            return null;
+        }
     }
-  },
 };
-
-export default walletApi;

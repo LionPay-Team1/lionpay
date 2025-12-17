@@ -32,30 +32,39 @@ public class AdminUserService {
             user = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new UserNotFoundException("해당 ID의 사용자를 찾을 수 없습니다."));
         } else {
-            // 이 경우는 Controller에서 분기 처리되므로 발생하지 않아야 합니다.
             throw new IllegalArgumentException("조회하려면 phone 또는 userId 중 하나가 필요합니다.");
         }
         return AdminUserResponse.from(user);
     }
 
     /**
-     * 모든 사용자를 조회하고 메모리 기반 페이징을 적용합니다.
+     * 모든 사용자를 조회하고 페이징을 적용합니다.
+     * 프론트엔드 호환성을 위해 page/size 기반 페이징을 유지합니다.
      *
      * @param page 페이지 번호 (0부터 시작)
      * @param size 페이지 당 항목 수
      * @return 페이징된 사용자 목록
      */
     public AdminUserListResponse findAllUsers(int page, int size) {
-        List<User> allUsers = userRepository.findAll();
-        long totalCount = allUsers.size();
+        return findAllUsersPaginated(size, null, page);
+    }
 
-        // suggestion: 반복문을 Stream API로 리팩토링하여 더 효율적인 컬렉션 처리를 고려하세요.
-        List<AdminUserResponse> pagedUsers = allUsers.stream()
-                .skip((long) page * size)
-                .limit(size)
+    /**
+     * DynamoDB 페이지네이션을 사용하여 사용자를 조회합니다.
+     *
+     * @param size    페이지 당 항목 수
+     * @param lastKey 이전 페이지의 마지막 키 (null이면 처음부터 시작)
+     * @param page    페이지 번호 (표시용)
+     * @return 페이징된 사용자 목록
+     */
+    public AdminUserListResponse findAllUsersPaginated(int size, String lastKey, int page) {
+        UserRepository.PaginatedResult<User> result = userRepository.findAllPaginated(size, lastKey);
+        long totalCount = userRepository.countAll();
+
+        List<AdminUserResponse> users = result.items().stream()
                 .map(AdminUserResponse::from)
                 .toList();
 
-        return new AdminUserListResponse(page, size, totalCount, pagedUsers);
+        return AdminUserListResponse.of(page, size, totalCount, result.lastKey(), users);
     }
 }
