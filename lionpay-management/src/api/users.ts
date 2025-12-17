@@ -1,9 +1,10 @@
-import client from './client';
+import { adminAuthApi } from './client';
+import type { UserResponse } from '../generated-api/auth';
 
 export interface User {
-  id: number;
+  id: string; // ID is string (UUID) in backend
   name: string;
-  email: string;
+  email: string; // Backend uses phone
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   joinedAt: string;
 }
@@ -14,60 +15,61 @@ export interface UserListParams {
   size?: number;
 }
 
-// Local mock data used as a fallback when backend is unavailable.
-const mockUsers: User[] = [
-  { id: 1, name: '김관리', email: 'admin1@example.com', status: 'ACTIVE', joinedAt: new Date('2023-01-10').toISOString() },
-  { id: 2, name: '박사용자', email: 'user2@example.com', status: 'ACTIVE', joinedAt: new Date('2023-02-15').toISOString() },
-  { id: 3, name: '이테스트', email: 'user3@example.com', status: 'SUSPENDED', joinedAt: new Date('2023-03-20').toISOString() },
-  { id: 4, name: '최준형', email: 'user4@example.com', status: 'INACTIVE', joinedAt: new Date('2024-01-05').toISOString() },
-  { id: 5, name: '홍길동', email: 'user5@example.com', status: 'ACTIVE', joinedAt: new Date('2024-05-02').toISOString() },
-];
+const mapUser = (u: UserResponse): User => {
+  return {
+    id: u.userId || '',
+    name: u.phone || 'Unknown', // Backend doesn't return name for generic users list?
+    email: u.phone || '',
+    status: (u.status as unknown as 'ACTIVE') || 'ACTIVE',
+    joinedAt: u.createdAt || new Date().toISOString()
+  };
+};
 
 export const usersApi = {
   getUsers: async (params?: UserListParams): Promise<User[]> => {
     try {
-      const response = await client.get<{ users: User[], totalCount: number }>('/admin/users', { params });
-      return response.data.users || [];
+      // Params: phone, userId, page, size
+      // Map 'search' to phone or userId if valid
+      const phone = params?.search; // Naive mapping
+      const response = await adminAuthApi.getUsers({
+        phone: phone,
+        page: params?.page || 0,
+        size: params?.size || 10
+      });
+      // response.data is 'object'? Generated code said Promise<object>. 
+      // I need to cast it to expected Page<UserResponse> or List<UserResponse>.
+      // Let's assume it's a Page object { content: [], ... } or just array.
+      // Based on typical Spring Data or similar, it's Page.
+      // But generated code said `object`. I'll try to treat it as { content: UserResponse[] } or UserResponse[]
+      const data = response.data as { content?: UserResponse[] };
+      const list = Array.isArray(data) ? data : (data.content || []);
+      return list.map(mapUser);
     } catch (error) {
-      // Fallback to mock data for local testing
-      console.warn('usersApi.getUsers(): backend request failed, using mock users', error);
-      const q = (params?.search || '').toLowerCase();
-      let results = mockUsers;
-      if (q) {
-        results = results.filter(u =>
-          u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || String(u.id) === q
-        );
+      console.error('usersApi.getUsers() failed', error);
+      throw error;
+    }
+  },
+
+  getUser: async (userId: string): Promise<User> => { // Changed ID type to string
+    try {
+      // API supports filtering by userId in getUsers
+      const response = await adminAuthApi.getUsers({ userId: userId });
+      const data = response.data as { content?: UserResponse[] };
+      const list = Array.isArray(data) ? data : (data.content || []);
+      if (list.length > 0) {
+        return mapUser(list[0]);
       }
-      const size = params?.size ?? results.length;
-      const page = Math.max(0, (params?.page ?? 0));
-      const start = page * size;
-      return results.slice(start, start + size);
+      throw new Error('User not found');
+    } catch (error) {
+      console.error(`usersApi.getUser(${userId}) failed`, error);
+      throw error;
     }
   },
 
-  getUser: async (userId: number): Promise<User> => {
-    try {
-      // Per spec: GET /api/v1/admin/users?userId=... returns the single user object
-      const response = await client.get<User>('/admin/users', { params: { userId } });
-      return response.data;
-    } catch (error) {
-      console.warn(`usersApi.getUser(${userId}): backend request failed, using mock user`, error);
-      const found = mockUsers.find(u => u.id === userId);
-      if (!found) throw error;
-      return found;
-    }
-  },
-
-  updateUser: async (userId: number, data: Partial<User>): Promise<User> => {
-    try {
-      const response = await client.put<User>(`/users/${userId}`, data);
-      return response.data;
-    } catch (error) {
-      console.warn(`usersApi.updateUser(${userId}): backend request failed, applying to mock`, error);
-      const idx = mockUsers.findIndex(u => u.id === userId);
-      if (idx === -1) throw error;
-      mockUsers[idx] = { ...mockUsers[idx], ...data } as User;
-      return mockUsers[idx];
-    }
+  updateUser: async (_userId: string, _data: Partial<User>): Promise<User> => {
+    // AdminController doesn't seem to have updateUser endpoint in the snippet I saw? 
+    // Only createAdmin, getUsers, signIn, signOut. 
+    // If missing, throw error.
+    throw new Error('Update user not implemented in backend API');
   },
 };

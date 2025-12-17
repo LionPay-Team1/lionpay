@@ -12,31 +12,26 @@ export default function SignIn() {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
+    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignIn = (e: React.FormEvent) => {
+    const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError('');
 
+        try {
+            // Convert to E.164 for backend for normal users
+            const e164Phone = toE164(phone);
+            console.log('Sending to backend:', e164Phone);
 
-
-
-        // Admin Login Check
-        if (phone === '000' && password === 'password') {
-            window.location.href = 'http://localhost:8083';
-            return;
-        }
-
-        // Convert to E.164 for backend for normal users
-        const e164Phone = toE164(phone);
-        console.log('Sending to backend:', e164Phone);
-
-        // Mock SignIn with delay for non-admin
-        setTimeout(() => {
-            setIsLoading(false);
-            login(); // Set auth state to true
+            await login(e164Phone, password); // Set auth state to true
             navigate('/');
-        }, 500);
+        } catch (err) {
+            console.error(err);
+            setError('로그인에 실패했습니다. 정보를 확인해주세요.');
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -57,6 +52,7 @@ export default function SignIn() {
                             type="tel"
                             maxLength={13}
                             value={phone}
+                            disabled={isLoading}
                             onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                         />
                         <Input
@@ -64,17 +60,23 @@ export default function SignIn() {
                             placeholder="******"
                             type="password"
                             value={password}
+                            disabled={isLoading}
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        {error && (
+                            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">
+                                {error}
+                            </div>
+                        )}
                     </div>
 
                     <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                        SignIn
+                        로그인
                     </Button>
                 </form>
 
                 <p className="text-center text-sm text-gray-500">
-                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">SignUp</Link>
+                    계정이 없으신가요? <Link to="/signup" className="text-primary-600 font-bold hover:underline">회원가입</Link>
                 </p>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -6,29 +6,70 @@ import { ArrowLeft, CheckCircle, Store, ChevronRight, Loader2 } from 'lucide-rea
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
+import { paymentApi, merchantApi } from '../lib/api';
+import type { MerchantResponse, PaymentRequest } from '../generated-api/wallet';
+import { AlertModal } from '../components/ui/AlertModal';
+import type { AxiosError } from 'axios';
 
 type Step = 'shop' | 'amount' | 'summary' | 'processing' | 'success';
 
-const SHOPS = [
-    { id: '1', name: '스타벅스', category: '카페' },
-    { id: '2', name: 'GS25', category: '편의점' },
-    { id: '3', name: '맥도날드', category: '음식점' },
-    { id: '4', name: '세븐일레븐', category: '편의점' },
-];
+interface Shop {
+    id: string;
+    name: string;
+    category: string;
+}
 
 export default function Payment() {
     const navigate = useNavigate();
-    const { country, money, points, paymentPriority, addPoints, deductMoney, deductPoints, addTransaction } = useAppStore();
+    const { country, fetchWallet, fetchTransactions } = useAppStore();
 
     const [step, setStep] = useState<Step>('shop');
-    const [selectedShop, setSelectedShop] = useState(SHOPS[0]);
+    const [shops, setShops] = useState<Shop[]>([]);
+    const [isLoadingShops, setIsLoadingShops] = useState(true);
+    const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
     const [amount, setAmount] = useState('');
     const [error, setError] = useState('');
 
+    // Alert State
+    const [alertConfig, setAlertConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+    }>({ isOpen: false, title: '', message: '' });
+
     // Result state
     const [usedMoney, setUsedMoney] = useState(0);
-    const [usedPoints, setUsedPoints] = useState(0);
-    const [earnedPoints, setEarnedPoints] = useState(0);
+
+    // Fetch merchants from server
+    useEffect(() => {
+        const fetchMerchants = async () => {
+            try {
+                const countryCode = country.id.toUpperCase();
+                const response = await merchantApi.apiV1MerchantsGet({ countryCode });
+                const merchantShops: Shop[] = response.data.map((m: MerchantResponse) => ({
+                    id: m.merchantId,
+                    name: m.merchantName,
+                    category: m.merchantCategory
+                }));
+                setShops(merchantShops);
+                if (merchantShops.length > 0) {
+                    setSelectedShop(merchantShops[0]);
+                } else {
+                    setSelectedShop(null);
+                }
+            } catch (err) {
+                console.error('Failed to fetch merchants:', err);
+                setAlertConfig({
+                    isOpen: true,
+                    title: '상점 목록 오류',
+                    message: '상점 목록을 불러오는데 실패했습니다.'
+                });
+            } finally {
+                setIsLoadingShops(false);
+            }
+        };
+        fetchMerchants();
+    }, [country]); // Refresh when country changes
 
     const handleHeaderBack = () => {
         if (step === 'shop') navigate(-1);
@@ -40,81 +81,101 @@ export default function Payment() {
         const payAmount = parseInt(amount);
         if (payAmount <= 0) return;
 
-        // Convert input amount to KRW for internal check if necessary, 
-        // but for this mock let's assume direct value usage but show currency symbol.
-        // Actually, to implement "money vs points" logic correctly, we treat them as 1:1 value units for simplicity within the app logic,
-        // but display them with rates.
-        // Let's stick to the previous plan: calculate costs in "Store Units" (KRW).
-        const krwCost = Math.floor(payAmount / country.rate);
-
-        // Calculate Payment Mix based on Priority
-        let moneyToUse = 0;
-        let pointsToUse = 0;
-
-        if (paymentPriority === 'points') {
-            if (points >= krwCost) {
-                pointsToUse = krwCost;
-                moneyToUse = 0;
-            } else {
-                pointsToUse = points;
-                moneyToUse = krwCost - points;
-            }
-        } else {
-            // Money Priority (Default)
-            moneyToUse = krwCost;
-            pointsToUse = 0;
-        }
-
-        // Check sufficiency
-        if (money < moneyToUse) {
-            setError('잔액이 부족합니다. 충전 후 이용해주세요.');
-            return;
-        }
-
         // Start Processing
         setStep('processing');
 
-        // Mock API Call (0.5s delay)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            // Call actual payment API
 
-        // Deduct
-        if (moneyToUse > 0) deductMoney(moneyToUse);
-        if (pointsToUse > 0) deductPoints(pointsToUse);
 
-        // Earn Points (1% of total KRW cost)
-        const pointsEarned = Math.floor(krwCost * 0.01);
-        addPoints(pointsEarned);
+            await paymentApi.apiV1PaymentsPost({
+                paymentRequest: {
+                    merchantId: selectedShop!.id,
+                    amountCash: payAmount,
+                    currency: country.currency
+                } as PaymentRequest
+            });
 
-        // Set Result State
-        setUsedMoney(moneyToUse);
-        setUsedPoints(pointsToUse);
-        setEarnedPoints(pointsEarned);
+            // Set Result State - usedMoney should be the deducted amount from wallet
+            // The response typically contains the transaction details including balance snapshot
+            // For now, we estimate or use the response if possible.
+            // Let's use the input amount rough conversion for display or fetch from response if available.
+            // Since we don't have the exact deducted amount from response easily accessible in generated client,
+            // we will approximate for display or better, assume the server deduction logic matches.
 
-        // Record Transaction(s)
-        const now = new Date();
-        const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
-        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            // Note: Server returns PaymentResponse which might NOT have the deducted KRW amount directly exposed easily in generated client
+            // unless we inspect response data.
+            // Let's just use the approximate calculated value for the UI success screen for now, 
+            // or better, rely on the balance drop.
 
-        addTransaction({
-            id: Date.now(),
-            type: 'use',
-            title: selectedShop.name,
-            date: dateStr,
-            time: timeStr,
-            amount: -(moneyToUse + pointsToUse), // Total cost (simulated negative)
-            earned: pointsEarned
-        });
+            const estimatedKrwCost = Math.floor(payAmount / country.rate);
+            setUsedMoney(estimatedKrwCost);
 
-        addTransaction({
-            id: Date.now() + 1,
-            type: 'earn',
-            title: `${selectedShop.name} 적립`,
-            date: dateStr,
-            time: timeStr,
-            amount: pointsEarned
-        });
+            // Refresh wallet and transactions from server
+            await fetchWallet();
+            await fetchTransactions();
 
-        setStep('success');
+            setStep('success');
+        } catch (err: unknown) {
+            console.error('Payment failed:', err);
+            let errorMessage = '결제에 실패했습니다. 다시 시도해주세요.';
+
+            const error = err as AxiosError<{
+                detail?: string;
+                message?: string;
+                title?: string;
+                errorCode?: string;
+                errorMessage?: string;
+            }>;
+
+            if (error.response && error.response.data) {
+                console.error('Error response data:', JSON.stringify(error.response.data));
+                const data = error.response.data;
+
+                // Use ErrorCode from backend if available
+                if (data.errorCode) {
+                    switch (data.errorCode) {
+                        case 'INSUFFICIENT_BALANCE':
+                            errorMessage = '잔액이 부족합니다. 충전 후 다시 시도해주세요.';
+                            break;
+                        case 'MERCHANT_NOT_FOUND':
+                            errorMessage = '상점 정보를 찾을 수 없습니다.';
+                            break;
+                        case 'WALLET_NOT_FOUND':
+                            errorMessage = '지갑 정보를 찾을 수 없습니다. 관리자에게 문의하세요.';
+                            break;
+                        case 'PAYMENT_FAILED':
+                            errorMessage = '결제 처리에 실패했습니다. 잠시 후 다시 시도해주세요.';
+                            break;
+                        case 'BAD_REQUEST':
+                            errorMessage = '잘못된 요청입니다.';
+                            break;
+                        case 'INTERNAL_SERVER_ERROR':
+                            errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                            break;
+                        default:
+                            // Fallback to server message if available
+                            errorMessage = data.errorMessage || errorMessage;
+                    }
+                } else if (data.errorMessage) {
+                    errorMessage = data.errorMessage;
+                } else if (data.detail) {
+                    errorMessage = data.detail;
+                } else if (data.message) {
+                    errorMessage = data.message;
+                } else if (data.title) {
+                    errorMessage = data.title;
+                }
+            }
+
+            // Show Alert Modal instead of setting input error
+            setAlertConfig({
+                isOpen: true,
+                title: '결제 실패',
+                message: errorMessage
+            });
+            setStep('amount');
+        }
     };
 
     if (step === 'success') {
@@ -130,13 +191,13 @@ export default function Payment() {
                 <h2 className="text-2xl font-bold mb-2">결제 완료</h2>
                 <div className="text-center space-y-4 mb-8">
                     <p className="text-gray-500">
-                        {country.name} {selectedShop.name}에서
+                        {country.name} {selectedShop?.name}에서
                     </p>
                     <div className="bg-gray-50 p-6 rounded-2xl w-full shadow-sm border border-gray-100">
                         <div className="text-center mb-6">
                             <span className="text-gray-500 text-sm mb-1 block">총 결제금액</span>
                             <span className="text-3xl font-bold text-gray-900">
-                                {country.currency === 'KRW' ? '' : country.currency === 'USD' ? '$' : '¥'}
+                                {country.currency === 'KRW' ? '' : '¥'}
                                 {parseInt(amount).toLocaleString()}
                                 {country.currency === 'KRW' ? '원' : ''}
                             </span>
@@ -147,17 +208,7 @@ export default function Payment() {
                                 <span className="text-gray-500 text-sm">머니 사용</span>
                                 <span className="font-bold text-gray-900">{Math.floor(usedMoney * country.rate).toLocaleString()} {country.currency}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500 text-sm">포인트 사용</span>
-                                <span className="font-bold text-gray-900">{Math.floor(usedPoints * country.rate).toLocaleString()} P</span>
-                            </div>
                         </div>
-                    </div>
-
-                    <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-100 inline-block">
-                        <p className="text-sm text-yellow-800 font-bold">
-                            + {earnedPoints.toLocaleString()} P 적립 완료!
-                        </p>
                     </div>
                 </div>
                 <Button className="w-full" onClick={() => navigate('/')}>
@@ -201,7 +252,11 @@ export default function Payment() {
                                 className="space-y-3"
                             >
                                 <p className="text-sm text-gray-500 mb-2">현재 결제 국가: <span className="font-bold text-primary-600">{country.name}</span></p>
-                                {SHOPS.map((shop) => (
+                                {isLoadingShops ? (
+                                    <div className="flex justify-center py-8">
+                                        <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+                                    </div>
+                                ) : shops.map((shop: Shop) => (
                                     <Card
                                         key={shop.id}
                                         className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors active:bg-gray-100"
@@ -236,7 +291,7 @@ export default function Payment() {
                                 <Card className="p-6">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-gray-500">결제처</span>
-                                        <span className="font-bold text-lg">{selectedShop.name}</span>
+                                        <span className="font-bold text-lg">{selectedShop?.name}</span>
                                     </div>
                                     <div className="h-px bg-gray-100 my-4" />
                                     <Input
@@ -252,9 +307,6 @@ export default function Payment() {
                                         autoFocus
                                         error={error}
                                     />
-                                    <p className="text-right text-xs text-gray-400 mt-2">
-                                        우선 사용: {paymentPriority === 'money' ? '라이언 페이 머니' : '라이언 페이 포인트'}
-                                    </p>
                                 </Card>
                                 <Button
                                     className="w-full"
@@ -267,6 +319,13 @@ export default function Payment() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+
+                    <AlertModal
+                        isOpen={alertConfig.isOpen}
+                        onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
+                        title={alertConfig.title}
+                        message={alertConfig.message}
+                    />
                 </>
             )}
         </motion.div>

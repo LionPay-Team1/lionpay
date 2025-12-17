@@ -8,7 +8,7 @@ public interface IWalletRepository
 {
     Task<IEnumerable<WalletModel>> GetWalletsAsync(Guid userId);
     Task<WalletModel?> GetWalletAsync(Guid userId, WalletType walletType);
-    Task<WalletModel?> GetWalletForUpdateAsync(Guid walletId, NpgsqlTransaction? transaction = null);
+    Task<WalletModel?> GetWalletByIdAsync(Guid walletId, NpgsqlTransaction? transaction = null);
     Task CreateWalletAsync(WalletModel wallet);
 
     Task<bool> UpdateBalanceAsync(Guid walletId, decimal newBalance, int currentVersion,
@@ -54,12 +54,14 @@ public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
             """;
 
         await using var connection = dataSource.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync<WalletModel>(sql, new { UserId = userId, WalletType = walletType });
+        return await connection.QuerySingleOrDefaultAsync<WalletModel>(sql, new { UserId = userId, WalletType = (int)walletType });
     }
 
-    public async Task<WalletModel?> GetWalletForUpdateAsync(Guid walletId,
+    public async Task<WalletModel?> GetWalletByIdAsync(Guid walletId,
         NpgsqlTransaction? transaction = null)
     {
+        // Note: FOR UPDATE is not used because Aurora DSQL uses lock-free OCC.
+        // Conflicts are detected at commit time and handled by OccExecutionStrategy.
         const string sql =
             """
             SELECT 
@@ -72,7 +74,6 @@ public class WalletRepository(NpgsqlDataSource dataSource) : IWalletRepository
                 updated_at AS UpdatedAt
             FROM wallets
             WHERE wallet_id = @WalletId
-            FOR UPDATE
             """;
 
         var connection = transaction?.Connection ?? dataSource.CreateConnection();

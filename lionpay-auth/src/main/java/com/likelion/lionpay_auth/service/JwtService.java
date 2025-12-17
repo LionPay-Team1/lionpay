@@ -31,8 +31,8 @@ public class JwtService {
     }
 
     // User Access Token
-    public String generateAccessToken(String phone) {
-        return generateToken(phone, Map.of(), jwtProperties.getUserAudience(),
+    public String generateAccessToken(String userId) {
+        return generateToken(userId, Map.of("role", "USER"), jwtProperties.getUserAudience(),
                 jwtProperties.getAccessTokenExpirationMinutes(), ChronoUnit.MINUTES);
     }
 

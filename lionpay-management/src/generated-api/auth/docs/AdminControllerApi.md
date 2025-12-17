@@ -5,11 +5,13 @@ All URIs are relative to *http://localhost:8080*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**createAdmin**](#createadmin) | **POST** /api/v1/admin/new | |
+|[**getUsers**](#getusers) | **GET** /api/v1/admin/users | |
+|[**refreshAdminToken**](#refreshadmintoken) | **POST** /api/v1/admin/refresh-token | |
 |[**signIn1**](#signin1) | **POST** /api/v1/admin/sign-in | |
 |[**signOut1**](#signout1) | **POST** /api/v1/admin/sign-out | |
 
 # **createAdmin**
-> ApiResponseAdminCreateResponse createAdmin(adminCreateRequest)
+> AdminDetailResponse createAdmin(adminCreateRequest)
 
 
 ### Example
@@ -40,7 +42,117 @@ const { status, data } = await apiInstance.createAdmin(
 
 ### Return type
 
-**ApiResponseAdminCreateResponse**
+**AdminDetailResponse**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUsers**
+> object getUsers()
+
+
+### Example
+
+```typescript
+import {
+    AdminControllerApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminControllerApi(configuration);
+
+let phone: string; // (optional) (default to undefined)
+let userId: string; // (optional) (default to undefined)
+let page: number; // (optional) (default to 0)
+let size: number; // (optional) (default to 10)
+
+const { status, data } = await apiInstance.getUsers(
+    phone,
+    userId,
+    page,
+    size
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **phone** | [**string**] |  | (optional) defaults to undefined|
+| **userId** | [**string**] |  | (optional) defaults to undefined|
+| **page** | [**number**] |  | (optional) defaults to 0|
+| **size** | [**number**] |  | (optional) defaults to 10|
+
+
+### Return type
+
+**object**
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **refreshAdminToken**
+> TokenResponse refreshAdminToken(refreshTokenRequest)
+
+
+### Example
+
+```typescript
+import {
+    AdminControllerApi,
+    Configuration,
+    RefreshTokenRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminControllerApi(configuration);
+
+let refreshTokenRequest: RefreshTokenRequest; //
+
+const { status, data } = await apiInstance.refreshAdminToken(
+    refreshTokenRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **refreshTokenRequest** | **RefreshTokenRequest**|  | |
+
+
+### Return type
+
+**TokenResponse**
 
 ### Authorization
 
@@ -111,7 +223,7 @@ const { status, data } = await apiInstance.signIn1(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **signOut1**
-> ApiResponseObject signOut1(signOutRequest)
+> signOut1(signOutRequest)
 
 
 ### Example
@@ -142,7 +254,7 @@ const { status, data } = await apiInstance.signOut1(
 
 ### Return type
 
-**ApiResponseObject**
+void (empty response body)
 
 ### Authorization
 
@@ -151,7 +263,7 @@ const { status, data } = await apiInstance.signOut1(
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: */*
+ - **Accept**: Not defined
 
 
 ### HTTP response details

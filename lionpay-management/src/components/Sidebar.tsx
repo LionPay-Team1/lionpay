@@ -1,6 +1,6 @@
 
 import { NavLink } from 'react-router-dom';
-import { Users, History, LogOut, LayoutDashboard } from 'lucide-react';
+import { Users, History, LogOut, LayoutDashboard, Coins } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Sidebar() {
@@ -24,6 +24,10 @@ export function Sidebar() {
           <History size={20} />
           <span>Point History</span>
         </NavLink>
+        <NavLink to="/exchange-rates" className={({ isActive }: { isActive: boolean }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <Coins size={20} />
+          <span>Exchange Rates</span>
+        </NavLink>
       </nav>
       <div className="sidebar-footer">
         <button onClick={logout} className="nav-item logout-btn">
@@ -34,3 +38,4 @@ export function Sidebar() {
     </aside>
   );
 }
+

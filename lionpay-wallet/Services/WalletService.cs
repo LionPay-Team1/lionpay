@@ -2,6 +2,7 @@ using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Infrastructure;
 using LionPay.Wallet.Models;
 using LionPay.Wallet.Repositories;
+using Npgsql;
 
 
 namespace LionPay.Wallet.Services;
@@ -17,6 +18,7 @@ public interface IWalletService
 public class WalletService(
     IWalletRepository walletRepository,
     ITransactionRepository transactionRepository,
+    NpgsqlDataSource dataSource,
     IOccExecutionStrategy executionStrategy)
     : IWalletService
 {
@@ -41,36 +43,55 @@ public class WalletService(
 
         return await executionStrategy.ExecuteAsync(async () =>
         {
-            var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
-            if (currentWallet == null) throw new WalletNotFoundException();
+            await using var connection = await dataSource.OpenConnectionAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
 
-            var newBalance = currentWallet.Balance + amount;
-            var success =
-                await walletRepository.UpdateBalanceAsync(currentWallet.WalletId, newBalance,
-                    currentWallet.Version);
-
-            if (!success)
+            try
             {
-                // Optimistic lock failed - retry via strategy
-                throw new RetryableOperationException();
+                var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+                if (currentWallet == null) throw new WalletNotFoundException();
+
+                // Fetch current wallet state within transaction for OCC
+                currentWallet = await walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
+                if (currentWallet == null) throw new WalletNotFoundException();
+
+                var newBalance = currentWallet.Balance + amount;
+                var success = await walletRepository.UpdateBalanceAsync(
+                    currentWallet.WalletId,
+                    newBalance,
+                    currentWallet.Version,
+                    transaction);
+
+                if (!success)
+                {
+                    // Optimistic lock failed - retry via strategy
+                    throw new RetryableOperationException();
+                }
+
+                var tx = new PaymentTransactionModel
+                {
+                    TxId = Guid.NewGuid(),
+                    WalletId = currentWallet.WalletId,
+                    UserId = userId,
+                    TxType = TxType.Charge,
+                    Amount = amount,
+                    BalanceSnapshot = newBalance,
+                    TxStatus = TxStatus.Success,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await transactionRepository.CreateTransactionAsync(tx, transaction);
+
+                await transaction.CommitAsync();
+
+                currentWallet.Balance = newBalance;
+                currentWallet.Version++;
+                return currentWallet;
             }
-
-            var tx = new PaymentTransactionModel
+            catch (Exception ex) when (ex is not DomainException)
             {
-                TxId = Guid.NewGuid(),
-                WalletId = currentWallet.WalletId,
-                UserId = userId,
-                TxType = TxType.Charge,
-                Amount = amount,
-                BalanceSnapshot = newBalance,
-                TxStatus = TxStatus.Success,
-                CreatedAt = DateTime.UtcNow
-            };
-            await transactionRepository.CreateTransactionAsync(tx);
-
-            currentWallet.Balance = newBalance;
-            currentWallet.Version++;
-            return currentWallet;
+                // Transaction rollback is automatic via 'await using'
+                throw;
+            }
         });
     }
 
@@ -83,44 +104,63 @@ public class WalletService(
     {
         return await executionStrategy.ExecuteAsync(async () =>
         {
-            var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
-            if (currentWallet == null)
+            await using var connection = await dataSource.OpenConnectionAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
             {
-                currentWallet = await ProvisionWalletAsync(userId);
+                var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+                if (currentWallet == null)
+                {
+                    currentWallet = await ProvisionWalletAsync(userId);
+                }
+
+                // Fetch current wallet state within transaction for OCC
+                currentWallet = await walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
+                if (currentWallet == null) throw new WalletNotFoundException();
+
+                var newBalance = currentWallet.Balance + amount;
+                if (newBalance < 0)
+                {
+                    throw new InsufficientBalanceException();
+                }
+
+                var success = await walletRepository.UpdateBalanceAsync(
+                    currentWallet.WalletId,
+                    newBalance,
+                    currentWallet.Version,
+                    transaction);
+
+                if (!success)
+                {
+                    throw new RetryableOperationException();
+                }
+
+                var tx = new PaymentTransactionModel
+                {
+                    TxId = Guid.NewGuid(),
+                    WalletId = currentWallet.WalletId,
+                    UserId = userId,
+                    TxType = amount > 0 ? TxType.AdminCharge : TxType.AdminDeduct,
+                    OrderName = reason,
+                    Amount = Math.Abs(amount),
+                    BalanceSnapshot = newBalance,
+                    TxStatus = TxStatus.Success,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await transactionRepository.CreateTransactionAsync(tx, transaction);
+
+                await transaction.CommitAsync();
+
+                currentWallet.Balance = newBalance;
+                currentWallet.Version++;
+                return currentWallet;
             }
-
-            var newBalance = currentWallet.Balance + amount;
-            if (newBalance < 0)
+            catch (Exception ex) when (ex is not DomainException)
             {
-                throw new InsufficientBalanceException();
+                // Transaction rollback is automatic via 'await using'
+                throw;
             }
-
-            var success =
-                await walletRepository.UpdateBalanceAsync(currentWallet.WalletId, newBalance,
-                    currentWallet.Version);
-
-            if (!success)
-            {
-                throw new RetryableOperationException();
-            }
-
-            var tx = new PaymentTransactionModel
-            {
-                TxId = Guid.NewGuid(),
-                WalletId = currentWallet.WalletId,
-                UserId = userId,
-                TxType = amount > 0 ? TxType.AdminCharge : TxType.AdminDeduct,
-                OrderName = reason,
-                Amount = Math.Abs(amount),
-                BalanceSnapshot = newBalance,
-                TxStatus = TxStatus.Success,
-                CreatedAt = DateTime.UtcNow
-            };
-            await transactionRepository.CreateTransactionAsync(tx);
-
-            currentWallet.Balance = newBalance;
-            currentWallet.Version++;
-            return currentWallet;
         });
     }
 

@@ -9,13 +9,14 @@ import com.likelion.lionpay_auth.entity.User;
 public record UserResponse(
         String userId,
         String phone,
+        String name,
         String status,
-        String createdAt
-) {
+        String createdAt) {
     public static UserResponse from(User user) {
         return new UserResponse(
                 user.getUserId(),
                 user.getPhone(),
+                user.getName(),
                 user.getStatus(),
                 user.getCreatedAt());
     }

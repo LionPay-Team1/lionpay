@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { UserList } from './pages/UserList';
 import { PointHistory } from './pages/PointHistory';
+import { ExchangeRates } from './pages/ExchangeRates';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -26,7 +27,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           <Route path="/" element={
             <ProtectedRoute>
               <Layout />
@@ -35,6 +36,7 @@ function App() {
             <Route index element={<Navigate to="/users" replace />} />
             <Route path="users" element={<UserList />} />
             <Route path="points/history" element={<PointHistory />} />
+            <Route path="exchange-rates" element={<ExchangeRates />} />
           </Route>
         </Routes>
       </BrowserRouter>
@@ -43,3 +45,4 @@ function App() {
 }
 
 export default App;
+

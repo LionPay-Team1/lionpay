@@ -6,9 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **merchantId** | **string** |  | [default to undefined]
-**amountCash** | [**ChargeRequestAmount**](ChargeRequestAmount.md) |  | [default to undefined]
+**amountCash** | [**AdjustBalanceRequestAmount**](AdjustBalanceRequestAmount.md) |  | [default to undefined]
 **currency** | **string** |  | [default to undefined]
-**assetType** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -19,7 +18,6 @@ const instance: PaymentRequest = {
     merchantId,
     amountCash,
     currency,
-    assetType,
 };
 ```
 

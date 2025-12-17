@@ -15,6 +15,8 @@ public class PaymentTransactionModel
     public string MerchantCategory { get; set; } = string.Empty;
     public string RegionCode { get; set; } = string.Empty;
     public TxStatus TxStatus { get; set; }
+    public string Currency { get; set; } = "KRW";
+    public decimal OriginalAmount { get; set; }
     public string? IdempotencyKey { get; set; }
     public DateTime CreatedAt { get; set; }
 }

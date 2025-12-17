@@ -36,6 +36,9 @@ public static class TransactionEndpoints
             t.TxType,
             t.TxStatus,
             t.MerchantName,
+            t.BalanceSnapshot,
+            t.Currency,
+            t.OriginalAmount,
             t.CreatedAt
         ));
         return Results.Ok(response);

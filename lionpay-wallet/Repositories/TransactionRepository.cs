@@ -20,11 +20,11 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
             INSERT INTO transactions (
                tx_id, merchant_id, wallet_id, user_id, group_tx_id, tx_type, order_name, 
                amount, balance_snapshot, merchant_name, merchant_category, region_code, 
-               tx_status, idempotency_key, created_at
+               tx_status, currency, original_amount, idempotency_key, created_at
             ) VALUES (
                @TxId, @MerchantId, @WalletId, @UserId, @GroupTxId, @TxType, @OrderName, 
                @Amount, @BalanceSnapshot, @MerchantName, @MerchantCategory, @RegionCode, 
-               @TxStatus, @IdempotencyKey, @CreatedAt
+               @TxStatus, @Currency, @OriginalAmount, @IdempotencyKey, @CreatedAt
             )
             """;
 
@@ -57,6 +57,8 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
                 merchant_category AS MerchantCategory,
                 region_code AS RegionCode,
                 tx_status AS TxStatus,
+                currency AS Currency,
+                original_amount AS OriginalAmount,
                 idempotency_key AS IdempotencyKey,
                 created_at AS CreatedAt
             FROM transactions
@@ -88,6 +90,8 @@ public class TransactionRepository(NpgsqlDataSource dataSource) : ITransactionRe
                 merchant_category AS MerchantCategory,
                 region_code AS RegionCode,
                 tx_status AS TxStatus,
+                currency AS Currency,
+                original_amount AS OriginalAmount,
                 idempotency_key AS IdempotencyKey,
                 created_at AS CreatedAt
             FROM transactions

@@ -96,11 +96,9 @@ public class AuthService {
 			// Bearer 접두사 제거
 			String tokenWithoutBearer = accessToken.startsWith("Bearer ") ? accessToken.substring(7) : accessToken;
 
-			// 전화번호 추출
-			String phone = jwtService.getPhoneFromToken(tokenWithoutBearer);
-			userRepository.findByPhone(phone).ifPresent(user -> {
-				refreshTokenRepository.deleteAllByUserId(user.getUserId());
-			});
+			// UserId 추출
+			String userId = jwtService.getSubject(tokenWithoutBearer);
+			refreshTokenRepository.deleteAllByUserId(userId);
 		} catch (Exception e) {
 			log.warn("SignOut failed", e);
 		}

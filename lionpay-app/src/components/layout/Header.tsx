@@ -15,12 +15,12 @@ export function Header() {
 
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { useAppStore, COUNTRIES } from '../../lib/store';
+import { useAppStore } from '../../lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 
 function CountrySelector() {
-    const { country, setCountry } = useAppStore();
+    const { country, setCountry, countries } = useAppStore();
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
 
@@ -48,7 +48,7 @@ function CountrySelector() {
                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
                             className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
                         >
-                            {COUNTRIES.map((c) => (
+                            {countries.map((c) => (
                                 <button
                                     key={c.id}
                                     onClick={() => {

@@ -18,6 +18,7 @@ EnsureDatabase.For.PostgresqlDatabase(connectionString);
 var upgrader = DeployChanges.To
     .PostgresqlDatabase(connectionString)
     .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+    .WithoutTransaction()
     .LogToConsole()
     .Build();
 

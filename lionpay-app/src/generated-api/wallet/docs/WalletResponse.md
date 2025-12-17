@@ -6,8 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **walletId** | **string** |  | [default to undefined]
-**balance** | [**ChargeRequestAmount**](ChargeRequestAmount.md) |  | [default to undefined]
-**walletType** | **string** |  | [default to undefined]
+**balance** | [**AdjustBalanceRequestAmount**](AdjustBalanceRequestAmount.md) |  | [default to undefined]
+**walletType** | [**WalletType**](WalletType.md) |  | [default to undefined]
 **updatedAt** | **string** |  | [default to undefined]
 
 ## Example

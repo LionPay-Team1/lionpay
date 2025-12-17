@@ -30,6 +30,11 @@ public static class AdminEndpoints
             .Produces<IEnumerable<TransactionResponse>>();
 
         // Merchants
+        group.MapGet("/merchants", GetMerchants)
+            .WithSummary("Get all merchants")
+            .WithDescription("Retrieves all merchants including inactive ones.")
+            .Produces<IEnumerable<MerchantResponse>>();
+
         group.MapPost("/merchants", CreateMerchant)
             .WithSummary("Create merchant")
             .Produces<MerchantModel>(StatusCodes.Status201Created)
@@ -89,6 +94,9 @@ public static class AdminEndpoints
             t.TxType,
             t.TxStatus,
             t.MerchantName,
+            t.BalanceSnapshot,
+            t.Currency,
+            t.OriginalAmount,
             t.CreatedAt
         ));
         return Results.Ok(response);
@@ -115,5 +123,19 @@ public static class AdminEndpoints
     {
         var merchant = await merchantService.GetMerchantFullInfoAsync(id);
         return Results.Ok(merchant);
+    }
+
+    public static async Task<IResult> GetMerchants(IMerchantService merchantService)
+    {
+        var merchants = await merchantService.GetAllMerchantsAsync();
+        var response = merchants.Select(m => new MerchantResponse(
+            m.MerchantId,
+            m.MerchantName,
+            m.CountryCode,
+            m.MerchantCategory,
+            m.MerchantStatus,
+            m.CreatedAt
+        ));
+        return Results.Ok(response);
     }
 }

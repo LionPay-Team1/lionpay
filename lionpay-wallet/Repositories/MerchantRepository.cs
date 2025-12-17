@@ -7,6 +7,9 @@ namespace LionPay.Wallet.Repositories;
 public interface IMerchantRepository
 {
     Task<MerchantModel?> GetMerchantAsync(Guid merchantId);
+    Task<IEnumerable<MerchantModel>> GetAllMerchantsAsync();
+    Task<IEnumerable<MerchantModel>> GetActiveMerchantsAsync();
+    Task<IEnumerable<MerchantModel>> GetActiveMerchantsByCountryAsync(string countryCode);
     Task<MerchantModel> CreateMerchantAsync(MerchantModel merchant);
     Task<MerchantModel?> UpdateMerchantAsync(MerchantModel merchant);
 }
@@ -30,6 +33,65 @@ public class MerchantRepository(NpgsqlDataSource dataSource) : IMerchantReposito
 
         await using var connection = dataSource.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<MerchantModel>(sql, new { MerchantId = merchantId });
+    }
+
+    public async Task<IEnumerable<MerchantModel>> GetAllMerchantsAsync()
+    {
+        const string sql =
+            """
+            SELECT 
+                merchant_id AS MerchantId,
+                merchant_name AS MerchantName,
+                country_code AS CountryCode,
+                merchant_category AS MerchantCategory,
+                merchant_status AS MerchantStatus,
+                created_at AS CreatedAt
+            FROM merchants
+            ORDER BY created_at DESC
+            """;
+
+        await using var connection = dataSource.CreateConnection();
+        return await connection.QueryAsync<MerchantModel>(sql);
+    }
+
+    public async Task<IEnumerable<MerchantModel>> GetActiveMerchantsAsync()
+    {
+        const string sql =
+            """
+            SELECT 
+                merchant_id AS MerchantId,
+                merchant_name AS MerchantName,
+                country_code AS CountryCode,
+                merchant_category AS MerchantCategory,
+                merchant_status AS MerchantStatus,
+                created_at AS CreatedAt
+            FROM merchants
+            WHERE merchant_status = 1
+            ORDER BY created_at DESC
+            """;
+
+        await using var connection = dataSource.CreateConnection();
+        return await connection.QueryAsync<MerchantModel>(sql);
+    }
+
+    public async Task<IEnumerable<MerchantModel>> GetActiveMerchantsByCountryAsync(string countryCode)
+    {
+        const string sql =
+            """
+            SELECT 
+                merchant_id AS MerchantId,
+                merchant_name AS MerchantName,
+                country_code AS CountryCode,
+                merchant_category AS MerchantCategory,
+                merchant_status AS MerchantStatus,
+                created_at AS CreatedAt
+            FROM merchants
+            WHERE merchant_status = 1 AND country_code = @CountryCode
+            ORDER BY created_at DESC
+            """;
+
+        await using var connection = dataSource.CreateConnection();
+        return await connection.QueryAsync<MerchantModel>(sql, new { CountryCode = countryCode });
     }
 
     public async Task<MerchantModel> CreateMerchantAsync(MerchantModel merchant)

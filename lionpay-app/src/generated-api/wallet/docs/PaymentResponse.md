@@ -7,8 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **txId** | **string** |  | [default to undefined]
 **merchantId** | **string** |  | [default to undefined]
-**amount** | [**ChargeRequestAmount**](ChargeRequestAmount.md) |  | [default to undefined]
-**txStatus** | **string** |  | [default to undefined]
+**amount** | [**AdjustBalanceRequestAmount**](AdjustBalanceRequestAmount.md) |  | [default to undefined]
+**txStatus** | [**TxStatus**](TxStatus.md) |  | [default to undefined]
 **createdAt** | **string** |  | [default to undefined]
 
 ## Example

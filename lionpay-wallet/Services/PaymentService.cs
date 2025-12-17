@@ -15,6 +15,7 @@ public class PaymentService(
     IWalletRepository walletRepository,
     ITransactionRepository transactionRepository,
     IMerchantRepository merchantRepository,
+    IExchangeRateService exchangeRateService,
     NpgsqlDataSource dataSource,
     IOccExecutionStrategy executionStrategy)
     : IPaymentService
@@ -32,10 +33,8 @@ public class PaymentService(
             }
         }
 
-        // 2. Mock Currency Conversion (1 JPY = 9.12 KRW)
-        // Ideally fetch from an external service
-        var exchangeRate = 1.0m;
-        if (request.Currency == "JPY") exchangeRate = 9.12m;
+        // 2. Dynamic Currency Conversion (fetch from exchange_rates table)
+        var exchangeRate = await exchangeRateService.GetRateAsync(request.Currency, "KRW");
 
         var amountPoint = request.AmountCash * exchangeRate;
 
@@ -50,7 +49,8 @@ public class PaymentService(
                 // 4. WalletModel & Balance Check
                 var wallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
 
-                wallet = await walletRepository.GetWalletForUpdateAsync(wallet?.WalletId ?? Guid.Empty, transaction);
+                // Fetch current wallet state within transaction for OCC
+                wallet = await walletRepository.GetWalletByIdAsync(wallet?.WalletId ?? Guid.Empty, transaction);
 
                 if (wallet == null)
                 {
@@ -89,6 +89,8 @@ public class PaymentService(
                     MerchantCategory = merchant?.MerchantCategory ?? "Unknown",
                     RegionCode = merchant?.CountryCode ?? "KR", // Default
                     TxStatus = TxStatus.Success,
+                    Currency = request.Currency,
+                    OriginalAmount = request.AmountCash,
                     IdempotencyKey = idempotencyKey,
                     CreatedAt = DateTime.UtcNow,
                     OrderName = $"Payment to {merchant?.MerchantName ?? "Unknown"}"

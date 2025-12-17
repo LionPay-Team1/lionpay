@@ -12,7 +12,7 @@ public record ChargeRequest(
 public record PaymentRequest(
     Guid MerchantId,
     decimal AmountCash,
-    string Currency // KRW, USD, etc. (Mocked)
+    string Currency // KRW, JPY, etc. (Mocked)
 );
 
 public record PaymentResponse(
@@ -30,6 +30,9 @@ public record TransactionResponse(
     TxType TxType,
     TxStatus TxStatus,
     string MerchantName,
+    decimal BalanceAfter,
+    string Currency,
+    decimal OriginalAmount,
     DateTime CreatedAt
 );
 
@@ -48,3 +51,38 @@ public record MerchantResponse(
     string MerchantStatus,
     DateTime CreatedAt
 );
+
+public record ExchangeRateResponse(
+    Guid Id,
+    string SourceCurrency,
+    string TargetCurrency,
+    decimal Rate,
+    string RateType,
+    string Source,
+    DateTime UpdatedAt
+);
+
+public record UpdateExchangeRateRequest(
+    string SourceCurrency,
+    string TargetCurrency,
+    decimal Rate
+);
+
+public record ExchangeRateHistoryResponse(
+    Guid Id,
+    Guid ExchangeRateId,
+    string SourceCurrency,
+    string TargetCurrency,
+    decimal? OldRate,
+    decimal NewRate,
+    DateTime ChangedAt,
+    Guid? ChangedBy
+);
+
+public record CurrencyResponse(
+    string CurrencyCode,
+    string CurrencyName,
+    string? Symbol,
+    bool IsActive
+);
+
