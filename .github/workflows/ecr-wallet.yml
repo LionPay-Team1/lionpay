@@ -25,13 +25,14 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC)
+      # ✅ 0) Seoul 자격증명 설정
+      - name: Configure AWS credentials (Seoul)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
           aws-region: ${{ env.SEOUL_REGION }}
 
-      # 1) Build once (in service folder)
+      # ✅ 1) Build (repo root context + Dockerfile in subfolder)
       - name: Build Docker image (wallet)
         run: |
           docker build \
@@ -39,32 +40,39 @@ jobs:
             -t ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
             .
 
-      # 2) Push to Seoul ECR
+      # ✅ 2) Push to Seoul ECR
       - name: Login to Amazon ECR (Seoul)
         id: login-seoul
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          region: ${{ env.SEOUL_REGION }}
 
       - name: Push to Amazon ECR (Seoul)
         run: |
-          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-      # 3) Push to Tokyo ECR
+      # ✅ 3) Tokyo 자격증명으로 "다시" 설정 (여기가 핵심!)
+      - name: Configure AWS credentials (Tokyo)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
+          aws-region: ${{ env.TOKYO_REGION }}
+
+      # ✅ 4) Push to Tokyo ECR
       - name: Login to Amazon ECR (Tokyo)
         id: login-tokyo
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          region: ${{ env.TOKYO_REGION }}
 
       - name: Push to Amazon ECR (Tokyo)
         run: |
-          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
