@@ -13,7 +13,10 @@ import com.likelion.lionpay_auth.exception.InvalidTokenException;
 import com.likelion.lionpay_auth.exception.UserAlreadyExistsException;
 import com.likelion.lionpay_auth.repository.RefreshTokenRepository;
 import com.likelion.lionpay_auth.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.Meter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,13 +26,33 @@ import java.util.Date;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class AuthService {
 
 	private final UserRepository userRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
+
+	// OpenTelemetry 커스텀 메트릭: 인증 시도 카운터
+	private final LongCounter authCounter;
+
+	public AuthService(
+			UserRepository userRepository,
+			RefreshTokenRepository refreshTokenRepository,
+			PasswordEncoder passwordEncoder,
+			JwtService jwtService,
+			Meter meter) {
+		this.userRepository = userRepository;
+		this.refreshTokenRepository = refreshTokenRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
+
+		// 커스텀 메트릭 초기화
+		this.authCounter = meter.counterBuilder("auth.attempts")
+				.setDescription("인증 시도 횟수 (로그인, 회원가입, 토큰 갱신)")
+				.setUnit("1")
+				.build();
+	}
 
 	// 🚨 수정된 부분: SignInResponse를 반환하도록 변경 (이전 수정 반영)
 	public SignInResponse signUp(SignUpRequest request) {
@@ -67,10 +90,20 @@ public class AuthService {
 	public SignInResponse signIn(SignInRequest request) {
 		// 1. 사용자 존재 여부 확인: UserNotFoundException 사용
 		User user = userRepository.findByPhone(request.getPhone())
-				.orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다"));
+				.orElseThrow(() -> {
+					// 실패 메트릭 기록
+					authCounter.add(1, Attributes.of(
+							AttributeKey.stringKey("operation"), "signin",
+							AttributeKey.stringKey("result"), "user_not_found"));
+					return new UserNotFoundException("존재하지 않는 사용자입니다");
+				});
 
 		// 2. 비밀번호 일치 여부 확인: PasswordMismatchException 사용
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			// 실패 메트릭 기록
+			authCounter.add(1, Attributes.of(
+					AttributeKey.stringKey("operation"), "signin",
+					AttributeKey.stringKey("result"), "password_mismatch"));
 			throw new PasswordMismatchException("비밀번호가 일치하지 않습니다");
 		}
 
@@ -82,6 +115,11 @@ public class AuthService {
 		String refreshToken = jwtService.generateRefreshToken(user.getUserId());
 
 		saveRefreshToken(user.getUserId(), refreshToken);
+
+		// 성공 메트릭 기록
+		authCounter.add(1, Attributes.of(
+				AttributeKey.stringKey("operation"), "signin",
+				AttributeKey.stringKey("result"), "success"));
 
 		return SignInResponse.builder()
 				.accessToken(accessToken)

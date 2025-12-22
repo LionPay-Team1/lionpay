@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Infrastructure;
 using LionPay.Wallet.Models;
@@ -15,16 +16,41 @@ public interface IWalletService
     Task<WalletModel> AdjustBalanceAsync(Guid userId, decimal amount, string reason);
 }
 
-public class WalletService(
-    IWalletRepository walletRepository,
-    ITransactionRepository transactionRepository,
-    NpgsqlDataSource dataSource,
-    IOccExecutionStrategy executionStrategy)
-    : IWalletService
+public class WalletService : IWalletService
 {
+    private readonly IWalletRepository _walletRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly NpgsqlDataSource _dataSource;
+    private readonly IOccExecutionStrategy _executionStrategy;
+
+    // OpenTelemetry 커스텀 메트릭
+    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
+
+    private static readonly Histogram<double> ChargeAmountHistogram = Meter.CreateHistogram<double>(
+        "wallet.charge.amount",
+        unit: "KRW",
+        description: "충전 금액 분포");
+
+    private static readonly Counter<long> ChargeCounter = Meter.CreateCounter<long>(
+        "wallet.charge.count",
+        unit: "1",
+        description: "충전 횟수");
+
+    public WalletService(
+        IWalletRepository walletRepository,
+        ITransactionRepository transactionRepository,
+        NpgsqlDataSource dataSource,
+        IOccExecutionStrategy executionStrategy)
+    {
+        _walletRepository = walletRepository;
+        _transactionRepository = transactionRepository;
+        _dataSource = dataSource;
+        _executionStrategy = executionStrategy;
+    }
+
     public async Task<WalletModel> GetMyWalletAsync(Guid userId)
     {
-        var wallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+        var wallet = await _walletRepository.GetWalletAsync(userId, WalletType.Money);
         if (wallet != null)
         {
             return wallet;
@@ -41,22 +67,22 @@ public class WalletService(
         // Ensure wallet exists (Lazy provisioning)
         await GetMyWalletAsync(userId);
 
-        return await executionStrategy.ExecuteAsync(async () =>
+        return await _executionStrategy.ExecuteAsync(async () =>
         {
-            await using var connection = await dataSource.OpenConnectionAsync();
+            await using var connection = await _dataSource.OpenConnectionAsync();
             await using var transaction = await connection.BeginTransactionAsync();
 
             try
             {
-                var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+                var currentWallet = await _walletRepository.GetWalletAsync(userId, WalletType.Money);
                 if (currentWallet == null) throw new WalletNotFoundException();
 
                 // Fetch current wallet state within transaction for OCC
-                currentWallet = await walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
+                currentWallet = await _walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
                 if (currentWallet == null) throw new WalletNotFoundException();
 
                 var newBalance = currentWallet.Balance + amount;
-                var success = await walletRepository.UpdateBalanceAsync(
+                var success = await _walletRepository.UpdateBalanceAsync(
                     currentWallet.WalletId,
                     newBalance,
                     currentWallet.Version,
@@ -79,9 +105,13 @@ public class WalletService(
                     TxStatus = TxStatus.Success,
                     CreatedAt = DateTime.UtcNow
                 };
-                await transactionRepository.CreateTransactionAsync(tx, transaction);
+                await _transactionRepository.CreateTransactionAsync(tx, transaction);
 
                 await transaction.CommitAsync();
+
+                // 커스텀 메트릭 기록
+                ChargeAmountHistogram.Record((double)amount);
+                ChargeCounter.Add(1);
 
                 currentWallet.Balance = newBalance;
                 currentWallet.Version++;
@@ -102,21 +132,21 @@ public class WalletService(
 
     public async Task<WalletModel> AdjustBalanceAsync(Guid userId, decimal amount, string reason)
     {
-        return await executionStrategy.ExecuteAsync(async () =>
+        return await _executionStrategy.ExecuteAsync(async () =>
         {
-            await using var connection = await dataSource.OpenConnectionAsync();
+            await using var connection = await _dataSource.OpenConnectionAsync();
             await using var transaction = await connection.BeginTransactionAsync();
 
             try
             {
-                var currentWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+                var currentWallet = await _walletRepository.GetWalletAsync(userId, WalletType.Money);
                 if (currentWallet == null)
                 {
                     currentWallet = await ProvisionWalletAsync(userId);
                 }
 
                 // Fetch current wallet state within transaction for OCC
-                currentWallet = await walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
+                currentWallet = await _walletRepository.GetWalletByIdAsync(currentWallet.WalletId, transaction);
                 if (currentWallet == null) throw new WalletNotFoundException();
 
                 var newBalance = currentWallet.Balance + amount;
@@ -125,7 +155,7 @@ public class WalletService(
                     throw new InsufficientBalanceException();
                 }
 
-                var success = await walletRepository.UpdateBalanceAsync(
+                var success = await _walletRepository.UpdateBalanceAsync(
                     currentWallet.WalletId,
                     newBalance,
                     currentWallet.Version,
@@ -148,7 +178,7 @@ public class WalletService(
                     TxStatus = TxStatus.Success,
                     CreatedAt = DateTime.UtcNow
                 };
-                await transactionRepository.CreateTransactionAsync(tx, transaction);
+                await _transactionRepository.CreateTransactionAsync(tx, transaction);
 
                 await transaction.CommitAsync();
 
@@ -179,14 +209,14 @@ public class WalletService(
 
         try
         {
-            await walletRepository.CreateWalletAsync(newWallet);
+            await _walletRepository.CreateWalletAsync(newWallet);
         }
         catch (DuplicateException)
         {
             // Ignore - wallet was created by another concurrent request (Lazy provisioning)
         }
 
-        var createdWallet = await walletRepository.GetWalletAsync(userId, WalletType.Money);
+        var createdWallet = await _walletRepository.GetWalletAsync(userId, WalletType.Money);
         return createdWallet ?? throw new WalletProvisioningFailedException();
     }
 }

@@ -120,3 +120,217 @@ generate-client.bat
 ```bash
 ./generate-client.sh
 ```
+
+---
+
+## 커스텀 메트릭 (Custom Metrics)
+
+이 프로젝트는 OpenTelemetry를 사용하여 커스텀 메트릭을 수집하고 Grafana에서 시각화할 수 있다. 각 서비스는 `lionpay.{service_name}` 형식의 통일된 네이밍 컨벤션을 사용한다.
+
+---
+
+### lionpay-auth (Java/Spring Boot)
+
+#### 커스텀 메트릭 사용 예제
+
+**Counter (카운터)** - 로그인 성공/실패 횟수 등:
+
+```java
+@Service
+public class AuthService {
+    private final LongCounter loginCounter;
+    
+    public AuthService(Meter meter) {
+        this.loginCounter = meter.counterBuilder("auth.login.count")
+            .setDescription("로그인 시도 횟수")
+            .setUnit("1")
+            .build();
+    }
+    
+    public void login(String username) {
+        // 로그인 로직
+        loginCounter.add(1, Attributes.of(
+            AttributeKey.stringKey("result"), "success",
+            AttributeKey.stringKey("method"), "password"
+        ));
+    }
+}
+```
+
+**Histogram (히스토그램)** - 응답 시간 분포 등:
+
+```java
+@Service
+public class TokenService {
+    private final DoubleHistogram tokenGenerationTime;
+    
+    public TokenService(Meter meter) {
+        this.tokenGenerationTime = meter.histogramBuilder("auth.token.generation_time")
+            .setDescription("JWT 토큰 생성 소요 시간")
+            .setUnit("ms")
+            .build();
+    }
+    
+    public String generateToken(User user) {
+        long startTime = System.currentTimeMillis();
+        String token = createJwtToken(user);
+        long duration = System.currentTimeMillis() - startTime;
+        
+        tokenGenerationTime.record(duration, Attributes.of(
+            AttributeKey.stringKey("token_type"), "access"
+        ));
+        return token;
+    }
+}
+```
+
+**Gauge (게이지)** - 현재 활성 세션 수 등:
+
+```java
+@Component
+public class SessionMetrics {
+    private final AtomicLong activeSessions = new AtomicLong(0);
+    
+    public SessionMetrics(Meter meter) {
+        meter.gaugeBuilder("auth.sessions.active")
+            .setDescription("현재 활성 세션 수")
+            .setUnit("1")
+            .buildWithCallback(measurement -> 
+                measurement.record(activeSessions.get())
+            );
+    }
+    
+    public void sessionCreated() { activeSessions.incrementAndGet(); }
+    public void sessionDestroyed() { activeSessions.decrementAndGet(); }
+}
+```
+
+---
+
+### lionpay-wallet (.NET/ASP.NET Core)
+
+#### Wallet 설정
+
+`aspire-servicedefaults/Extensions.cs`에서 `lionpay.wallet` 미터가 등록되어 있다:
+
+```csharp
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddMeter("lionpay.wallet");  // 커스텀 미터 등록
+    });
+```
+
+#### Wallet 커스텀 메트릭 사용 예제
+
+먼저 서비스 클래스에서 `Meter`를 생성하고 메트릭을 정의한다:
+
+**Counter (카운터)** - 트랜잭션 수 등:
+
+```csharp
+using System.Diagnostics.Metrics;
+
+public class TransactionService
+{
+    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
+    private static readonly Counter<long> TransactionCounter = 
+        Meter.CreateCounter<long>(
+            "wallet.transactions.count",
+            unit: "1",
+            description: "총 트랜잭션 수");
+
+    public async Task<Transaction> ProcessTransactionAsync(decimal amount, string type)
+    {
+        // 트랜잭션 처리 로직
+        var transaction = await ExecuteTransactionAsync(amount);
+        
+        TransactionCounter.Add(1, 
+            new KeyValuePair<string, object?>("type", type),
+            new KeyValuePair<string, object?>("status", "success"));
+        
+        return transaction;
+    }
+}
+```
+
+**Histogram (히스토그램)** - 처리 시간 분포:
+
+```csharp
+public class WalletService
+{
+    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
+    private static readonly Histogram<double> ProcessingTime =
+        Meter.CreateHistogram<double>(
+            "wallet.processing.duration",
+            unit: "ms",
+            description: "지갑 작업 처리 시간");
+
+    public async Task<Balance> GetBalanceAsync(string userId)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        
+        var balance = await FetchBalanceAsync(userId);
+        
+        stopwatch.Stop();
+        ProcessingTime.Record(stopwatch.ElapsedMilliseconds,
+            new KeyValuePair<string, object?>("operation", "get_balance"));
+        
+        return balance;
+    }
+}
+```
+
+**Gauge (게이지)** - 현재 총 잔액:
+
+```csharp
+public class BalanceMetrics
+{
+    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
+    
+    public BalanceMetrics()
+    {
+        Meter.CreateObservableGauge(
+            "wallet.total_balance",
+            () => GetTotalBalance(),
+            unit: "KRW",
+            description: "전체 사용자 총 잔액");
+    }
+    
+    private Measurement<decimal> GetTotalBalance()
+    {
+        // DB에서 총 잔액 조회
+        return new Measurement<decimal>(totalBalance);
+    }
+}
+```
+
+---
+
+### Grafana에서 메트릭 조회
+
+1. **Grafana 접속**: `http://localhost:3000`
+2. **Explore 페이지** 이동
+3. **Prometheus (Mimir)** 데이터소스 선택
+4. 메트릭 쿼리 예제:
+   * 로그인 횟수: `auth_login_count_total`
+   * 지갑 트랜잭션: `wallet_transactions_count_total`
+   * JWT 생성 시간 분포: `auth_token_generation_time_bucket`
+
+> [!NOTE]
+> OpenTelemetry 메트릭은 Prometheus 형식으로 변환될 때 `.`이 `_`로 변경된다.
+> 예: `auth.login.count` → `auth_login_count_total`
+
+---
+
+### LGTM 스택 접속 정보
+
+| 서비스 | URL | 설명 |
+|--------|-----|------|
+| **Grafana** | <http://localhost:3000> | 대시보드 (로그인 불필요) |
+| **Alloy UI** | <http://localhost:13345> | OTEL 수집기 상태 |
+| **Mimir** | <http://localhost:9009> | 메트릭 저장소 |
+| **Loki** | <http://localhost:3100> | 로그 저장소 |
+| **Tempo** | <http://localhost:3200> | 트레이스 저장소 |

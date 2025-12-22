@@ -21,4 +21,5 @@ RUN ./gradlew bootJar --no-daemon -x test
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/app.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY lionpay-auth/otel-agent/lib/opentelemetry-javaagent.jar opentelemetry-javaagent.jar
+ENTRYPOINT ["java", "-javaagent:opentelemetry-javaagent.jar", "-jar", "app.jar"]
