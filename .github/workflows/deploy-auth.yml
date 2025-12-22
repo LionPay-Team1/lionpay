@@ -1,0 +1,68 @@
+name: Build & Push auth-service to AWS ECR
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - lionpay-auth/**
+      - .github/workflows/deploy-auth.yml
+  workflow_dispatch:
+
+env:
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  ECR_REPOSITORY: lionpay-auth
+
+jobs:
+  build-and-push:
+    name: Build and push to ${{ matrix.region }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    strategy:
+      matrix:
+        region:
+          - ap-northeast-2 # Seoul
+          - ap-northeast-1 # Tokyo
+          # 리전 추가 시 여기에 항목만 추가하면 됨
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.region }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: lionpay-auth
+          file: lionpay-auth/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ matrix.region }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ matrix.region }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=gha,scope=${{ matrix.region }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.region }}
+
+      - name: Image digest info
+        run: |
+          echo "Image pushed to: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ matrix.region }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
