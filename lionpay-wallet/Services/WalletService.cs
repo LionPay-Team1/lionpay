@@ -1,9 +1,9 @@
+using System.Diagnostics.Metrics;
 using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Infrastructure;
 using LionPay.Wallet.Models;
 using LionPay.Wallet.Repositories;
 using Npgsql;
-using System.Diagnostics.Metrics;
 
 
 namespace LionPay.Wallet.Services;
