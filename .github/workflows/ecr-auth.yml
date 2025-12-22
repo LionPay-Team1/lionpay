@@ -1,51 +1,73 @@
-# 0) 처음엔 서울 리전으로 AWS 로그인
-- name: Configure AWS credentials (Seoul)
-  uses: aws-actions/configure-aws-credentials@v4
-  with:
-    role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
-    aws-region: ap-northeast-2
+name: Build & Push (lionpay-auth) to ECR (Seoul & Tokyo)
 
-# 1) Build
-- name: Build Docker image (auth)
-  run: |
-    docker build \
-      -f lionpay-auth/Dockerfile \
-      -t ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-      .
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - lionpay-auth/**
+      - .github/workflows/ecr-auth.yml
 
-# 2) Seoul ECR
-- name: Login to Amazon ECR (Seoul)
-  id: login-seoul
-  uses: aws-actions/amazon-ecr-login@v2
+permissions:
+  id-token: write
+  contents: read
 
-- name: Push to Amazon ECR (Seoul)
-  run: |
-    docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-      ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-    docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+env:
+  ECR_REPOSITORY: lionpay-auth
+  IMAGE_TAG: ${{ github.sha }}
+  SEOUL_REGION: ap-northeast-2
+  TOKYO_REGION: ap-northeast-1
 
-    docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-      ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-    docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-# 🔁 여기서 리전을 “도쿄로 다시 로그인”
-- name: Configure AWS credentials (Tokyo)
-  uses: aws-actions/configure-aws-credentials@v4
-  with:
-    role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
-    aws-region: ap-northeast-1
+      - name: Configure AWS credentials (Seoul)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
+          aws-region: ${{ env.SEOUL_REGION }}
 
-# 3) Tokyo ECR
-- name: Login to Amazon ECR (Tokyo)
-  id: login-tokyo
-  uses: aws-actions/amazon-ecr-login@v2
+      - name: Build Docker image (auth)
+        run: |
+          docker build \
+            -f lionpay-auth/Dockerfile \
+            -t ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            .
 
-- name: Push to Amazon ECR (Tokyo)
-  run: |
-    docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-      ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-    docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+      - name: Login to Amazon ECR (Seoul)
+        id: login-seoul
+        uses: aws-actions/amazon-ecr-login@v2
 
-    docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-      ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-    docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+      - name: Push to Amazon ECR (Seoul)
+        run: |
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker push ${{ steps.login-seoul.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Configure AWS credentials (Tokyo)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::727646470302:role/lionpay-role
+          aws-region: ${{ env.TOKYO_REGION }}
+
+      - name: Login to Amazon ECR (Tokyo)
+        id: login-tokyo
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push to Amazon ECR (Tokyo)
+        run: |
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker push ${{ steps.login-tokyo.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
