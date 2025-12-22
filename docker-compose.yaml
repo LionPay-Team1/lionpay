@@ -48,6 +48,11 @@ services:
       JWT_ADMIN_AUDIENCE: lionpay-management
       SUPER_ADMIN_USERNAME: ${SUPER_ADMIN_USERNAME}
       SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_SERVICE_NAME: lionpay-auth
     depends_on:
       - dynamodb
     networks:
@@ -80,6 +85,9 @@ services:
       JWT__Secret: ${JWT_SECRET}
       JWT__Issuer: lionpay-auth
       JWT__Audiences: lionpay-app,lionpay-management
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_SERVICE_NAME: lionpay-wallet
     depends_on:
       postgres:
         condition: service_started
@@ -119,6 +127,67 @@ services:
     depends_on:
       - auth-service
       - wallet-service
+    networks:
+      - lionpay-network
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: lionpay-alloy
+    command: run --server.http.listen-addr=0.0.0.0:12345 --stability.level=experimental --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    volumes:
+      - ./lgtm/alloy/config.alloy:/etc/alloy/config.alloy
+    ports:
+      - "13345:12345"
+      - "14317:4317"
+      - "14318:4318"
+    depends_on:
+      - loki
+      - tempo
+      - mimir
+    networks:
+      - lionpay-network
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./lgtm/loki/loki-config.yaml:/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - lionpay-network
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./lgtm/tempo/tempo-config.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4317"  # otlp grpc
+    networks:
+      - lionpay-network
+
+  mimir:
+    image: grafana/mimir:latest
+    command: [ "-config.file=/etc/mimir.yaml" ]
+    volumes:
+      - ./lgtm/mimir/mimir-config.yaml:/etc/mimir.yaml
+    ports:
+      - "9009:9009"
+    networks:
+      - lionpay-network
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./lgtm/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    ports:
+      - "3000:3000"
     networks:
       - lionpay-network
 
