@@ -53,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: lionpay-auth
+          context: .
           file: lionpay-auth/Dockerfile
           push: true
           platforms: linux/arm64
