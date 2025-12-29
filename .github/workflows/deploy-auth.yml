@@ -26,7 +26,6 @@ jobs:
       matrix:
         region:
           - ap-northeast-2 # Seoul
-          - ap-northeast-1 # Tokyo
           # 리전 추가 시 여기에 항목만 추가하면 됨
 
     steps:
