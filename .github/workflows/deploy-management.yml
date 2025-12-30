@@ -1,0 +1,60 @@
+name: Build & Deploy lionpay-management to S3
+
+on:
+    push:
+        branches:
+            - release
+        paths:
+            - lionpay-management/**
+            - .github/workflows/deploy-management.yml
+    workflow_dispatch:
+
+env:
+    AWS_REGION: ap-northeast-2
+    S3_BUCKET: lionpay-management-frontend
+
+jobs:
+    build-and-deploy:
+        name: Build and deploy to S3
+        runs-on: ubuntu-24.04
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              working-directory: lionpay-management
+              run: bun install --frozen-lockfile
+
+            - name: Build
+              working-directory: lionpay-management
+              env:
+                  AUTH_SERVICE_URL: https://api.lionpay.shop
+                  WALLET_SERVICE_URL: https://api.lionpay.shop
+              run: bun run build
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Sync to S3
+              working-directory: lionpay-management
+              run: |
+                  aws s3 sync dist/ s3://${{ env.S3_BUCKET }}/ --delete
+
+            - name: Invalidate CloudFront cache
+              run: |
+                  aws cloudfront create-invalidation \
+                    --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_MANAGEMENT }} \
+                    --paths "/*"
