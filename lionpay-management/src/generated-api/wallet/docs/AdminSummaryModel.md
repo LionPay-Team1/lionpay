@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **totalWallets** | [**AdminSummaryModelTotalWallets**](AdminSummaryModelTotalWallets.md) |  | [default to undefined]
 **totalMerchants** | [**AdminSummaryModelTotalWallets**](AdminSummaryModelTotalWallets.md) |  | [default to undefined]
 **totalTransactions** | [**AdminSummaryModelTotalWallets**](AdminSummaryModelTotalWallets.md) |  | [default to undefined]
-**activeCurrencies** | [**ApiV1AdminExchangeRatesHistoryGetLimitParameter**](ApiV1AdminExchangeRatesHistoryGetLimitParameter.md) |  | [default to undefined]
+**activeCurrencies** | [**ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter**](ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter.md) |  | [default to undefined]
 
 ## Example
 

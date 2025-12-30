@@ -8,7 +8,7 @@ export interface WalletBalance {
 export const walletApi = {
     getUserBalance: async (userId: string): Promise<WalletBalance | null> => {
         try {
-            const response = await adminWalletApi.apiV1AdminWalletsUserIdGet({ userId });
+            const response = await adminWalletApi.apiV1WalletAdminWalletsUserIdGet({ userId });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const data = response.data as any;
 

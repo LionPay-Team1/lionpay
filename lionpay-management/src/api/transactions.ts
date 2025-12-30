@@ -45,7 +45,7 @@ export interface TransactionParams {
 
 export const transactionsApi = {
     getUserTransactions: async (userId: string, params?: TransactionParams): Promise<Transaction[]> => {
-        const response = await adminWalletApi.apiV1AdminTransactionsUserIdGet({
+        const response = await adminWalletApi.apiV1WalletAdminTransactionsUserIdGet({
             userId,
             limit: params?.limit,
             offset: params?.offset

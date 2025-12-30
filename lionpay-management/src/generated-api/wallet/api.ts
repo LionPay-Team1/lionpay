@@ -33,15 +33,15 @@ export interface AdminSummaryModel {
     'totalWallets': AdminSummaryModelTotalWallets;
     'totalMerchants': AdminSummaryModelTotalWallets;
     'totalTransactions': AdminSummaryModelTotalWallets;
-    'activeCurrencies': ApiV1AdminExchangeRatesHistoryGetLimitParameter;
+    'activeCurrencies': ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter;
 }
 export interface AdminSummaryModelTotalWallets {
 }
-export interface ApiV1AdminExchangeRatesHistoryGetLimitParameter {
+export interface ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter {
 }
-export interface ApiV1TransactionsGetLimitParameter {
+export interface ApiV1WalletTransactionsGetLimitParameter {
 }
-export interface ApiV1TransactionsGetOffsetParameter {
+export interface ApiV1WalletTransactionsGetOffsetParameter {
 }
 export interface ChargeRequest {
     'amount': AdjustBalanceRequestAmount;
@@ -222,8 +222,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesCurrenciesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/exchange-rates/currencies`;
+        apiV1WalletAdminExchangeRatesCurrenciesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/admin/exchange-rates/currencies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -252,8 +252,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/exchange-rates`;
+        apiV1WalletAdminExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/admin/exchange-rates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -279,16 +279,16 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * Returns the history of exchange rate changes.
          * @summary Get exchange rate history
-         * @param {ApiV1AdminExchangeRatesHistoryGetLimitParameter} limit 
+         * @param {ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter} limit 
          * @param {string} [sourceCurrency] 
          * @param {string} [targetCurrency] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesHistoryGet: async (limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminExchangeRatesHistoryGet: async (limit: ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'limit' is not null or undefined
-            assertParamExists('apiV1AdminExchangeRatesHistoryGet', 'limit', limit)
-            const localVarPath = `/api/v1/admin/exchange-rates/history`;
+            assertParamExists('apiV1WalletAdminExchangeRatesHistoryGet', 'limit', limit)
+            const localVarPath = `/api/v1/wallet/admin/exchange-rates/history`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -330,10 +330,10 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesPut: async (updateExchangeRateRequest: UpdateExchangeRateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminExchangeRatesPut: async (updateExchangeRateRequest: UpdateExchangeRateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'updateExchangeRateRequest' is not null or undefined
-            assertParamExists('apiV1AdminExchangeRatesPut', 'updateExchangeRateRequest', updateExchangeRateRequest)
-            const localVarPath = `/api/v1/admin/exchange-rates`;
+            assertParamExists('apiV1WalletAdminExchangeRatesPut', 'updateExchangeRateRequest', updateExchangeRateRequest)
+            const localVarPath = `/api/v1/wallet/admin/exchange-rates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -365,8 +365,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/merchants`;
+        apiV1WalletAdminMerchantsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/admin/merchants`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -396,10 +396,10 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsIdGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminMerchantsIdGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiV1AdminMerchantsIdGet', 'id', id)
-            const localVarPath = `/api/v1/admin/merchants/{id}`
+            assertParamExists('apiV1WalletAdminMerchantsIdGet', 'id', id)
+            const localVarPath = `/api/v1/wallet/admin/merchants/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -431,12 +431,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsIdPut: async (id: string, updateMerchantRequest: UpdateMerchantRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminMerchantsIdPut: async (id: string, updateMerchantRequest: UpdateMerchantRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiV1AdminMerchantsIdPut', 'id', id)
+            assertParamExists('apiV1WalletAdminMerchantsIdPut', 'id', id)
             // verify required parameter 'updateMerchantRequest' is not null or undefined
-            assertParamExists('apiV1AdminMerchantsIdPut', 'updateMerchantRequest', updateMerchantRequest)
-            const localVarPath = `/api/v1/admin/merchants/{id}`
+            assertParamExists('apiV1WalletAdminMerchantsIdPut', 'updateMerchantRequest', updateMerchantRequest)
+            const localVarPath = `/api/v1/wallet/admin/merchants/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -470,10 +470,10 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsPost: async (createMerchantRequest: CreateMerchantRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminMerchantsPost: async (createMerchantRequest: CreateMerchantRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createMerchantRequest' is not null or undefined
-            assertParamExists('apiV1AdminMerchantsPost', 'createMerchantRequest', createMerchantRequest)
-            const localVarPath = `/api/v1/admin/merchants`;
+            assertParamExists('apiV1WalletAdminMerchantsPost', 'createMerchantRequest', createMerchantRequest)
+            const localVarPath = `/api/v1/wallet/admin/merchants`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -505,8 +505,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminSummaryGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/summary`;
+        apiV1WalletAdminSummaryGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/admin/summary`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -533,15 +533,15 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get user transactions
          * @param {string} userId 
-         * @param {ApiV1TransactionsGetLimitParameter} [limit] 
-         * @param {ApiV1TransactionsGetOffsetParameter} [offset] 
+         * @param {ApiV1WalletTransactionsGetLimitParameter} [limit] 
+         * @param {ApiV1WalletTransactionsGetOffsetParameter} [offset] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminTransactionsUserIdGet: async (userId: string, limit?: ApiV1TransactionsGetLimitParameter, offset?: ApiV1TransactionsGetOffsetParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminTransactionsUserIdGet: async (userId: string, limit?: ApiV1WalletTransactionsGetLimitParameter, offset?: ApiV1WalletTransactionsGetOffsetParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('apiV1AdminTransactionsUserIdGet', 'userId', userId)
-            const localVarPath = `/api/v1/admin/transactions/{userId}`
+            assertParamExists('apiV1WalletAdminTransactionsUserIdGet', 'userId', userId)
+            const localVarPath = `/api/v1/wallet/admin/transactions/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -581,12 +581,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminWalletsUserIdAdjustPost: async (userId: string, adjustBalanceRequest: AdjustBalanceRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminWalletsUserIdAdjustPost: async (userId: string, adjustBalanceRequest: AdjustBalanceRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('apiV1AdminWalletsUserIdAdjustPost', 'userId', userId)
+            assertParamExists('apiV1WalletAdminWalletsUserIdAdjustPost', 'userId', userId)
             // verify required parameter 'adjustBalanceRequest' is not null or undefined
-            assertParamExists('apiV1AdminWalletsUserIdAdjustPost', 'adjustBalanceRequest', adjustBalanceRequest)
-            const localVarPath = `/api/v1/admin/wallets/{userId}/adjust`
+            assertParamExists('apiV1WalletAdminWalletsUserIdAdjustPost', 'adjustBalanceRequest', adjustBalanceRequest)
+            const localVarPath = `/api/v1/wallet/admin/wallets/{userId}/adjust`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -620,10 +620,10 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminWalletsUserIdGet: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletAdminWalletsUserIdGet: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('apiV1AdminWalletsUserIdGet', 'userId', userId)
-            const localVarPath = `/api/v1/admin/wallets/{userId}`
+            assertParamExists('apiV1WalletAdminWalletsUserIdGet', 'userId', userId)
+            const localVarPath = `/api/v1/wallet/admin/wallets/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -662,10 +662,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CurrencyResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesCurrenciesGet(options);
+        async apiV1WalletAdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CurrencyResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminExchangeRatesCurrenciesGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesCurrenciesGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminExchangeRatesCurrenciesGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -674,25 +674,25 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesGet(options);
+        async apiV1WalletAdminExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminExchangeRatesGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Returns the history of exchange rate changes.
          * @summary Get exchange rate history
-         * @param {ApiV1AdminExchangeRatesHistoryGetLimitParameter} limit 
+         * @param {ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter} limit 
          * @param {string} [sourceCurrency] 
          * @param {string} [targetCurrency] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminExchangeRatesHistoryGet(limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateHistoryResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesHistoryGet(limit, sourceCurrency, targetCurrency, options);
+        async apiV1WalletAdminExchangeRatesHistoryGet(limit: ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter, sourceCurrency?: string, targetCurrency?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateHistoryResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminExchangeRatesHistoryGet(limit, sourceCurrency, targetCurrency, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesHistoryGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminExchangeRatesHistoryGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -702,10 +702,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminExchangeRatesPut(updateExchangeRateRequest: UpdateExchangeRateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExchangeRateResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminExchangeRatesPut(updateExchangeRateRequest, options);
+        async apiV1WalletAdminExchangeRatesPut(updateExchangeRateRequest: UpdateExchangeRateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExchangeRateResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminExchangeRatesPut(updateExchangeRateRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminExchangeRatesPut']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminExchangeRatesPut']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -714,10 +714,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminMerchantsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MerchantResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminMerchantsGet(options);
+        async apiV1WalletAdminMerchantsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MerchantResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminMerchantsGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminMerchantsGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminMerchantsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -727,10 +727,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminMerchantsIdGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminMerchantsIdGet(id, options);
+        async apiV1WalletAdminMerchantsIdGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminMerchantsIdGet(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminMerchantsIdGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminMerchantsIdGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -741,10 +741,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminMerchantsIdPut(id: string, updateMerchantRequest: UpdateMerchantRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminMerchantsIdPut(id, updateMerchantRequest, options);
+        async apiV1WalletAdminMerchantsIdPut(id: string, updateMerchantRequest: UpdateMerchantRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminMerchantsIdPut(id, updateMerchantRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminMerchantsIdPut']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminMerchantsIdPut']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -754,10 +754,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminMerchantsPost(createMerchantRequest: CreateMerchantRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminMerchantsPost(createMerchantRequest, options);
+        async apiV1WalletAdminMerchantsPost(createMerchantRequest: CreateMerchantRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminMerchantsPost(createMerchantRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminMerchantsPost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminMerchantsPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -766,25 +766,25 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminSummaryGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSummaryModel>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminSummaryGet(options);
+        async apiV1WalletAdminSummaryGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AdminSummaryModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminSummaryGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminSummaryGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminSummaryGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Get user transactions
          * @param {string} userId 
-         * @param {ApiV1TransactionsGetLimitParameter} [limit] 
-         * @param {ApiV1TransactionsGetOffsetParameter} [offset] 
+         * @param {ApiV1WalletTransactionsGetLimitParameter} [limit] 
+         * @param {ApiV1WalletTransactionsGetOffsetParameter} [offset] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminTransactionsUserIdGet(userId: string, limit?: ApiV1TransactionsGetLimitParameter, offset?: ApiV1TransactionsGetOffsetParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TransactionResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminTransactionsUserIdGet(userId, limit, offset, options);
+        async apiV1WalletAdminTransactionsUserIdGet(userId: string, limit?: ApiV1WalletTransactionsGetLimitParameter, offset?: ApiV1WalletTransactionsGetOffsetParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TransactionResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminTransactionsUserIdGet(userId, limit, offset, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminTransactionsUserIdGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminTransactionsUserIdGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -795,10 +795,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminWalletsUserIdAdjustPost(userId: string, adjustBalanceRequest: AdjustBalanceRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminWalletsUserIdAdjustPost(userId, adjustBalanceRequest, options);
+        async apiV1WalletAdminWalletsUserIdAdjustPost(userId: string, adjustBalanceRequest: AdjustBalanceRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminWalletsUserIdAdjustPost(userId, adjustBalanceRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminWalletsUserIdAdjustPost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminWalletsUserIdAdjustPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -808,10 +808,10 @@ export const AdminApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1AdminWalletsUserIdGet(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1AdminWalletsUserIdGet(userId, options);
+        async apiV1WalletAdminWalletsUserIdGet(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletAdminWalletsUserIdGet(userId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1AdminWalletsUserIdGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiV1WalletAdminWalletsUserIdGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -829,8 +829,8 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<CurrencyResponse>> {
-            return localVarFp.apiV1AdminExchangeRatesCurrenciesGet(options).then((request) => request(axios, basePath));
+        apiV1WalletAdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<CurrencyResponse>> {
+            return localVarFp.apiV1WalletAdminExchangeRatesCurrenciesGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -838,28 +838,28 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
-            return localVarFp.apiV1AdminExchangeRatesGet(options).then((request) => request(axios, basePath));
+        apiV1WalletAdminExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
+            return localVarFp.apiV1WalletAdminExchangeRatesGet(options).then((request) => request(axios, basePath));
         },
         /**
          * Returns the history of exchange rate changes.
          * @summary Get exchange rate history
-         * @param {AdminApiApiV1AdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1AdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateHistoryResponse>> {
-            return localVarFp.apiV1AdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1WalletAdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateHistoryResponse>> {
+            return localVarFp.apiV1WalletAdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(axios, basePath));
         },
         /**
          * Create or update an exchange rate between two currencies.
          * @summary Update exchange rate
-         * @param {AdminApiApiV1AdminExchangeRatesPutRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminExchangeRatesPutRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminExchangeRatesPut(requestParameters: AdminApiApiV1AdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<ExchangeRateResponse> {
-            return localVarFp.apiV1AdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminExchangeRatesPut(requestParameters: AdminApiApiV1WalletAdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<ExchangeRateResponse> {
+            return localVarFp.apiV1WalletAdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves all merchants including inactive ones.
@@ -867,38 +867,38 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<MerchantResponse>> {
-            return localVarFp.apiV1AdminMerchantsGet(options).then((request) => request(axios, basePath));
+        apiV1WalletAdminMerchantsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<MerchantResponse>> {
+            return localVarFp.apiV1WalletAdminMerchantsGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get merchant full info
-         * @param {AdminApiApiV1AdminMerchantsIdGetRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminMerchantsIdGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsIdGet(requestParameters: AdminApiApiV1AdminMerchantsIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
-            return localVarFp.apiV1AdminMerchantsIdGet(requestParameters.id, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminMerchantsIdGet(requestParameters: AdminApiApiV1WalletAdminMerchantsIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
+            return localVarFp.apiV1WalletAdminMerchantsIdGet(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Update merchant
-         * @param {AdminApiApiV1AdminMerchantsIdPutRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminMerchantsIdPutRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsIdPut(requestParameters: AdminApiApiV1AdminMerchantsIdPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
-            return localVarFp.apiV1AdminMerchantsIdPut(requestParameters.id, requestParameters.updateMerchantRequest, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminMerchantsIdPut(requestParameters: AdminApiApiV1WalletAdminMerchantsIdPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
+            return localVarFp.apiV1WalletAdminMerchantsIdPut(requestParameters.id, requestParameters.updateMerchantRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Create merchant
-         * @param {AdminApiApiV1AdminMerchantsPostRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminMerchantsPostRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminMerchantsPost(requestParameters: AdminApiApiV1AdminMerchantsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
-            return localVarFp.apiV1AdminMerchantsPost(requestParameters.createMerchantRequest, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminMerchantsPost(requestParameters: AdminApiApiV1WalletAdminMerchantsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantModel> {
+            return localVarFp.apiV1WalletAdminMerchantsPost(requestParameters.createMerchantRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -906,47 +906,47 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminSummaryGet(options?: RawAxiosRequestConfig): AxiosPromise<AdminSummaryModel> {
-            return localVarFp.apiV1AdminSummaryGet(options).then((request) => request(axios, basePath));
+        apiV1WalletAdminSummaryGet(options?: RawAxiosRequestConfig): AxiosPromise<AdminSummaryModel> {
+            return localVarFp.apiV1WalletAdminSummaryGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get user transactions
-         * @param {AdminApiApiV1AdminTransactionsUserIdGetRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminTransactionsUserIdGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminTransactionsUserIdGet(requestParameters: AdminApiApiV1AdminTransactionsUserIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<TransactionResponse>> {
-            return localVarFp.apiV1AdminTransactionsUserIdGet(requestParameters.userId, requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminTransactionsUserIdGet(requestParameters: AdminApiApiV1WalletAdminTransactionsUserIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<TransactionResponse>> {
+            return localVarFp.apiV1WalletAdminTransactionsUserIdGet(requestParameters.userId, requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Adjust user wallet balance
-         * @param {AdminApiApiV1AdminWalletsUserIdAdjustPostRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminWalletsUserIdAdjustPostRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminWalletsUserIdAdjustPost(requestParameters: AdminApiApiV1AdminWalletsUserIdAdjustPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
-            return localVarFp.apiV1AdminWalletsUserIdAdjustPost(requestParameters.userId, requestParameters.adjustBalanceRequest, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminWalletsUserIdAdjustPost(requestParameters: AdminApiApiV1WalletAdminWalletsUserIdAdjustPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
+            return localVarFp.apiV1WalletAdminWalletsUserIdAdjustPost(requestParameters.userId, requestParameters.adjustBalanceRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get user wallet
-         * @param {AdminApiApiV1AdminWalletsUserIdGetRequest} requestParameters Request parameters.
+         * @param {AdminApiApiV1WalletAdminWalletsUserIdGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1AdminWalletsUserIdGet(requestParameters: AdminApiApiV1AdminWalletsUserIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
-            return localVarFp.apiV1AdminWalletsUserIdGet(requestParameters.userId, options).then((request) => request(axios, basePath));
+        apiV1WalletAdminWalletsUserIdGet(requestParameters: AdminApiApiV1WalletAdminWalletsUserIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
+            return localVarFp.apiV1WalletAdminWalletsUserIdGet(requestParameters.userId, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for apiV1AdminExchangeRatesHistoryGet operation in AdminApi.
+ * Request parameters for apiV1WalletAdminExchangeRatesHistoryGet operation in AdminApi.
  */
-export interface AdminApiApiV1AdminExchangeRatesHistoryGetRequest {
-    readonly limit: ApiV1AdminExchangeRatesHistoryGetLimitParameter
+export interface AdminApiApiV1WalletAdminExchangeRatesHistoryGetRequest {
+    readonly limit: ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter
 
     readonly sourceCurrency?: string
 
@@ -954,59 +954,59 @@ export interface AdminApiApiV1AdminExchangeRatesHistoryGetRequest {
 }
 
 /**
- * Request parameters for apiV1AdminExchangeRatesPut operation in AdminApi.
+ * Request parameters for apiV1WalletAdminExchangeRatesPut operation in AdminApi.
  */
-export interface AdminApiApiV1AdminExchangeRatesPutRequest {
+export interface AdminApiApiV1WalletAdminExchangeRatesPutRequest {
     readonly updateExchangeRateRequest: UpdateExchangeRateRequest
 }
 
 /**
- * Request parameters for apiV1AdminMerchantsIdGet operation in AdminApi.
+ * Request parameters for apiV1WalletAdminMerchantsIdGet operation in AdminApi.
  */
-export interface AdminApiApiV1AdminMerchantsIdGetRequest {
+export interface AdminApiApiV1WalletAdminMerchantsIdGetRequest {
     readonly id: string
 }
 
 /**
- * Request parameters for apiV1AdminMerchantsIdPut operation in AdminApi.
+ * Request parameters for apiV1WalletAdminMerchantsIdPut operation in AdminApi.
  */
-export interface AdminApiApiV1AdminMerchantsIdPutRequest {
+export interface AdminApiApiV1WalletAdminMerchantsIdPutRequest {
     readonly id: string
 
     readonly updateMerchantRequest: UpdateMerchantRequest
 }
 
 /**
- * Request parameters for apiV1AdminMerchantsPost operation in AdminApi.
+ * Request parameters for apiV1WalletAdminMerchantsPost operation in AdminApi.
  */
-export interface AdminApiApiV1AdminMerchantsPostRequest {
+export interface AdminApiApiV1WalletAdminMerchantsPostRequest {
     readonly createMerchantRequest: CreateMerchantRequest
 }
 
 /**
- * Request parameters for apiV1AdminTransactionsUserIdGet operation in AdminApi.
+ * Request parameters for apiV1WalletAdminTransactionsUserIdGet operation in AdminApi.
  */
-export interface AdminApiApiV1AdminTransactionsUserIdGetRequest {
+export interface AdminApiApiV1WalletAdminTransactionsUserIdGetRequest {
     readonly userId: string
 
-    readonly limit?: ApiV1TransactionsGetLimitParameter
+    readonly limit?: ApiV1WalletTransactionsGetLimitParameter
 
-    readonly offset?: ApiV1TransactionsGetOffsetParameter
+    readonly offset?: ApiV1WalletTransactionsGetOffsetParameter
 }
 
 /**
- * Request parameters for apiV1AdminWalletsUserIdAdjustPost operation in AdminApi.
+ * Request parameters for apiV1WalletAdminWalletsUserIdAdjustPost operation in AdminApi.
  */
-export interface AdminApiApiV1AdminWalletsUserIdAdjustPostRequest {
+export interface AdminApiApiV1WalletAdminWalletsUserIdAdjustPostRequest {
     readonly userId: string
 
     readonly adjustBalanceRequest: AdjustBalanceRequest
 }
 
 /**
- * Request parameters for apiV1AdminWalletsUserIdGet operation in AdminApi.
+ * Request parameters for apiV1WalletAdminWalletsUserIdGet operation in AdminApi.
  */
-export interface AdminApiApiV1AdminWalletsUserIdGetRequest {
+export interface AdminApiApiV1WalletAdminWalletsUserIdGetRequest {
     readonly userId: string
 }
 
@@ -1020,8 +1020,8 @@ export class AdminApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesCurrenciesGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminExchangeRatesCurrenciesGet(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminExchangeRatesCurrenciesGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1030,30 +1030,30 @@ export class AdminApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminExchangeRatesGet(options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminExchangeRatesGet(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns the history of exchange rate changes.
      * @summary Get exchange rate history
-     * @param {AdminApiApiV1AdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminExchangeRatesHistoryGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1AdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminExchangeRatesHistoryGet(requestParameters: AdminApiApiV1WalletAdminExchangeRatesHistoryGetRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminExchangeRatesHistoryGet(requestParameters.limit, requestParameters.sourceCurrency, requestParameters.targetCurrency, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Create or update an exchange rate between two currencies.
      * @summary Update exchange rate
-     * @param {AdminApiApiV1AdminExchangeRatesPutRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminExchangeRatesPutRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminExchangeRatesPut(requestParameters: AdminApiApiV1AdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminExchangeRatesPut(requestParameters: AdminApiApiV1WalletAdminExchangeRatesPutRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminExchangeRatesPut(requestParameters.updateExchangeRateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1062,41 +1062,41 @@ export class AdminApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminMerchantsGet(options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminMerchantsGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminMerchantsGet(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminMerchantsGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get merchant full info
-     * @param {AdminApiApiV1AdminMerchantsIdGetRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminMerchantsIdGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminMerchantsIdGet(requestParameters: AdminApiApiV1AdminMerchantsIdGetRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminMerchantsIdGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminMerchantsIdGet(requestParameters: AdminApiApiV1WalletAdminMerchantsIdGetRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminMerchantsIdGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Update merchant
-     * @param {AdminApiApiV1AdminMerchantsIdPutRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminMerchantsIdPutRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminMerchantsIdPut(requestParameters: AdminApiApiV1AdminMerchantsIdPutRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminMerchantsIdPut(requestParameters.id, requestParameters.updateMerchantRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminMerchantsIdPut(requestParameters: AdminApiApiV1WalletAdminMerchantsIdPutRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminMerchantsIdPut(requestParameters.id, requestParameters.updateMerchantRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Create merchant
-     * @param {AdminApiApiV1AdminMerchantsPostRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminMerchantsPostRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminMerchantsPost(requestParameters: AdminApiApiV1AdminMerchantsPostRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminMerchantsPost(requestParameters.createMerchantRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminMerchantsPost(requestParameters: AdminApiApiV1WalletAdminMerchantsPostRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminMerchantsPost(requestParameters.createMerchantRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1105,41 +1105,41 @@ export class AdminApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminSummaryGet(options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminSummaryGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminSummaryGet(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminSummaryGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get user transactions
-     * @param {AdminApiApiV1AdminTransactionsUserIdGetRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminTransactionsUserIdGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminTransactionsUserIdGet(requestParameters: AdminApiApiV1AdminTransactionsUserIdGetRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminTransactionsUserIdGet(requestParameters.userId, requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminTransactionsUserIdGet(requestParameters: AdminApiApiV1WalletAdminTransactionsUserIdGetRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminTransactionsUserIdGet(requestParameters.userId, requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Adjust user wallet balance
-     * @param {AdminApiApiV1AdminWalletsUserIdAdjustPostRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminWalletsUserIdAdjustPostRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminWalletsUserIdAdjustPost(requestParameters: AdminApiApiV1AdminWalletsUserIdAdjustPostRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminWalletsUserIdAdjustPost(requestParameters.userId, requestParameters.adjustBalanceRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminWalletsUserIdAdjustPost(requestParameters: AdminApiApiV1WalletAdminWalletsUserIdAdjustPostRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminWalletsUserIdAdjustPost(requestParameters.userId, requestParameters.adjustBalanceRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get user wallet
-     * @param {AdminApiApiV1AdminWalletsUserIdGetRequest} requestParameters Request parameters.
+     * @param {AdminApiApiV1WalletAdminWalletsUserIdGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1AdminWalletsUserIdGet(requestParameters: AdminApiApiV1AdminWalletsUserIdGetRequest, options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiV1AdminWalletsUserIdGet(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletAdminWalletsUserIdGet(requestParameters: AdminApiApiV1WalletAdminWalletsUserIdGetRequest, options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiV1WalletAdminWalletsUserIdGet(requestParameters.userId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1156,8 +1156,8 @@ export const ExchangeRatesApiAxiosParamCreator = function (configuration?: Confi
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1ExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/exchange-rates`;
+        apiV1WalletExchangeRatesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/exchange-rates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1195,10 +1195,10 @@ export const ExchangeRatesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1ExchangeRatesGet(options);
+        async apiV1WalletExchangeRatesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ExchangeRateResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletExchangeRatesGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ExchangeRatesApi.apiV1ExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ExchangeRatesApi.apiV1WalletExchangeRatesGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1216,8 +1216,8 @@ export const ExchangeRatesApiFactory = function (configuration?: Configuration, 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
-            return localVarFp.apiV1ExchangeRatesGet(options).then((request) => request(axios, basePath));
+        apiV1WalletExchangeRatesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<ExchangeRateResponse>> {
+            return localVarFp.apiV1WalletExchangeRatesGet(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1232,8 +1232,8 @@ export class ExchangeRatesApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1ExchangeRatesGet(options?: RawAxiosRequestConfig) {
-        return ExchangeRatesApiFp(this.configuration).apiV1ExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletExchangeRatesGet(options?: RawAxiosRequestConfig) {
+        return ExchangeRatesApiFp(this.configuration).apiV1WalletExchangeRatesGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1251,8 +1251,8 @@ export const MerchantApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1MerchantsGet: async (countryCode?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/merchants`;
+        apiV1WalletMerchantsGet: async (countryCode?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/merchants`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1286,10 +1286,10 @@ export const MerchantApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1MerchantsIdGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletMerchantsIdGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiV1MerchantsIdGet', 'id', id)
-            const localVarPath = `/api/v1/merchants/{id}`
+            assertParamExists('apiV1WalletMerchantsIdGet', 'id', id)
+            const localVarPath = `/api/v1/wallet/merchants/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1329,10 +1329,10 @@ export const MerchantApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1MerchantsGet(countryCode?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MerchantResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1MerchantsGet(countryCode, options);
+        async apiV1WalletMerchantsGet(countryCode?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MerchantResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletMerchantsGet(countryCode, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['MerchantApi.apiV1MerchantsGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MerchantApi.apiV1WalletMerchantsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1342,10 +1342,10 @@ export const MerchantApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1MerchantsIdGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1MerchantsIdGet(id, options);
+        async apiV1WalletMerchantsIdGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MerchantResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletMerchantsIdGet(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['MerchantApi.apiV1MerchantsIdGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MerchantApi.apiV1WalletMerchantsIdGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1360,37 +1360,37 @@ export const MerchantApiFactory = function (configuration?: Configuration, baseP
         /**
          * Retrieves a list of active merchants.
          * @summary Get active merchants
-         * @param {MerchantApiApiV1MerchantsGetRequest} requestParameters Request parameters.
+         * @param {MerchantApiApiV1WalletMerchantsGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1MerchantsGet(requestParameters: MerchantApiApiV1MerchantsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<MerchantResponse>> {
-            return localVarFp.apiV1MerchantsGet(requestParameters.countryCode, options).then((request) => request(axios, basePath));
+        apiV1WalletMerchantsGet(requestParameters: MerchantApiApiV1WalletMerchantsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<MerchantResponse>> {
+            return localVarFp.apiV1WalletMerchantsGet(requestParameters.countryCode, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves details of a specific merchant by ID.
          * @summary Get merchant details
-         * @param {MerchantApiApiV1MerchantsIdGetRequest} requestParameters Request parameters.
+         * @param {MerchantApiApiV1WalletMerchantsIdGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1MerchantsIdGet(requestParameters: MerchantApiApiV1MerchantsIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantResponse> {
-            return localVarFp.apiV1MerchantsIdGet(requestParameters.id, options).then((request) => request(axios, basePath));
+        apiV1WalletMerchantsIdGet(requestParameters: MerchantApiApiV1WalletMerchantsIdGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<MerchantResponse> {
+            return localVarFp.apiV1WalletMerchantsIdGet(requestParameters.id, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for apiV1MerchantsGet operation in MerchantApi.
+ * Request parameters for apiV1WalletMerchantsGet operation in MerchantApi.
  */
-export interface MerchantApiApiV1MerchantsGetRequest {
+export interface MerchantApiApiV1WalletMerchantsGetRequest {
     readonly countryCode?: string
 }
 
 /**
- * Request parameters for apiV1MerchantsIdGet operation in MerchantApi.
+ * Request parameters for apiV1WalletMerchantsIdGet operation in MerchantApi.
  */
-export interface MerchantApiApiV1MerchantsIdGetRequest {
+export interface MerchantApiApiV1WalletMerchantsIdGetRequest {
     readonly id: string
 }
 
@@ -1401,23 +1401,23 @@ export class MerchantApi extends BaseAPI {
     /**
      * Retrieves a list of active merchants.
      * @summary Get active merchants
-     * @param {MerchantApiApiV1MerchantsGetRequest} requestParameters Request parameters.
+     * @param {MerchantApiApiV1WalletMerchantsGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1MerchantsGet(requestParameters: MerchantApiApiV1MerchantsGetRequest = {}, options?: RawAxiosRequestConfig) {
-        return MerchantApiFp(this.configuration).apiV1MerchantsGet(requestParameters.countryCode, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletMerchantsGet(requestParameters: MerchantApiApiV1WalletMerchantsGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return MerchantApiFp(this.configuration).apiV1WalletMerchantsGet(requestParameters.countryCode, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Retrieves details of a specific merchant by ID.
      * @summary Get merchant details
-     * @param {MerchantApiApiV1MerchantsIdGetRequest} requestParameters Request parameters.
+     * @param {MerchantApiApiV1WalletMerchantsIdGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1MerchantsIdGet(requestParameters: MerchantApiApiV1MerchantsIdGetRequest, options?: RawAxiosRequestConfig) {
-        return MerchantApiFp(this.configuration).apiV1MerchantsIdGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletMerchantsIdGet(requestParameters: MerchantApiApiV1WalletMerchantsIdGetRequest, options?: RawAxiosRequestConfig) {
+        return MerchantApiFp(this.configuration).apiV1WalletMerchantsIdGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1436,10 +1436,10 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1PaymentsPost: async (paymentRequest: PaymentRequest, xIdempotencyKey?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletPaymentsPost: async (paymentRequest: PaymentRequest, xIdempotencyKey?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'paymentRequest' is not null or undefined
-            assertParamExists('apiV1PaymentsPost', 'paymentRequest', paymentRequest)
-            const localVarPath = `/api/v1/payments`;
+            assertParamExists('apiV1WalletPaymentsPost', 'paymentRequest', paymentRequest)
+            const localVarPath = `/api/v1/wallet/payments`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1485,10 +1485,10 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1PaymentsPost(paymentRequest: PaymentRequest, xIdempotencyKey?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1PaymentsPost(paymentRequest, xIdempotencyKey, options);
+        async apiV1WalletPaymentsPost(paymentRequest: PaymentRequest, xIdempotencyKey?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletPaymentsPost(paymentRequest, xIdempotencyKey, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['PaymentApi.apiV1PaymentsPost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['PaymentApi.apiV1WalletPaymentsPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1503,20 +1503,20 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
         /**
          * Processes a payment transaction for a user.
          * @summary Process a payment
-         * @param {PaymentApiApiV1PaymentsPostRequest} requestParameters Request parameters.
+         * @param {PaymentApiApiV1WalletPaymentsPostRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1PaymentsPost(requestParameters: PaymentApiApiV1PaymentsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaymentResponse> {
-            return localVarFp.apiV1PaymentsPost(requestParameters.paymentRequest, requestParameters.xIdempotencyKey, options).then((request) => request(axios, basePath));
+        apiV1WalletPaymentsPost(requestParameters: PaymentApiApiV1WalletPaymentsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<PaymentResponse> {
+            return localVarFp.apiV1WalletPaymentsPost(requestParameters.paymentRequest, requestParameters.xIdempotencyKey, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for apiV1PaymentsPost operation in PaymentApi.
+ * Request parameters for apiV1WalletPaymentsPost operation in PaymentApi.
  */
-export interface PaymentApiApiV1PaymentsPostRequest {
+export interface PaymentApiApiV1WalletPaymentsPostRequest {
     readonly paymentRequest: PaymentRequest
 
     readonly xIdempotencyKey?: string
@@ -1529,12 +1529,12 @@ export class PaymentApi extends BaseAPI {
     /**
      * Processes a payment transaction for a user.
      * @summary Process a payment
-     * @param {PaymentApiApiV1PaymentsPostRequest} requestParameters Request parameters.
+     * @param {PaymentApiApiV1WalletPaymentsPostRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1PaymentsPost(requestParameters: PaymentApiApiV1PaymentsPostRequest, options?: RawAxiosRequestConfig) {
-        return PaymentApiFp(this.configuration).apiV1PaymentsPost(requestParameters.paymentRequest, requestParameters.xIdempotencyKey, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletPaymentsPost(requestParameters: PaymentApiApiV1WalletPaymentsPostRequest, options?: RawAxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).apiV1WalletPaymentsPost(requestParameters.paymentRequest, requestParameters.xIdempotencyKey, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1548,13 +1548,13 @@ export const TransactionApiAxiosParamCreator = function (configuration?: Configu
         /**
          * Retrieves a list of past transactions for the authenticated user.
          * @summary Get transaction history
-         * @param {ApiV1TransactionsGetLimitParameter} [limit] 
-         * @param {ApiV1TransactionsGetOffsetParameter} [offset] 
+         * @param {ApiV1WalletTransactionsGetLimitParameter} [limit] 
+         * @param {ApiV1WalletTransactionsGetOffsetParameter} [offset] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1TransactionsGet: async (limit?: ApiV1TransactionsGetLimitParameter, offset?: ApiV1TransactionsGetOffsetParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/transactions`;
+        apiV1WalletTransactionsGet: async (limit?: ApiV1WalletTransactionsGetLimitParameter, offset?: ApiV1WalletTransactionsGetOffsetParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/transactions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1597,15 +1597,15 @@ export const TransactionApiFp = function(configuration?: Configuration) {
         /**
          * Retrieves a list of past transactions for the authenticated user.
          * @summary Get transaction history
-         * @param {ApiV1TransactionsGetLimitParameter} [limit] 
-         * @param {ApiV1TransactionsGetOffsetParameter} [offset] 
+         * @param {ApiV1WalletTransactionsGetLimitParameter} [limit] 
+         * @param {ApiV1WalletTransactionsGetOffsetParameter} [offset] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1TransactionsGet(limit?: ApiV1TransactionsGetLimitParameter, offset?: ApiV1TransactionsGetOffsetParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TransactionResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1TransactionsGet(limit, offset, options);
+        async apiV1WalletTransactionsGet(limit?: ApiV1WalletTransactionsGetLimitParameter, offset?: ApiV1WalletTransactionsGetOffsetParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TransactionResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletTransactionsGet(limit, offset, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['TransactionApi.apiV1TransactionsGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['TransactionApi.apiV1WalletTransactionsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1620,23 +1620,23 @@ export const TransactionApiFactory = function (configuration?: Configuration, ba
         /**
          * Retrieves a list of past transactions for the authenticated user.
          * @summary Get transaction history
-         * @param {TransactionApiApiV1TransactionsGetRequest} requestParameters Request parameters.
+         * @param {TransactionApiApiV1WalletTransactionsGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1TransactionsGet(requestParameters: TransactionApiApiV1TransactionsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<TransactionResponse>> {
-            return localVarFp.apiV1TransactionsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
+        apiV1WalletTransactionsGet(requestParameters: TransactionApiApiV1WalletTransactionsGetRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<Array<TransactionResponse>> {
+            return localVarFp.apiV1WalletTransactionsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for apiV1TransactionsGet operation in TransactionApi.
+ * Request parameters for apiV1WalletTransactionsGet operation in TransactionApi.
  */
-export interface TransactionApiApiV1TransactionsGetRequest {
-    readonly limit?: ApiV1TransactionsGetLimitParameter
+export interface TransactionApiApiV1WalletTransactionsGetRequest {
+    readonly limit?: ApiV1WalletTransactionsGetLimitParameter
 
-    readonly offset?: ApiV1TransactionsGetOffsetParameter
+    readonly offset?: ApiV1WalletTransactionsGetOffsetParameter
 }
 
 /**
@@ -1646,12 +1646,12 @@ export class TransactionApi extends BaseAPI {
     /**
      * Retrieves a list of past transactions for the authenticated user.
      * @summary Get transaction history
-     * @param {TransactionApiApiV1TransactionsGetRequest} requestParameters Request parameters.
+     * @param {TransactionApiApiV1WalletTransactionsGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1TransactionsGet(requestParameters: TransactionApiApiV1TransactionsGetRequest = {}, options?: RawAxiosRequestConfig) {
-        return TransactionApiFp(this.configuration).apiV1TransactionsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletTransactionsGet(requestParameters: TransactionApiApiV1WalletTransactionsGetRequest = {}, options?: RawAxiosRequestConfig) {
+        return TransactionApiFp(this.configuration).apiV1WalletTransactionsGet(requestParameters.limit, requestParameters.offset, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1669,10 +1669,10 @@ export const WalletApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1WalletsChargePost: async (chargeRequest: ChargeRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiV1WalletChargePost: async (chargeRequest: ChargeRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'chargeRequest' is not null or undefined
-            assertParamExists('apiV1WalletsChargePost', 'chargeRequest', chargeRequest)
-            const localVarPath = `/api/v1/wallets/charge`;
+            assertParamExists('apiV1WalletChargePost', 'chargeRequest', chargeRequest)
+            const localVarPath = `/api/v1/wallet/charge`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1704,8 +1704,8 @@ export const WalletApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1WalletsMeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/wallets/me`;
+        apiV1WalletMeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/wallet/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1744,10 +1744,10 @@ export const WalletApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1WalletsChargePost(chargeRequest: ChargeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletsChargePost(chargeRequest, options);
+        async apiV1WalletChargePost(chargeRequest: ChargeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletChargePost(chargeRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['WalletApi.apiV1WalletsChargePost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.apiV1WalletChargePost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1756,10 +1756,10 @@ export const WalletApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiV1WalletsMeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletsMeGet(options);
+        async apiV1WalletMeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WalletResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV1WalletMeGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['WalletApi.apiV1WalletsMeGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['WalletApi.apiV1WalletMeGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1774,12 +1774,12 @@ export const WalletApiFactory = function (configuration?: Configuration, basePat
         /**
          * Charges the user\'s Money wallet with the specified amount.
          * @summary Charge wallet
-         * @param {WalletApiApiV1WalletsChargePostRequest} requestParameters Request parameters.
+         * @param {WalletApiApiV1WalletChargePostRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1WalletsChargePost(requestParameters: WalletApiApiV1WalletsChargePostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
-            return localVarFp.apiV1WalletsChargePost(requestParameters.chargeRequest, options).then((request) => request(axios, basePath));
+        apiV1WalletChargePost(requestParameters: WalletApiApiV1WalletChargePostRequest, options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
+            return localVarFp.apiV1WalletChargePost(requestParameters.chargeRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the current user\'s Money wallet information.
@@ -1787,16 +1787,16 @@ export const WalletApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiV1WalletsMeGet(options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
-            return localVarFp.apiV1WalletsMeGet(options).then((request) => request(axios, basePath));
+        apiV1WalletMeGet(options?: RawAxiosRequestConfig): AxiosPromise<WalletResponse> {
+            return localVarFp.apiV1WalletMeGet(options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for apiV1WalletsChargePost operation in WalletApi.
+ * Request parameters for apiV1WalletChargePost operation in WalletApi.
  */
-export interface WalletApiApiV1WalletsChargePostRequest {
+export interface WalletApiApiV1WalletChargePostRequest {
     readonly chargeRequest: ChargeRequest
 }
 
@@ -1807,12 +1807,12 @@ export class WalletApi extends BaseAPI {
     /**
      * Charges the user\'s Money wallet with the specified amount.
      * @summary Charge wallet
-     * @param {WalletApiApiV1WalletsChargePostRequest} requestParameters Request parameters.
+     * @param {WalletApiApiV1WalletChargePostRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1WalletsChargePost(requestParameters: WalletApiApiV1WalletsChargePostRequest, options?: RawAxiosRequestConfig) {
-        return WalletApiFp(this.configuration).apiV1WalletsChargePost(requestParameters.chargeRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletChargePost(requestParameters: WalletApiApiV1WalletChargePostRequest, options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).apiV1WalletChargePost(requestParameters.chargeRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1821,8 +1821,8 @@ export class WalletApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiV1WalletsMeGet(options?: RawAxiosRequestConfig) {
-        return WalletApiFp(this.configuration).apiV1WalletsMeGet(options).then((request) => request(this.axios, this.basePath));
+    public apiV1WalletMeGet(options?: RawAxiosRequestConfig) {
+        return WalletApiFp(this.configuration).apiV1WalletMeGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

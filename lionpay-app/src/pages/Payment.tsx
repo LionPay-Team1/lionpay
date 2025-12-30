@@ -45,7 +45,7 @@ export default function Payment() {
         const fetchMerchants = async () => {
             try {
                 const countryCode = country.id.toUpperCase();
-                const response = await merchantApi.apiV1MerchantsGet({ countryCode });
+                const response = await merchantApi.apiV1WalletMerchantsGet({ countryCode });
                 const merchantShops: Shop[] = response.data.map((m: MerchantResponse) => ({
                     id: m.merchantId,
                     name: m.merchantName,
@@ -88,7 +88,7 @@ export default function Payment() {
             // Call actual payment API
 
 
-            await paymentApi.apiV1PaymentsPost({
+            await paymentApi.apiV1WalletPaymentsPost({
                 paymentRequest: {
                     merchantId: selectedShop!.id,
                     amountCash: payAmount,
@@ -105,7 +105,7 @@ export default function Payment() {
 
             // Note: Server returns PaymentResponse which might NOT have the deducted KRW amount directly exposed easily in generated client
             // unless we inspect response data.
-            // Let's just use the approximate calculated value for the UI success screen for now, 
+            // Let's just use the approximate calculated value for the UI success screen for now,
             // or better, rely on the balance drop.
 
             const estimatedKrwCost = Math.floor(payAmount / country.rate);

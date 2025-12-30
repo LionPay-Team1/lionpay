@@ -141,7 +141,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     fetchWallet: async () => {
         try {
-            const response = await walletApi.apiV1WalletsMeGet();
+            const response = await walletApi.apiV1WalletMeGet();
             const wallet = response.data;
 
             const balanceVal = (typeof wallet.balance === 'number') ? wallet.balance : ((wallet.balance as unknown as { amount: number })?.amount ?? 0);
@@ -156,7 +156,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     fetchTransactions: async () => {
         try {
-            const response = await transactionApi.apiV1TransactionsGet();
+            const response = await transactionApi.apiV1WalletTransactionsGet();
             const transactions = response.data.map(mapTransaction);
             set({ transactions });
         } catch (error) {
@@ -175,7 +175,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     fetchExchangeRates: async () => {
         try {
-            const response = await exchangeRatesApi.apiV1ExchangeRatesGet();
+            const response = await exchangeRatesApi.apiV1WalletExchangeRatesGet();
             const rates = response.data;
 
             const newCountries = get().countries.map(c => {

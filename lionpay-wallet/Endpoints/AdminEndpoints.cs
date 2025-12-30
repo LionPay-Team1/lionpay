@@ -9,7 +9,7 @@ public static class AdminEndpoints
 {
     public static void MapAdminEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/v1/admin")
+        var group = app.MapGroup("/api/v1/wallet/admin")
             .RequireAuthorization(Policies.AdminRole)
             .WithTags("Admin");
 
@@ -113,7 +113,7 @@ public static class AdminEndpoints
         IMerchantService merchantService)
     {
         var merchant = await merchantService.CreateMerchantAsync(request);
-        return Results.Created($"/api/v1/merchants/{merchant.MerchantId}", merchant);
+        return Results.Created($"/api/v1/wallet/merchants/{merchant.MerchantId}", merchant);
     }
 
     public static async Task<IResult> UpdateMerchant(
