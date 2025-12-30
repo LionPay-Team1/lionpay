@@ -139,14 +139,14 @@ generate-client.bat
 @Service
 public class AuthService {
     private final LongCounter loginCounter;
-    
+
     public AuthService(Meter meter) {
         this.loginCounter = meter.counterBuilder("auth.login.count")
             .setDescription("로그인 시도 횟수")
             .setUnit("1")
             .build();
     }
-    
+
     public void login(String username) {
         // 로그인 로직
         loginCounter.add(1, Attributes.of(
@@ -163,19 +163,19 @@ public class AuthService {
 @Service
 public class TokenService {
     private final DoubleHistogram tokenGenerationTime;
-    
+
     public TokenService(Meter meter) {
         this.tokenGenerationTime = meter.histogramBuilder("auth.token.generation_time")
             .setDescription("JWT 토큰 생성 소요 시간")
             .setUnit("ms")
             .build();
     }
-    
+
     public String generateToken(User user) {
         long startTime = System.currentTimeMillis();
         String token = createJwtToken(user);
         long duration = System.currentTimeMillis() - startTime;
-        
+
         tokenGenerationTime.record(duration, Attributes.of(
             AttributeKey.stringKey("token_type"), "access"
         ));
@@ -190,16 +190,16 @@ public class TokenService {
 @Component
 public class SessionMetrics {
     private final AtomicLong activeSessions = new AtomicLong(0);
-    
+
     public SessionMetrics(Meter meter) {
         meter.gaugeBuilder("auth.sessions.active")
             .setDescription("현재 활성 세션 수")
             .setUnit("1")
-            .buildWithCallback(measurement -> 
+            .buildWithCallback(measurement ->
                 measurement.record(activeSessions.get())
             );
     }
-    
+
     public void sessionCreated() { activeSessions.incrementAndGet(); }
     public void sessionDestroyed() { activeSessions.decrementAndGet(); }
 }
@@ -236,7 +236,7 @@ using System.Diagnostics.Metrics;
 public class TransactionService
 {
     private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
-    private static readonly Counter<long> TransactionCounter = 
+    private static readonly Counter<long> TransactionCounter =
         Meter.CreateCounter<long>(
             "wallet.transactions.count",
             unit: "1",
@@ -246,11 +246,11 @@ public class TransactionService
     {
         // 트랜잭션 처리 로직
         var transaction = await ExecuteTransactionAsync(amount);
-        
-        TransactionCounter.Add(1, 
+
+        TransactionCounter.Add(1,
             new KeyValuePair<string, object?>("type", type),
             new KeyValuePair<string, object?>("status", "success"));
-        
+
         return transaction;
     }
 }
@@ -271,13 +271,13 @@ public class WalletService
     public async Task<Balance> GetBalanceAsync(string userId)
     {
         var stopwatch = Stopwatch.StartNew();
-        
+
         var balance = await FetchBalanceAsync(userId);
-        
+
         stopwatch.Stop();
         ProcessingTime.Record(stopwatch.ElapsedMilliseconds,
             new KeyValuePair<string, object?>("operation", "get_balance"));
-        
+
         return balance;
     }
 }
@@ -289,7 +289,7 @@ public class WalletService
 public class BalanceMetrics
 {
     private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
-    
+
     public BalanceMetrics()
     {
         Meter.CreateObservableGauge(
@@ -298,7 +298,7 @@ public class BalanceMetrics
             unit: "KRW",
             description: "전체 사용자 총 잔액");
     }
-    
+
     private Measurement<decimal> GetTotalBalance()
     {
         // DB에서 총 잔액 조회
@@ -334,3 +334,30 @@ public class BalanceMetrics
 | **Mimir** | <http://localhost:9009> | 메트릭 저장소 |
 | **Loki** | <http://localhost:3100> | 로그 저장소 |
 | **Tempo** | <http://localhost:3200> | 트레이스 저장소 |
+
+---
+
+## CI/CD 시크릿 설정 (CI/CD Secrets)
+
+GitHub Actions를 통한 자동 배포를 위해 저장소 설정(`Settings > Secrets and variables > Actions`)에 다음 시크릿들을 등록해야 한다.
+
+### 공통 시크릿 (Common Secrets)
+
+모든 배포 파이프라인에서 공통으로 사용되는 AWS 인증 정보이다.
+
+| Secret Name | 설명 |
+|-------------|------|
+| `AWS_ACCESS_KEY_ID` | Terraform 등을 통해 생성된 CI/CD용 IAM User의 Access Key |
+| `AWS_SECRET_ACCESS_KEY` | Terraform 등을 통해 생성된 CI/CD용 IAM User의 Secret Key |
+| `AWS_ACCOUNT_ID` | AWS 계정 12자리 숫자 ID (ECR 로그인 등에 사용) |
+
+### 프론트엔드 배포 시크릿 (Frontend Distribution)
+
+각 프론트엔드 애플리케이션의 CloudFront 캐시 무효화(Invalidation)에 사용된다.
+
+| Secret Name | 대상 앱 | 설명 |
+|-------------|---------|------|
+| `CLOUDFRONT_DISTRIBUTION_ID_APP` | **lionpay-app** | 고객용 앱의 CloudFront Distribution ID |
+| `CLOUDFRONT_DISTRIBUTION_ID_MANAGEMENT` | **lionpay-management** | 관리자용 앱의 CloudFront Distribution ID |
+
+> **참고**: `check.yml` (CI 빌드/테스트) 워크플로우는 소스 코드만 필요하므로 별도의 시크릿이 필요 없다.
