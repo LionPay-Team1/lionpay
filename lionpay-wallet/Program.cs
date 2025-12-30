@@ -50,9 +50,15 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         corsBuilder =>
         {
-            corsBuilder.AllowAnyOrigin()
+            corsBuilder.WithOrigins(
+                    "https://lionpay.shop",
+                    "https://admin.lionpay.shop",
+                    "http://localhost:5173",
+                    "http://localhost:5174"
+                )
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
 

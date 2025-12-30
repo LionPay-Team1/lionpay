@@ -25,7 +25,7 @@ export default function Charge() {
         setError('');
 
         try {
-            await walletApi.apiV1WalletsChargePost({
+            await walletApi.apiV1WalletChargePost({
                 chargeRequest: {
                     amount: parseInt(amount) as unknown as AdjustBalanceRequestAmount
                 }

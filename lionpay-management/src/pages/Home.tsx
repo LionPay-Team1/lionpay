@@ -20,7 +20,7 @@ export function Home() {
         const loadSummary = async () => {
             setLoading(true);
             try {
-                const response = await adminWalletApi.apiV1AdminSummaryGet();
+                const response = await adminWalletApi.apiV1WalletAdminSummaryGet();
                 setSummary(response.data as unknown as SummaryData);
             } catch (error) {
                 console.error("Failed to load summary", error);

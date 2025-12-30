@@ -11,7 +11,7 @@ public static class ExchangeRateEndpoints
     public static void MapExchangeRateEndpoints(this IEndpointRouteBuilder app)
     {
         // User endpoints - authenticated users can view exchange rates and currencies
-        var userGroup = app.MapGroup("/api/v1/exchange-rates")
+        var userGroup = app.MapGroup("/api/v1/wallet/exchange-rates")
             .RequireAuthorization(Policies.UserRole)
             .WithTags("ExchangeRates");
 
@@ -20,7 +20,7 @@ public static class ExchangeRateEndpoints
             .Produces<IEnumerable<ExchangeRateResponse>>();
 
         // Admin endpoints - admins can manage exchange rates
-        var adminGroup = app.MapGroup("/api/v1/admin/exchange-rates")
+        var adminGroup = app.MapGroup("/api/v1/wallet/admin/exchange-rates")
             .RequireAuthorization(Policies.AdminRole)
             .WithTags("Admin");
 

@@ -4,10 +4,10 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1PaymentsPost**](#apiv1paymentspost) | **POST** /api/v1/payments | Process a payment|
+|[**apiV1WalletPaymentsPost**](#apiv1walletpaymentspost) | **POST** /api/v1/wallet/payments | Process a payment|
 
-# **apiV1PaymentsPost**
-> PaymentResponse apiV1PaymentsPost(paymentRequest)
+# **apiV1WalletPaymentsPost**
+> PaymentResponse apiV1WalletPaymentsPost(paymentRequest)
 
 Processes a payment transaction for a user.
 
@@ -26,7 +26,7 @@ const apiInstance = new PaymentApi(configuration);
 let paymentRequest: PaymentRequest; //
 let xIdempotencyKey: string; // (optional) (default to undefined)
 
-const { status, data } = await apiInstance.apiV1PaymentsPost(
+const { status, data } = await apiInstance.apiV1WalletPaymentsPost(
     paymentRequest,
     xIdempotencyKey
 );

@@ -9,9 +9,9 @@ docs/AdjustBalanceRequestAmount.md
 docs/AdminApi.md
 docs/AdminSummaryModel.md
 docs/AdminSummaryModelTotalWallets.md
-docs/ApiV1AdminExchangeRatesHistoryGetLimitParameter.md
-docs/ApiV1TransactionsGetLimitParameter.md
-docs/ApiV1TransactionsGetOffsetParameter.md
+docs/ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter.md
+docs/ApiV1WalletTransactionsGetLimitParameter.md
+docs/ApiV1WalletTransactionsGetOffsetParameter.md
 docs/ChargeRequest.md
 docs/CreateMerchantRequest.md
 docs/CurrencyResponse.md

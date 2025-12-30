@@ -10,7 +10,7 @@ public static class TransactionEndpoints
 {
     public static void MapTransactionEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/v1/transactions")
+        var group = app.MapGroup("/api/v1/wallet/transactions")
             .RequireAuthorization(Policies.UserRole)
             .WithTags("Transaction");
 
