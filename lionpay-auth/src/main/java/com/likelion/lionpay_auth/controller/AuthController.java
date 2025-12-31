@@ -19,11 +19,6 @@ public class AuthController {
 		this.authService = authService;
 	}
 
-	@GetMapping("/ping")
-	public ResponseEntity<String> ping() {
-		return ResponseEntity.ok("pong");
-	}
-
 	// 🚨 수정된 부분: 반환 타입을 Map으로 변경하고 토큰을 반환합니다.
 	@PostMapping("/sign-up")
 	public ResponseEntity<TokenResponse> signUp(@Valid @RequestBody SignUpRequest request) {
