@@ -48,8 +48,7 @@ public class SecurityConfig {
 								"/api/v1/auth/sign-up",
 								"/api/v1/auth/sign-in",
 								"/api/v1/auth/sign-out",
-								"/api/v1/auth/refresh-token",
-								"/api/v1/auth/ping")
+								"/api/v1/auth/refresh-token")
 						.permitAll()
 						// 관리자 토큰 재발급 경로
 						.requestMatchers("/api/v1/admin/refresh-token").permitAll()

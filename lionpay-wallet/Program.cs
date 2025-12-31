@@ -13,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
+builder.Services.AddRequestTimeouts();
+builder.Services.AddOutputCache();
+
 // Configure JSON to serialize enums as strings
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -66,6 +69,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseRequestTimeouts();
+app.UseOutputCache();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
