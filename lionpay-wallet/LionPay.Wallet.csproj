@@ -8,24 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\aspire-servicedefaults\LionPay.ServiceDefaults.csproj"/>
+    <ProjectReference Include="..\aspire-servicedefaults\LionPay.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Npgsql" Version="13.0.2"/>
-    <PackageReference Include="Dapper" Version="2.1.66"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1"/>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
+    <PackageReference Include="Aspire.Npgsql" Version="13.1.0" />
+    <PackageReference Include="AWSSDK.DSQL" Version="4.0.8.4" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scalar.AspNetCore" Version="2.11.4"/>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.11.10" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\"/>
-    <Folder Include="Services\"/>
+    <Folder Include="Repositories\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
