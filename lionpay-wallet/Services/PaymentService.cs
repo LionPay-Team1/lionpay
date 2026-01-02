@@ -1,3 +1,4 @@
+using System.Data;
 using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Infrastructure;
 using LionPay.Wallet.Models;
@@ -42,7 +43,8 @@ public class PaymentService(
         return await executionStrategy.ExecuteAsync(async () =>
         {
             await using var connection = await dataSource.OpenConnectionAsync();
-            await using var transaction = await connection.BeginTransactionAsync();
+            // DSQL only supports SNAPSHOT isolation level
+            await using var transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
 
             try
             {
@@ -110,6 +112,3 @@ public class PaymentService(
         });
     }
 }
-
-
-
