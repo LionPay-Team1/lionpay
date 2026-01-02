@@ -7,8 +7,8 @@ var jwtSecret = builder.AddParameter("jwt-secret", secret: true);
 
 var dynamodb = builder.AddLocalDynamoDb("dynamodb");
 
-var walletPostgres = builder.AddPostgres("wallet-postgres");
-var walletdb = walletPostgres.AddDatabase("walletdb");
+// var walletPostgres = builder.AddPostgres("wallet-postgres");
+// var walletdb = walletPostgres.AddDatabase("walletdb");
 
 var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
         new JavaAppExecutableResourceOptions
@@ -36,20 +36,25 @@ var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
         c.Urls.Add(item);
     });
 
-var walletDbMigrations = builder.AddProject<LionPay_Wallet_Migrations>("wallet-db-migrations")
-    .WaitFor(walletdb)
-    .WithReference(walletdb);
+// var walletDbMigrations = builder.AddProject<LionPay_Wallet_Migrations>("wallet-db-migrations")
+//     .WaitFor(walletdb)
+//     .WithReference(walletdb);
 
-var walletCache = builder.AddRedis("wallet-cache");
+// var walletCache = builder.AddRedis("wallet-cache");
 
 var walletService = builder.AddProject<LionPay_Wallet>("wallet-service")
-    .WaitForCompletion(walletDbMigrations)
-    .WithReference(walletCache)
-    .WithReference(walletdb)
-    .WithReference(walletdb)
+    // .WaitForCompletion(walletDbMigrations)
+    // .WithReference(walletCache)
+    // .WithReference(walletdb)
+    // .WithReference(walletdb)
     .WithEnvironment("JWT__Secret", jwtSecret)
     .WithEnvironment("JWT__Issuer", "lionpay-auth")
     .WithEnvironment("JWT__Audiences", "lionpay-app,lionpay-management")
+    // DSQL 접속을 위한 로컬 AWS 자격 증명 설정 (필요시 프로필 지정)
+    .WithEnvironment("AWS_PROFILE", "likelion431")
+    .WithEnvironment("AWS_REGION", "ap-northeast-2")
+    .WithEnvironment("Dsql__Region", "ap-northeast-2")
+    .WithEnvironment("ConnectionStrings__WalletDb", "Host=ybtn6aheuy2zt6m5erjh2xxvgy.dsql.ap-northeast-2.on.aws;Database=postgres;Username=admin;SslMode=Require;")
     .WithHttpHealthCheck("/health")
     .WithUrls(c =>
     {

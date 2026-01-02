@@ -1,3 +1,4 @@
+using System.Data;
 using System.Diagnostics.Metrics;
 using LionPay.Wallet.Exceptions;
 using LionPay.Wallet.Infrastructure;
@@ -70,7 +71,9 @@ public class WalletService : IWalletService
         return await _executionStrategy.ExecuteAsync(async () =>
         {
             await using var connection = await _dataSource.OpenConnectionAsync();
-            await using var transaction = await connection.BeginTransactionAsync();
+            // DSQL only supports SNAPSHOT isolation level (which maps to RepeatableRead or Snapshot in ADO.NET)
+            // Postgres RepeatableRead is close to Snapshot isolation.
+            await using var transaction = await connection.BeginTransactionAsync(System.Data.IsolationLevel.Snapshot);
 
             try
             {
@@ -135,7 +138,9 @@ public class WalletService : IWalletService
         return await _executionStrategy.ExecuteAsync(async () =>
         {
             await using var connection = await _dataSource.OpenConnectionAsync();
-            await using var transaction = await connection.BeginTransactionAsync();
+            // DSQL only supports SNAPSHOT isolation level (which maps to RepeatableRead or Snapshot in ADO.NET)
+            // Postgres RepeatableRead is close to Snapshot isolation.
+            await using var transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
 
             try
             {

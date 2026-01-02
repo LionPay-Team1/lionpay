@@ -12,17 +12,31 @@ public static class DsqlAuthenticationExtensions
     {
         var dsqlOptions = builder.Configuration.GetSection(DsqlOptions.SectionName).Get<DsqlOptions>() ?? new DsqlOptions();
 
-        builder.AddNpgsqlDataSource(connectionName, configureDataSourceBuilder: dataSourceBuilder =>
+        builder.AddNpgsqlDataSource(connectionName, settings =>
         {
-            // 토큰 갱신 주기 설정
-            dataSourceBuilder.UsePeriodicPasswordProvider(async (_, ct) =>
-            {
-                // 재연결 시 호스트 정보가 변경되었을 가능성은 낮지만 안전하게 확인
-                var currentHost = new NpgsqlConnectionStringBuilder(dataSourceBuilder.ConnectionString).Host;
-                if (string.IsNullOrEmpty(currentHost)) return "";
+            settings.DisableHealthChecks = true;
+        }, configureDataSourceBuilder: dataSourceBuilder =>
+        {
+            var connBuilder = dataSourceBuilder.ConnectionStringBuilder;
 
-                return await GenerateToken(currentHost, dsqlOptions.Region);
-            }, TimeSpan.FromMinutes(dsqlOptions.TokenRefreshMinutes), TimeSpan.FromSeconds(10));
+            // DSQL 엔드포인트인지 확인 (dsql 도메인 포함 여부)
+            if (connBuilder.Host != null && connBuilder.Host.Contains("dsql"))
+            {
+                // [Fix] DSQL은 DISCARD ALL 명령을 지원하지 않으므로 커넥션 반환 시 세션 초기화를 비활성화함
+                // connBuilder.NoResetOnClose = true;
+                dataSourceBuilder.ConnectionStringBuilder.NoResetOnClose = true;
+
+                // 토큰 갱신 주기 설정
+                dataSourceBuilder.UsePeriodicPasswordProvider(async (_, ct) =>
+                {
+                    var currentHost = new NpgsqlConnectionStringBuilder(dataSourceBuilder.ConnectionString).Host;
+                    if (string.IsNullOrEmpty(currentHost)) return "";
+
+                    var token = await GenerateToken(currentHost, dsqlOptions.Region);
+                    await Task.Delay(TimeSpan.FromSeconds(10), ct);
+                    return token;
+                }, TimeSpan.FromMinutes(dsqlOptions.TokenRefreshMinutes), TimeSpan.FromSeconds(10));
+            }
         });
     }
 
