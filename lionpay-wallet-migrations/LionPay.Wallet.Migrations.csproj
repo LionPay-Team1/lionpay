@@ -5,14 +5,26 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Authors>LionPay Team</Authors>
+    <Company>LionPay Corp.</Company>
+    <Product>LionPay Wallet Migrations Tool</Product>
+    <Copyright>Copyright (C) 2025 LionPay Corp.</Copyright>
+    <Version>0.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dbup-postgresql" Version="6.1.5"/>
+    <PackageReference Include="AWSSDK.DSQL" Version="4.0.8.4" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="4.0.5.4" />
+    <PackageReference Include="AWSSDK.SSO" Version="4.0.2.8" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="4.0.3.9" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="dbup-postgresql" Version="6.1.5" />
+    <PackageReference Include="Npgsql" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\**\*.sql" LogicalName="%(Filename)%(Extension)"/>
+    <EmbeddedResource Include="Migrations\**\*.sql" LogicalName="%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

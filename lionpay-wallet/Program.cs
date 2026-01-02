@@ -22,10 +22,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.AddNpgsqlDataSource(connectionName: "walletdb");
+builder.AddDsqlNpgsqlDataSource("walletdb");
 
 // Configure Options
 builder.Services.Configure<WalletOptions>(builder.Configuration.GetSection(WalletOptions.SectionName));
+builder.Services.Configure<DsqlOptions>(builder.Configuration.GetSection(DsqlOptions.SectionName));
 
 // Add Services & Repositories
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
