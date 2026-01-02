@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
+<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="*" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="*" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="*" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Bun" Version="*" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="13.0.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Bun" Version="13.0.0" />
   </ItemGroup>
 
 </Project>
