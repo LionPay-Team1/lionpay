@@ -107,60 +107,14 @@ static async Task<int> RunMigrations(MigrateOptions options)
     }
 }
 
-static async Task<string> BuildDsqlConnectionString(Options opts)
+static async Task<string> BuildDsqlConnectionString(MigrateOptions opts)
 {
-    var region = RegionEndpoint.GetBySystemName(opts.Region);
-
-    AWSCredentials credentials;
-    if (!string.IsNullOrEmpty(opts.Profile))
-    {
-        var chain = new Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain();
-        if (chain.TryGetAWSCredentials(opts.Profile, out var profileCreds))
-        {
-            credentials = profileCreds;
-        }
-        else
-        {
-            throw new Exception($"Could not find AWS profile '{opts.Profile}'");
-        }
-    }
-    else
-    {
-        credentials = await DefaultAWSCredentialsIdentityResolver.GetCredentialsAsync();
-    }
-
-    try
-    {
-        var stsClient = new Amazon.SecurityToken.AmazonSecurityTokenServiceClient(credentials, region);
-        var identity = await stsClient.GetCallerIdentityAsync(new Amazon.SecurityToken.Model.GetCallerIdentityRequest());
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[AWS Identity] Account: {identity.Account}, Arn: {identity.Arn}");
-        Console.ResetColor();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Warning: Could not verify AWS Identity: {ex.Message}");
-    }
-
-    var endpoint = opts.ClusterEndpoint;
-    if (string.IsNullOrEmpty(endpoint))
-    {
-        throw new Exception("Cluster Endpoint is required.");
-    }
-
-    // Remove https:// or http:// and trailing slashes if present
-    endpoint = endpoint.Replace("https://", "").Replace("http://", "").Trim('/');
-    // Also remove port if present, though DSQL usually implies 5432
-    if (endpoint.Contains(':'))
-        endpoint = endpoint.Split(':')[0];
-
-    Console.WriteLine($"Generating Auth Token for Endpoint: {endpoint}...");
-    var token = await DSQLAuthTokenGenerator.GenerateDbConnectAdminAuthTokenAsync(credentials, region, endpoint);
+    var token = await GenerateToken(opts.Profile, opts.Region!, opts.ClusterEndpoint!);
+    var endpoint = NormalizeEndpoint(opts.ClusterEndpoint!);
 
     var builder = new Npgsql.NpgsqlConnectionStringBuilder
     {
         Host = endpoint,
-        // Port = 5432,
         Database = opts.Database,
         Username = "admin",
         Password = token,
@@ -171,4 +125,40 @@ static async Task<string> BuildDsqlConnectionString(Options opts)
     };
 
     return builder.ToString();
+}
+
+static async Task<string> GenerateToken(string? profile, string region, string clusterEndpoint)
+{
+    var regionEndpoint = RegionEndpoint.GetBySystemName(region);
+
+    AWSCredentials credentials;
+    if (!string.IsNullOrEmpty(profile))
+    {
+        var chain = new Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain();
+        if (chain.TryGetAWSCredentials(profile, out var profileCreds))
+        {
+            credentials = profileCreds;
+        }
+        else
+        {
+            throw new Exception($"Could not find AWS profile '{profile}'");
+        }
+    }
+    else
+    {
+        credentials = await DefaultAWSCredentialsIdentityResolver.GetCredentialsAsync();
+    }
+
+    var endpoint = NormalizeEndpoint(clusterEndpoint);
+    return await DSQLAuthTokenGenerator.GenerateDbConnectAdminAuthTokenAsync(credentials, regionEndpoint, endpoint);
+}
+
+static string NormalizeEndpoint(string endpoint)
+{
+    // Remove https:// or http:// and trailing slashes if present
+    endpoint = endpoint.Replace("https://", "").Replace("http://", "").Trim('/');
+    // Also remove port if present, though DSQL usually implies 5432
+    if (endpoint.Contains(':'))
+        endpoint = endpoint.Split(':')[0];
+    return endpoint;
 }
