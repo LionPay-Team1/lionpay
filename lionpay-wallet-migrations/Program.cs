@@ -18,10 +18,12 @@ static async Task<int> GetToken(GetTokenOptions options)
 {
     try
     {
-        var token = await GenerateToken(options.Profile, options.Region, options.ClusterEndpoint);
+        var token = await GenerateToken(options.Profile, options.Region, options.ClusterEndpoint, options.ExpiresInMinutes);
+
         Console.WriteLine(token);
         return 0;
     }
+
     catch (Exception ex)
     {
         Console.Error.WriteLine($"Error: {ex.Message}");
@@ -127,7 +129,7 @@ static async Task<string> BuildDsqlConnectionString(MigrateOptions opts)
     return builder.ToString();
 }
 
-static async Task<string> GenerateToken(string? profile, string region, string clusterEndpoint)
+static async Task<string> GenerateToken(string? profile, string region, string clusterEndpoint, int expiresInMinutes = 15)
 {
     var regionEndpoint = RegionEndpoint.GetBySystemName(region);
 
@@ -147,6 +149,7 @@ static async Task<string> GenerateToken(string? profile, string region, string c
     else
     {
         credentials = await DefaultAWSCredentialsIdentityResolver.GetCredentialsAsync();
+        credentials.Expiration = DateTime.UtcNow.AddMinutes(expiresInMinutes);
     }
 
     var endpoint = NormalizeEndpoint(clusterEndpoint);

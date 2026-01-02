@@ -29,4 +29,7 @@ public class GetTokenOptions
 
     [Option('e', "endpoint", Required = true, HelpText = "AWS DSQL Cluster Endpoint.")]
     public required string ClusterEndpoint { get; set; }
+
+    [Option("expires-in", Required = false, Default = 15, HelpText = "Token expiration time in minutes.")]
+    public int ExpiresInMinutes { get; set; }
 }
