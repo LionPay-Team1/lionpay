@@ -88,10 +88,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
+app.MapDefaultEndpoints(); // Health checks should not require authentication
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapDefaultEndpoints();
 
 app.MapWalletEndpoints();
 app.MapPaymentEndpoints();

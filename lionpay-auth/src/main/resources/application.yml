@@ -4,11 +4,11 @@ spring:
   application:
     name: lionpay-auth
 aws:
-  region: ap-northeast-2
+  region: ${AWS_REGION:ap-northeast-2}
   dynamodb:
-    endpoint: ${DYNAMODB_URL:http://localhost:8000}
-    access-key: ${AWS_ACCESS_KEY_ID:local}
-    secret-key: ${AWS_SECRET_ACCESS_KEY:local}
+    endpoint: ${DYNAMODB_URL:}
+    access-key: ${AWS_ACCESS_KEY_ID:}
+    secret-key: ${AWS_SECRET_ACCESS_KEY:}
     table-name: ${DYNAMODB_TABLE_NAME:lionpay-auth}
 
 jwt:

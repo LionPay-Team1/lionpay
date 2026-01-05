@@ -19,10 +19,10 @@ public static class ServiceCollectionExtensions
                 {
                     options.RequireHttpsMetadata = false;
 
-                    var jwtSecret = configuration["JWT:Secret"];
+                    var jwtSecret = configuration["JWT_SECRET"];
                     if (string.IsNullOrEmpty(jwtSecret))
                     {
-                        throw new InvalidOperationException("JWT:Secret is not configured");
+                        throw new InvalidOperationException("JWT_SECRET is not configured");
                     }
 
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -33,8 +33,8 @@ public static class ServiceCollectionExtensions
                         RequireExpirationTime = true,
                         ValidateLifetime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-                        ValidIssuer = configuration["JWT:Issuer"],
-                        ValidAudiences = configuration["JWT:Audiences"]?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? []
+                        ValidIssuer = configuration["JWT_ISSUER"],
+                        ValidAudiences = configuration["JWT_AUDIENCES"]?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? []
                     };
 
                     options.Events = new JwtBearerEvents

@@ -33,40 +33,37 @@ static async Task<int> GetToken(GetTokenOptions options)
 
 static async Task<int> RunMigrations(MigrateOptions options)
 {
-    string connectionString;
-    var envConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__walletdb");
+    // 환경 변수에서 기본값 로드 (우선순위: 명령어 인자 > 환경 변수)
+    var clusterEndpoint = options.ClusterEndpoint ?? Environment.GetEnvironmentVariable("CLUSTER_ENDPOINT");
+    var region = options.Region ?? Environment.GetEnvironmentVariable("AWS_REGION");
+    var profile = options.Profile ?? Environment.GetEnvironmentVariable("AWS_PROFILE");
 
-    // If env var is set and NO DSQL params are provided, use env var.
-    // If DSQL params are provided, they take precedence, or we should clarify.
-    // Logic: If env var exists, and NO endpoint provided, use env.
-    // If an endpoint is provided, use DSQL logic.
-    if (!string.IsNullOrEmpty(envConnectionString) && string.IsNullOrEmpty(options.ClusterEndpoint))
+    if (string.IsNullOrEmpty(clusterEndpoint) || string.IsNullOrEmpty(region))
     {
-        Console.WriteLine("Using ConnectionStrings__walletdb from environment.");
-        connectionString = envConnectionString;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("Error: CLUSTER_ENDPOINT and AWS_REGION must be provided via command line or environment variables.");
+        Console.ResetColor();
+        return -1;
     }
-    else
-    {
-        if (string.IsNullOrEmpty(options.ClusterEndpoint) || string.IsNullOrEmpty(options.Region))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(
-                "Error: ConnectionStrings__walletdb not set, and DSQL parameters (ClusterEndpoint + Region) are missing.");
-            Console.ResetColor();
-            return -1;
-        }
 
-        try
-        {
-            connectionString = await BuildDsqlConnectionString(options);
-        }
-        catch (Exception ex)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Error building DSQL connection string: {ex.Message}");
-            Console.ResetColor();
-            return -1;
-        }
+    Console.WriteLine($"Using Cluster Endpoint: {clusterEndpoint}");
+    Console.WriteLine($"Using AWS Region: {region}");
+    if (!string.IsNullOrEmpty(profile))
+    {
+        Console.WriteLine($"Using AWS Profile: {profile}");
+    }
+
+    string connectionString;
+    try
+    {
+        connectionString = await BuildDsqlConnectionString(profile, region, clusterEndpoint, options.Database);
+    }
+    catch (Exception ex)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"Error building DSQL connection string: {ex.Message}");
+        Console.ResetColor();
+        return -1;
     }
 
     // 토큰 발급 후 바로 연결하면 연결이 되지 않기 때문에 30초간 대기
@@ -109,15 +106,13 @@ static async Task<int> RunMigrations(MigrateOptions options)
     }
 }
 
-static async Task<string> BuildDsqlConnectionString(MigrateOptions opts)
+static async Task<string> BuildDsqlConnectionString(string? profile, string region, string clusterEndpoint, string database)
 {
-    var token = await GenerateToken(opts.Profile, opts.Region!, opts.ClusterEndpoint!);
-    var endpoint = NormalizeEndpoint(opts.ClusterEndpoint!);
-
+    var token = await GenerateToken(profile, region, clusterEndpoint);
     var builder = new Npgsql.NpgsqlConnectionStringBuilder
     {
-        Host = endpoint,
-        Database = opts.Database,
+        Host = clusterEndpoint,
+        Database = database,
         Username = "admin",
         Password = token,
         Pooling = false,
@@ -143,7 +138,7 @@ static async Task<string> GenerateToken(string? profile, string region, string c
         }
         else
         {
-            throw new Exception($"Could not find AWS profile '{profile}'");
+            throw new InvalidOperationException($"Could not find AWS profile '{profile}'");
         }
     }
     else
@@ -152,16 +147,5 @@ static async Task<string> GenerateToken(string? profile, string region, string c
         credentials.Expiration = DateTime.UtcNow.AddMinutes(expiresInMinutes);
     }
 
-    var endpoint = NormalizeEndpoint(clusterEndpoint);
-    return await DSQLAuthTokenGenerator.GenerateDbConnectAdminAuthTokenAsync(credentials, regionEndpoint, endpoint);
-}
-
-static string NormalizeEndpoint(string endpoint)
-{
-    // Remove https:// or http:// and trailing slashes if present
-    endpoint = endpoint.Replace("https://", "").Replace("http://", "").Trim('/');
-    // Also remove port if present, though DSQL usually implies 5432
-    if (endpoint.Contains(':'))
-        endpoint = endpoint.Split(':')[0];
-    return endpoint;
+    return await DSQLAuthTokenGenerator.GenerateDbConnectAdminAuthTokenAsync(credentials, regionEndpoint, clusterEndpoint);
 }
