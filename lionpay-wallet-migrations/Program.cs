@@ -69,9 +69,9 @@ static async Task<int> RunMigrations(MigrateOptions options)
         }
     }
 
-    // 토큰 발급 후 바로 연결하면 연결이 되지 않기 때문에 10초간 대기
-    Console.WriteLine("Waiting for 10 seconds before connecting...");
-    await Task.Delay(TimeSpan.FromSeconds(10));
+    // 토큰 발급 후 바로 연결하면 연결이 되지 않기 때문에 30초간 대기
+    Console.WriteLine("Waiting for 30 seconds before connecting...");
+    await Task.Delay(TimeSpan.FromSeconds(30));
 
     try
     {
