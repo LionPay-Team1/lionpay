@@ -103,6 +103,62 @@ aspire run
 
 ---
 
+## AWS 인프라 설정 (AWS Infrastructure Setup)
+
+로컬 개발 환경에서 Aspire를 사용할 경우, AWS CloudFormation을 통해 필요한 리소스가 자동으로 프로비저닝된다.
+
+### 필수 리소스 (Required Resources)
+
+| 리소스 | 타입 | 용도 |
+|--------|------|------|
+| **AuthDB** | DynamoDB Table | 인증 서비스 데이터 저장 |
+| **WalletDB** | DSQL Cluster | 지갑 서비스 데이터베이스 |
+
+### AWS 프로필 설정 (AWS Profile Configuration)
+
+Aspire 실행 전에 AWS 프로필을 설정해야 한다.
+
+**AWS CLI 설정:**
+
+```bash
+# AWS CLI 설치 (Windows)
+winget install Amazon.AWSCLI
+
+# 프로필 설정
+aws configure --profile likelion431
+```
+
+**필요한 정보:**
+* AWS Access Key ID
+* AWS Secret Access Key
+* Default region: `ap-northeast-2`
+
+**프로필 확인:**
+
+```bash
+aws sts get-caller-identity --profile likelion431
+```
+
+### CloudFormation 스택 (CloudFormation Stack)
+
+`aspire run` 실행 시 자동으로 `lionpay-local-dev` 스택이 생성된다.
+
+**스택 내용:**
+* DynamoDB Table (`lionpay-local-dev-auth-table`)
+  * Partition Key: `pk` (String)
+  * Sort Key: `sk` (String)
+  * GSI: `byRefreshToken` (token 파티션 키)
+  * 암호화: 활성화
+  * Deletion Policy: Retain (삭제 보호)
+
+* DSQL Cluster (`lionpay-local-dev-wallet-dsql-cluster`)
+  * Deletion Protection: 활성화
+
+> [!IMPORTANT]
+> 리소스는 `DeletionPolicy: Retain`으로 설정되어 있어 스택 삭제 시에도 보존된다. 완전히 삭제하려면 AWS 콘솔에서 수동으로 삭제해야 한다.
+
+---
+
 ## API 클라이언트 생성 (API Client Generation)
 
 이 프로젝트는 `lionpay-app`과 `lionpay-management`에서 사용할 TypeScript API 클라이언트를 자동으로 생성하는 스크립트를 제공한다.
