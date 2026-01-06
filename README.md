@@ -129,6 +129,7 @@ aws configure --profile likelion431
 ```
 
 **필요한 정보:**
+
 * AWS Access Key ID
 * AWS Secret Access Key
 * Default region: `ap-northeast-2`
@@ -144,6 +145,7 @@ aws sts get-caller-identity --profile likelion431
 `aspire run` 실행 시 자동으로 `lionpay-local-dev` 스택이 생성된다.
 
 **스택 내용:**
+
 * DynamoDB Table (`lionpay-local-dev-auth-table`)
   * Partition Key: `pk` (String)
   * Sort Key: `sk` (String)
@@ -156,6 +158,31 @@ aws sts get-caller-identity --profile likelion431
 
 > [!IMPORTANT]
 > 리소스는 `DeletionPolicy: Retain`으로 설정되어 있어 스택 삭제 시에도 보존된다. 완전히 삭제하려면 AWS 콘솔에서 수동으로 삭제해야 한다.
+
+---
+
+## WalletDB 마이그레이션 (WalletDB Migrations)
+
+`lionpay-wallet` 서비스는 AWS DSQL을 데이터베이스로 사용하며, [DbUp](https://dbup.github.io/)을 통해 스키마 마이그레이션을 관리한다.
+
+### 마이그레이션 실행 방법
+
+루트 디렉토리에 있는 `migrate-walletdb.ps1` 스크립트를 사용하여 마이그레이션을 실행할 수 있다. 이 스크립트는 프로젝트를 자동으로 빌드한 후 실행한다.
+
+**PowerShell (Windows):**
+
+```powershell
+# 모든 마이그레이션 스크립트 실행 (단축 파라미터 사용)
+.\migrate-walletdb.ps1 migrate -e <DSQL_ENDPOINT> -r ap-northeast-2 -p <AWS_PROFILE>
+```
+
+**주요 파라미터:**
+
+* `migrate`: 마이그레이션 명령 (필수)
+* `-e`, `--endpoint`: AWS DSQL 클러스터의 엔드포인트 URL (필수)
+* `-r`, `--region`: AWS 리전 (예: `ap-northeast-2`)
+* `-p`, `--profile`: 사용할 AWS 프로필 이름 (기본값 사용 시 생략 가능)
+* `-d`, `--database`: 대상 데이터베이스 이름 (기본값: `postgres`)
 
 ---
 
