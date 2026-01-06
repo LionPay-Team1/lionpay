@@ -39,7 +39,7 @@ super-admin:
 management:
   endpoints:
     web:
-      base-path: /api/v1/auth
+      base-path: /actuator
       exposure:
         include: health, info
   endpoint:
