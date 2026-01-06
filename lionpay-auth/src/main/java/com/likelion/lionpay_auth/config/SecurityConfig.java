@@ -36,6 +36,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						// Forward 요청 허용 (WebMvcConfig의 forward를 위해 필요)
+						.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD).permitAll()
 						// Swagger/OpenAPI 경로 허용
 						.requestMatchers(
 								"/swagger.html")
@@ -44,6 +46,7 @@ public class SecurityConfig {
 								"/openapi/**",
 								"/swagger-ui/**",
 								"/swagger.html",
+								"/actuator/health",
 								"/actuator/**")
 						.permitAll()
 						.requestMatchers(
