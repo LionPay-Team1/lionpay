@@ -4,8 +4,6 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var jwtSecret = builder.AddParameter("jwt-secret", secret: true);
-
 var awsConfig = builder.AddAWSSDKConfig()
     .WithRegion(RegionEndpoint.APNortheast2)
     .WithProfile("likelion431");
@@ -13,6 +11,8 @@ var awsConfig = builder.AddAWSSDKConfig()
 var awsResources = builder
     .AddAWSCloudFormationTemplate("aws-resources", "app-resources.template", stackName: "lionpay-local-dev")
     .WithReference(awsConfig);
+
+var jwtSecret = builder.AddParameter("jwt-secret", secret: true);
 
 var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
         new JavaAppExecutableResourceOptions
@@ -30,6 +30,7 @@ var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
     .WithEnvironment("AWS_REGION", awsConfig.Region!.SystemName)
     .WithEnvironment("AWS_PROFILE", awsConfig.Profile)
     .WithEnvironment("JWT_SECRET", jwtSecret)
+    .WithHttpHealthCheck("/actuator/health")
     .WithUrls(c =>
     {
         var item = new ResourceUrlAnnotation
