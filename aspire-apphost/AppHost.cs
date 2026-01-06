@@ -30,7 +30,7 @@ var authService = builder.AddSpringApp("auth-service", "../lionpay-auth",
     .WithEnvironment("AWS_REGION", awsConfig.Region!.SystemName)
     .WithEnvironment("AWS_PROFILE", awsConfig.Profile)
     .WithEnvironment("JWT_SECRET", jwtSecret)
-    .WithHttpHealthCheck("/api/v1/auth/actuator/health")
+    .WithHttpHealthCheck("/api/v1/auth/health")
     .WithUrls(c =>
     {
         var item = new ResourceUrlAnnotation

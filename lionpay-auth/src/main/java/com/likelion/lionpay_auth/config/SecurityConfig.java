@@ -38,11 +38,13 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						// Swagger/OpenAPI 경로 허용
 						.requestMatchers(
+								"/swagger.html")
+						.permitAll()
+						.requestMatchers(
 								"/openapi/**",
 								"/swagger-ui/**",
 								"/swagger.html",
-								"/actuator/**",
-								"/api/v1/auth/actuator/**")
+								"/actuator/**")
 						.permitAll()
 						.requestMatchers(
 								// 인증 API 경로
@@ -50,7 +52,8 @@ public class SecurityConfig {
 								"/api/v1/auth/sign-in",
 								"/api/v1/auth/sign-out",
 								"/api/v1/auth/refresh-token",
-								"/api/v1/auth/health")
+								"/api/v1/auth/health",
+								"/api/v1/auth/info")
 						.permitAll()
 						// 관리자 토큰 재발급 경로
 						.requestMatchers("/api/v1/admin/refresh-token").permitAll()
