@@ -89,6 +89,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 app.MapDefaultEndpoints(); // Health checks should not require authentication
+app.MapHealthChecks("/api/v1/wallet/health")
+    .CacheOutput("HealthChecks")
+    .WithRequestTimeout("HealthChecks");
 
 app.UseAuthentication();
 app.UseAuthorization();

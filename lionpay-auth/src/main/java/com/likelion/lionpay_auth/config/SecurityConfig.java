@@ -41,7 +41,8 @@ public class SecurityConfig {
 								"/openapi/**",
 								"/swagger-ui/**",
 								"/swagger.html",
-								"/actuator/**")
+								"/actuator/**",
+								"/api/v1/auth/actuator/**")
 						.permitAll()
 						.requestMatchers(
 								// 인증 API 경로

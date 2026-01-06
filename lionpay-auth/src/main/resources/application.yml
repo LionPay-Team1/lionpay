@@ -35,3 +35,13 @@ springdoc:
 super-admin:
   username: ${SUPER_ADMIN_USERNAME:admin}
   password: ${SUPER_ADMIN_PASSWORD:password}
+
+management:
+  endpoints:
+    web:
+      base-path: /api/v1/auth/actuator
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
