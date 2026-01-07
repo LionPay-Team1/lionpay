@@ -17,14 +17,17 @@ public static class DsqlAuthenticationExtensions
     public static void AddDsqlNpgsqlDataSource(this IHostApplicationBuilder builder, string connectionName)
     {
         var dsqlOptions = builder.Configuration.GetSection(DsqlOptions.SectionName).Get<DsqlOptions>() ?? new DsqlOptions();
+
+        // AWS 서명 시 클라이언트 시간이 서버 시간보다 빠를 경우를 대비해 시간을 1분 늦춤
+        AWSConfigs.ManualClockCorrection = TimeSpan.FromMinutes(-1);
+
         var clusterEndpoint = builder.Configuration["WALLETDB_CLUSTER_ENDPOINT"];
 
-        // DSQL 엔드포인트인 경우 초기 토큰을 미리 생성 (30초 대기 필요)
+        // DSQL 엔드포인트인 경우 초기 토큰을 미리 생성
         string? initialToken = null;
         if (!string.IsNullOrEmpty(clusterEndpoint) && clusterEndpoint.Contains("dsql"))
         {
             initialToken = GenerateToken(clusterEndpoint, dsqlOptions.Region).GetAwaiter().GetResult();
-            Thread.Sleep(TimeSpan.FromSeconds(30));
         }
 
         builder.AddNpgsqlDataSource(connectionName, settings =>
@@ -60,7 +63,7 @@ public static class DsqlAuthenticationExtensions
                     if (string.IsNullOrEmpty(currentHost)) return "";
 
                     var token = await GenerateToken(currentHost, dsqlOptions.Region);
-                    await Task.Delay(TimeSpan.FromSeconds(30), ct);
+                    Console.WriteLine("DSQL Token Refreshed.");
                     return token;
                 }, TimeSpan.FromMinutes(dsqlOptions.TokenRefreshMinutes), TimeSpan.FromSeconds(60));
             }

@@ -8,6 +8,9 @@ using DbUp;
 using LionPay.Wallet.Migrations;
 using LionPay.Wallet.Migrations.Dsql;
 
+// AWS 서명 시 클라이언트 시간이 서버 시간보다 빠를 경우를 대비해 시간을 1분 늦춤
+AWSConfigs.ManualClockCorrection = TimeSpan.FromMinutes(-1);
+
 return await Parser.Default.ParseArguments<MigrateOptions, GetTokenOptions>(args)
     .MapResult(
         async (MigrateOptions options) => await RunMigrations(options),
@@ -65,10 +68,6 @@ static async Task<int> RunMigrations(MigrateOptions options)
         Console.ResetColor();
         return -1;
     }
-
-    // 토큰 발급 후 바로 연결하면 연결이 되지 않기 때문에 30초간 대기
-    Console.WriteLine("Waiting for 30 seconds before connecting...");
-    await Task.Delay(TimeSpan.FromSeconds(30));
 
     try
     {
