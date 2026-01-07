@@ -12,6 +12,8 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
+  BUCKET_FRONTEND: BUCKET_ID
+  DIST_ID: DIST_ID
 
 jobs:
   build-and-deploy:
@@ -28,10 +30,10 @@ jobs:
       - name: Set Environment Variables
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
-              echo "FRONTEND_BUCKET=${{ secrets.BUCKET_FRONTEND_PROD }}" >> "$GITHUB_ENV"
+              echo "BUCKET_FRONTEND=${{ secrets.BUCKET_FRONTEND_PROD }}" >> "$GITHUB_ENV"
               echo "DIST_ID=${{ secrets.DIST_APP_ID_PROD }}" >> "$GITHUB_ENV"
           else
-              echo "FRONTEND_BUCKET=${{ secrets.BUCKET_FRONTEND_DEV }}" >> "$GITHUB_ENV"
+              echo "BUCKET_FRONTEND=${{ secrets.BUCKET_FRONTEND_DEV }}" >> "$GITHUB_ENV"
               echo "DIST_ID=${{ secrets.DIST_APP_ID_DEV }}" >> "$GITHUB_ENV"
           fi
 
@@ -61,7 +63,7 @@ jobs:
       - name: Sync to S3
         working-directory: lionpay-app
         run: |
-          aws s3 sync dist/ s3://${{ env.FRONTEND_BUCKET }}/app/ --delete
+          aws s3 sync dist/ s3://${{ env.BUCKET_FRONTEND }}/app/ --delete
 
       - name: Invalidate CloudFront cache
         run: |
