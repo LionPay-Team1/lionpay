@@ -28,11 +28,11 @@ jobs:
       - name: Set Environment Variables
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
-              echo "FRONTEND_BUCKET=${{ secrets.FRONTEND_BUCKET_PROD }}" >> "$GITHUB_ENV"
-              echo "CLOUDFRONT_ID=${{ secrets.APP_CLOUDFRONT_ID_PROD }}" >> "$GITHUB_ENV"
+              echo "FRONTEND_BUCKET=${{ secrets.BUCKET_FRONTEND_PROD }}" >> "$GITHUB_ENV"
+              echo "DIST_ID=${{ secrets.DIST_APP_ID_PROD }}" >> "$GITHUB_ENV"
           else
-              echo "FRONTEND_BUCKET=${{ secrets.FRONTEND_BUCKET_DEV }}" >> "$GITHUB_ENV"
-              echo "CLOUDFRONT_ID=${{ secrets.APP_CLOUDFRONT_ID_DEV }}" >> "$GITHUB_ENV"
+              echo "FRONTEND_BUCKET=${{ secrets.BUCKET_FRONTEND_DEV }}" >> "$GITHUB_ENV"
+              echo "DIST_ID=${{ secrets.DIST_APP_ID_DEV }}" >> "$GITHUB_ENV"
           fi
 
       - name: Setup Bun
@@ -66,6 +66,6 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ env.CLOUDFRONT_ID }} \
+            --distribution-id ${{ env.DIST_ID }} \
             --paths "/*" \
             --no-cli-pager
