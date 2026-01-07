@@ -34,7 +34,7 @@ public static class DsqlAuthenticationExtensions
             if (!string.IsNullOrEmpty(clusterEndpoint))
             {
                 // UsePeriodicPasswordProvider 사용 시 ConnectionString에 Password를 포함하면 안 됨
-                settings.ConnectionString = $"Host={clusterEndpoint};Database=postgres;Username=admin;";
+                settings.ConnectionString = $"Host={clusterEndpoint};Database=postgres;Username=admin;Ssl Mode=VerifyFull;";
             }
         }, configureDataSourceBuilder: dataSourceBuilder =>
         {
