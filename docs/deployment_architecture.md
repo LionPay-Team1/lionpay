@@ -140,21 +140,21 @@ spec:
     - http:
         paths:
           # Auth Service endpoints
-          - path: /api/v1/auth
+          - path: /v1/auth
             pathType: Prefix
             backend:
               service:
                 name: auth-service
                 port:
                   number: 8080
-          - path: /api/v1/users
+          - path: /v1/users
             pathType: Prefix
             backend:
               service:
                 name: auth-service
                 port:
                   number: 8080
-          - path: /api/v1/admin
+          - path: /v1/admin
             pathType: Prefix
             backend:
               service:
@@ -162,7 +162,7 @@ spec:
                 port:
                   number: 8080
           # Wallet Service endpoints
-          - path: /api/v1/wallet
+          - path: /v1/wallet
             pathType: Prefix
             backend:
               service:
@@ -222,23 +222,23 @@ WALLET_SERVICE_URL=https://api.lionpay.shop
 
 ## 5. API 엔드포인트 요약
 
-최종 API URL 형식: `https://api.lionpay.shop/api/v1/{service}/{endpoint}`
+최종 API URL 형식: `https://api.lionpay.shop/v1/{service}/{endpoint}`
 
 ### Auth Service (`auth-service`)
 
 | 엔드포인트 | URL | 설명 |
 |-----------|-----|------|
-| Auth | `/api/v1/auth/*` | 회원가입, 로그인, 로그아웃 |
-| Users | `/api/v1/users/*` | 사용자 정보 조회 |
-| Admin | `/api/v1/admin/*` | 관리자 인증 및 사용자 관리 |
+| Auth | `/v1/auth/*` | 회원가입, 로그인, 로그아웃 |
+| Users | `/v1/users/*` | 사용자 정보 조회 |
+| Admin | `/v1/admin/*` | 관리자 인증 및 사용자 관리 |
 
 ### Wallet Service (`wallet-service`)
 
 | 엔드포인트 | URL | 설명 |
 |-----------|-----|------|
-| Wallet | `/api/v1/wallet/*` | 지갑 조회, 충전 |
-| Payments | `/api/v1/wallet/payments/*` | 결제 처리 |
-| Transactions | `/api/v1/wallet/transactions/*` | 거래 내역 |
-| Merchants | `/api/v1/wallet/merchants/*` | 가맹점 조회 |
-| Admin | `/api/v1/wallet/admin/*` | 관리자 기능 |
-| Exchange Rates | `/api/v1/wallet/exchange-rates/*` | 환율 정보 |
+| Wallet | `/v1/wallet/*` | 지갑 조회, 충전 |
+| Payments | `/v1/wallet/payments/*` | 결제 처리 |
+| Transactions | `/v1/wallet/transactions/*` | 거래 내역 |
+| Merchants | `/v1/wallet/merchants/*` | 가맹점 조회 |
+| Admin | `/v1/wallet/admin/*` | 관리자 기능 |
+| Exchange Rates | `/v1/wallet/exchange-rates/*` | 환율 정보 |
