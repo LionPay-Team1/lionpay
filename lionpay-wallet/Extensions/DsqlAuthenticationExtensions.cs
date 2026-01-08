@@ -74,7 +74,12 @@ public static class DsqlAuthenticationExtensions
     {
         if (string.IsNullOrEmpty(region))
         {
-            region = Environment.GetEnvironmentVariable("AWS_REGION") ?? "ap-northeast-2";
+            region = Environment.GetEnvironmentVariable("AWS_REGION");
+        }
+
+        if (string.IsNullOrEmpty(region))
+        {
+            throw new InvalidOperationException("AWS Region is not configured. Please set Dsql:Region in configuration or AWS_REGION environment variable.");
         }
 
         var regionEndpoint = RegionEndpoint.GetBySystemName(region);
