@@ -151,13 +151,13 @@ aws sts get-caller-identity --profile likelion431
   * Sort Key: `sk` (String)
   * GSI: `byRefreshToken` (token 파티션 키)
   * 암호화: 활성화
-  * Deletion Policy: Retain (삭제 보호)
+  * Deletion Policy: Delete (스택 삭제 시 제거됨)
 
 * DSQL Cluster (`lionpay-local-dev-wallet-dsql-cluster`)
-  * Deletion Protection: 활성화
+  * Deletion Protection: 비활성화
 
-> [!IMPORTANT]
-> 리소스는 `DeletionPolicy: Retain`으로 설정되어 있어 스택 삭제 시에도 보존된다. 완전히 삭제하려면 AWS 콘솔에서 수동으로 삭제해야 한다.
+> [!CAUTION]
+> 리소스는 `DeletionPolicy: Delete`로 설정되어 있어 스택 삭제 시 데이터도 함께 영구 삭제된다.
 
 ---
 
@@ -216,7 +216,9 @@ generate-client.bat
 
 #### 커스텀 메트릭 사용 예제
 
-**Counter (카운터)** - 로그인 성공/실패 횟수 등:
+OpenTelemetry `Meter`를 주입받아 카운터(Counter), 히스토그램(Histogram), 게이지(Gauge) 등을 생성하여 사용한다.
+
+**예시 (로그인 카운터):**
 
 ```java
 @Service
@@ -224,67 +226,12 @@ public class AuthService {
     private final LongCounter loginCounter;
 
     public AuthService(Meter meter) {
-        this.loginCounter = meter.counterBuilder("auth.login.count")
-            .setDescription("로그인 시도 횟수")
-            .setUnit("1")
-            .build();
+        this.loginCounter = meter.counterBuilder("auth.login.count").build();
     }
 
-    public void login(String username) {
-        // 로그인 로직
-        loginCounter.add(1, Attributes.of(
-            AttributeKey.stringKey("result"), "success",
-            AttributeKey.stringKey("method"), "password"
-        ));
+    public void login() {
+        loginCounter.add(1, Attributes.of(AttributeKey.stringKey("result"), "success"));
     }
-}
-```
-
-**Histogram (히스토그램)** - 응답 시간 분포 등:
-
-```java
-@Service
-public class TokenService {
-    private final DoubleHistogram tokenGenerationTime;
-
-    public TokenService(Meter meter) {
-        this.tokenGenerationTime = meter.histogramBuilder("auth.token.generation_time")
-            .setDescription("JWT 토큰 생성 소요 시간")
-            .setUnit("ms")
-            .build();
-    }
-
-    public String generateToken(User user) {
-        long startTime = System.currentTimeMillis();
-        String token = createJwtToken(user);
-        long duration = System.currentTimeMillis() - startTime;
-
-        tokenGenerationTime.record(duration, Attributes.of(
-            AttributeKey.stringKey("token_type"), "access"
-        ));
-        return token;
-    }
-}
-```
-
-**Gauge (게이지)** - 현재 활성 세션 수 등:
-
-```java
-@Component
-public class SessionMetrics {
-    private final AtomicLong activeSessions = new AtomicLong(0);
-
-    public SessionMetrics(Meter meter) {
-        meter.gaugeBuilder("auth.sessions.active")
-            .setDescription("현재 활성 세션 수")
-            .setUnit("1")
-            .buildWithCallback(measurement ->
-                measurement.record(activeSessions.get())
-            );
-    }
-
-    public void sessionCreated() { activeSessions.incrementAndGet(); }
-    public void sessionDestroyed() { activeSessions.decrementAndGet(); }
 }
 ```
 
@@ -309,83 +256,19 @@ builder.Services.AddOpenTelemetry()
 
 #### Wallet 커스텀 메트릭 사용 예제
 
-먼저 서비스 클래스에서 `Meter`를 생성하고 메트릭을 정의한다:
+서비스 클래스에서 `Meter`를 정의하고 메트릭을 기록한다.
 
-**Counter (카운터)** - 트랜잭션 수 등:
+**예시 (트랜잭션 카운터):**
 
 ```csharp
-using System.Diagnostics.Metrics;
-
 public class TransactionService
 {
-    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
-    private static readonly Counter<long> TransactionCounter =
-        Meter.CreateCounter<long>(
-            "wallet.transactions.count",
-            unit: "1",
-            description: "총 트랜잭션 수");
+    private static readonly Meter Meter = new("lionpay.wallet");
+    private static readonly Counter<long> TransactionCounter = Meter.CreateCounter<long>("wallet.transactions.count");
 
-    public async Task<Transaction> ProcessTransactionAsync(decimal amount, string type)
+    public void ProcessTransaction()
     {
-        // 트랜잭션 처리 로직
-        var transaction = await ExecuteTransactionAsync(amount);
-
-        TransactionCounter.Add(1,
-            new KeyValuePair<string, object?>("type", type),
-            new KeyValuePair<string, object?>("status", "success"));
-
-        return transaction;
-    }
-}
-```
-
-**Histogram (히스토그램)** - 처리 시간 분포:
-
-```csharp
-public class WalletService
-{
-    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
-    private static readonly Histogram<double> ProcessingTime =
-        Meter.CreateHistogram<double>(
-            "wallet.processing.duration",
-            unit: "ms",
-            description: "지갑 작업 처리 시간");
-
-    public async Task<Balance> GetBalanceAsync(string userId)
-    {
-        var stopwatch = Stopwatch.StartNew();
-
-        var balance = await FetchBalanceAsync(userId);
-
-        stopwatch.Stop();
-        ProcessingTime.Record(stopwatch.ElapsedMilliseconds,
-            new KeyValuePair<string, object?>("operation", "get_balance"));
-
-        return balance;
-    }
-}
-```
-
-**Gauge (게이지)** - 현재 총 잔액:
-
-```csharp
-public class BalanceMetrics
-{
-    private static readonly Meter Meter = new("lionpay.wallet", "1.0.0");
-
-    public BalanceMetrics()
-    {
-        Meter.CreateObservableGauge(
-            "wallet.total_balance",
-            () => GetTotalBalance(),
-            unit: "KRW",
-            description: "전체 사용자 총 잔액");
-    }
-
-    private Measurement<decimal> GetTotalBalance()
-    {
-        // DB에서 총 잔액 조회
-        return new Measurement<decimal>(totalBalance);
+        TransactionCounter.Add(1, new KeyValuePair<string, object?>("status", "success"));
     }
 }
 ```
@@ -438,9 +321,13 @@ GitHub Actions를 통한 자동 배포를 위해 저장소 설정(`Settings > Se
 
 각 프론트엔드 애플리케이션의 CloudFront 캐시 무효화(Invalidation)에 사용된다.
 
-| Secret Name | 대상 앱 | 설명 |
-|-------------|---------|------|
-| `CLOUDFRONT_DISTRIBUTION_ID_APP` | **lionpay-app** | 고객용 앱의 CloudFront Distribution ID |
-| `CLOUDFRONT_DISTRIBUTION_ID_MANAGEMENT` | **lionpay-management** | 관리자용 앱의 CloudFront Distribution ID |
+| Secret Name | 설명 |
+|-------------|------|
+| `BUCKET_FRONTEND_DEV` | 프론트엔드 개발 환경 S3 버킷 이름 |
+| `BUCKET_FRONTEND_PROD` | 프론트엔드 운영 환경 S3 버킷 이름 |
+| `DIST_APP_ID_DEV` | **lionpay-app** (Dev) CloudFront Distribution ID |
+| `DIST_APP_ID_PROD` | **lionpay-app** (Prod) CloudFront Distribution ID |
+| `DIST_MANAGEMENT_ID_DEV` | **lionpay-management** (Dev) CloudFront Distribution ID |
+| `DIST_MANAGEMENT_ID_PROD` | **lionpay-management** (Prod) CloudFront Distribution ID |
 
 > **참고**: `check.yml` (CI 빌드/테스트) 워크플로우는 소스 코드만 필요하므로 별도의 시크릿이 필요 없다.
