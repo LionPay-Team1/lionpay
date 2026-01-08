@@ -90,7 +90,7 @@ const handleErrorInterceptor = async (error: AxiosError) => {
         }
 
         try {
-            const response = await axios.post(`${AUTH_BASE_URL}/api/v1/admin/refresh-token`, {
+            const response = await axios.post(`${AUTH_BASE_URL}/v1/admin/refresh-token`, {
                 refreshToken: refreshToken
             });
 

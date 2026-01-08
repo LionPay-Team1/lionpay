@@ -4,11 +4,11 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1WalletMerchantsGet**](#apiv1walletmerchantsget) | **GET** /api/v1/wallet/merchants | Get active merchants|
-|[**apiV1WalletMerchantsIdGet**](#apiv1walletmerchantsidget) | **GET** /api/v1/wallet/merchants/{id} | Get merchant details|
+|[**v1WalletMerchantsGet**](#v1walletmerchantsget) | **GET** /v1/wallet/merchants | Get active merchants|
+|[**v1WalletMerchantsIdGet**](#v1walletmerchantsidget) | **GET** /v1/wallet/merchants/{id} | Get merchant details|
 
-# **apiV1WalletMerchantsGet**
-> Array<MerchantResponse> apiV1WalletMerchantsGet()
+# **v1WalletMerchantsGet**
+> Array<MerchantResponse> v1WalletMerchantsGet()
 
 Retrieves a list of active merchants.
 
@@ -25,7 +25,7 @@ const apiInstance = new MerchantApi(configuration);
 
 let countryCode: string; // (optional) (default to undefined)
 
-const { status, data } = await apiInstance.apiV1WalletMerchantsGet(
+const { status, data } = await apiInstance.v1WalletMerchantsGet(
     countryCode
 );
 ```
@@ -58,8 +58,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletMerchantsIdGet**
-> MerchantResponse apiV1WalletMerchantsIdGet()
+# **v1WalletMerchantsIdGet**
+> MerchantResponse v1WalletMerchantsIdGet()
 
 Retrieves details of a specific merchant by ID.
 
@@ -76,7 +76,7 @@ const apiInstance = new MerchantApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.apiV1WalletMerchantsIdGet(
+const { status, data } = await apiInstance.v1WalletMerchantsIdGet(
     id
 );
 ```

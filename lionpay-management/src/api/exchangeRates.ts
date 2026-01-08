@@ -42,14 +42,14 @@ export interface Currency {
 
 export const exchangeRatesApi = {
     getAll: async (): Promise<ExchangeRate[]> => {
-        const response = await axios.get(`${WALLET_BASE_URL}/api/v1/wallet/admin/exchange-rates`, {
+        const response = await axios.get(`${WALLET_BASE_URL}/v1/wallet/admin/exchange-rates`, {
             headers: getAuthHeaders()
         });
         return response.data as ExchangeRate[];
     },
 
     update: async (sourceCurrency: string, targetCurrency: string, rate: number): Promise<ExchangeRate> => {
-        const response = await axios.put(`${WALLET_BASE_URL}/api/v1/wallet/admin/exchange-rates`, {
+        const response = await axios.put(`${WALLET_BASE_URL}/v1/wallet/admin/exchange-rates`, {
             sourceCurrency,
             targetCurrency,
             rate
@@ -65,14 +65,14 @@ export const exchangeRatesApi = {
         if (targetCurrency) params.append('targetCurrency', targetCurrency);
         params.append('limit', limit.toString());
 
-        const response = await axios.get(`${WALLET_BASE_URL}/api/v1/wallet/admin/exchange-rates/history?${params.toString()}`, {
+        const response = await axios.get(`${WALLET_BASE_URL}/v1/wallet/admin/exchange-rates/history?${params.toString()}`, {
             headers: getAuthHeaders()
         });
         return response.data as ExchangeRateHistory[];
     },
 
     getCurrencies: async (): Promise<Currency[]> => {
-        const response = await axios.get(`${WALLET_BASE_URL}/api/v1/wallet/admin/exchange-rates/currencies`, {
+        const response = await axios.get(`${WALLET_BASE_URL}/v1/wallet/admin/exchange-rates/currencies`, {
             headers: getAuthHeaders()
         });
         return response.data as Currency[];

@@ -93,7 +93,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
         createAdmin: async (adminCreateRequest: AdminCreateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'adminCreateRequest' is not null or undefined
             assertParamExists('createAdmin', 'adminCreateRequest', adminCreateRequest)
-            const localVarPath = `/api/v1/admin/new`;
+            const localVarPath = `/v1/admin/new`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -129,7 +129,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
          * @throws {RequiredError}
          */
         getAdmins: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/admins`;
+            const localVarPath = `/v1/admin/admins`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -166,7 +166,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
          * @throws {RequiredError}
          */
         getUsers: async (phone?: string, userId?: string, page?: number, size?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/users`;
+            const localVarPath = `/v1/admin/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -218,7 +218,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
         refreshAdminToken: async (refreshTokenRequest: RefreshTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'refreshTokenRequest' is not null or undefined
             assertParamExists('refreshAdminToken', 'refreshTokenRequest', refreshTokenRequest)
-            const localVarPath = `/api/v1/admin/refresh-token`;
+            const localVarPath = `/v1/admin/refresh-token`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -257,7 +257,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
         signIn1: async (adminSignInRequest: AdminSignInRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'adminSignInRequest' is not null or undefined
             assertParamExists('signIn1', 'adminSignInRequest', adminSignInRequest)
-            const localVarPath = `/api/v1/admin/sign-in`;
+            const localVarPath = `/v1/admin/sign-in`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -296,7 +296,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
         signOut1: async (signOutRequest: SignOutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signOutRequest' is not null or undefined
             assertParamExists('signOut1', 'signOutRequest', signOutRequest)
-            const localVarPath = `/api/v1/admin/sign-out`;
+            const localVarPath = `/v1/admin/sign-out`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -338,7 +338,7 @@ export const AdminControllerApiAxiosParamCreator = function (configuration?: Con
             assertParamExists('updateAdmin', 'adminId', adminId)
             // verify required parameter 'adminUpdateRequest' is not null or undefined
             assertParamExists('updateAdmin', 'adminUpdateRequest', adminUpdateRequest)
-            const localVarPath = `/api/v1/admin/admins/{adminId}`
+            const localVarPath = `/v1/admin/admins/{adminId}`
                 .replace(`{${"adminId"}}`, encodeURIComponent(String(adminId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -672,39 +672,6 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        ping: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/auth/ping`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearerAuth required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {RefreshTokenRequest} refreshTokenRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -712,7 +679,7 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
         refreshToken: async (refreshTokenRequest: RefreshTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'refreshTokenRequest' is not null or undefined
             assertParamExists('refreshToken', 'refreshTokenRequest', refreshTokenRequest)
-            const localVarPath = `/api/v1/auth/refresh-token`;
+            const localVarPath = `/v1/auth/refresh-token`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -751,7 +718,7 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
         signIn: async (signInRequest: SignInRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signInRequest' is not null or undefined
             assertParamExists('signIn', 'signInRequest', signInRequest)
-            const localVarPath = `/api/v1/auth/sign-in`;
+            const localVarPath = `/v1/auth/sign-in`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -789,7 +756,7 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
          * @throws {RequiredError}
          */
         signOut: async (authorization?: string, signOutRequest?: SignOutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/auth/sign-out`;
+            const localVarPath = `/v1/auth/sign-out`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -831,7 +798,7 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
         signUp: async (signUpRequest: SignUpRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signUpRequest' is not null or undefined
             assertParamExists('signUp', 'signUpRequest', signUpRequest)
-            const localVarPath = `/api/v1/auth/sign-up`;
+            const localVarPath = `/v1/auth/sign-up`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -870,17 +837,6 @@ export const AuthControllerApiAxiosParamCreator = function (configuration?: Conf
 export const AuthControllerApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AuthControllerApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async ping(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ping(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AuthControllerApi.ping']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
         /**
          * 
          * @param {RefreshTokenRequest} refreshTokenRequest 
@@ -939,14 +895,6 @@ export const AuthControllerApiFp = function(configuration?: Configuration) {
 export const AuthControllerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = AuthControllerApiFp(configuration)
     return {
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        ping(options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.ping(options).then((request) => request(axios, basePath));
-        },
         /**
          * 
          * @param {AuthControllerApiRefreshTokenRequest} requestParameters Request parameters.
@@ -1022,15 +970,6 @@ export interface AuthControllerApiSignUpRequest {
 export class AuthControllerApi extends BaseAPI {
     /**
      * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public ping(options?: RawAxiosRequestConfig) {
-        return AuthControllerApiFp(this.configuration).ping(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {AuthControllerApiRefreshTokenRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1083,7 +1022,7 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
          * @throws {RequiredError}
          */
         getCurrentUser: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/users/me`;
+            const localVarPath = `/v1/users/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

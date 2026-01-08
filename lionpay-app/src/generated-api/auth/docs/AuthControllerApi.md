@@ -4,54 +4,10 @@ All URIs are relative to *http://localhost:8080*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**ping**](#ping) | **GET** /api/v1/auth/ping | |
-|[**refreshToken**](#refreshtoken) | **POST** /api/v1/auth/refresh-token | |
-|[**signIn**](#signin) | **POST** /api/v1/auth/sign-in | |
-|[**signOut**](#signout) | **POST** /api/v1/auth/sign-out | |
-|[**signUp**](#signup) | **POST** /api/v1/auth/sign-up | |
-
-# **ping**
-> string ping()
-
-
-### Example
-
-```typescript
-import {
-    AuthControllerApi,
-    Configuration
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new AuthControllerApi(configuration);
-
-const { status, data } = await apiInstance.ping();
-```
-
-### Parameters
-This endpoint does not have any parameters.
-
-
-### Return type
-
-**string**
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: */*
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | OK |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+|[**refreshToken**](#refreshtoken) | **POST** /v1/auth/refresh-token | |
+|[**signIn**](#signin) | **POST** /v1/auth/sign-in | |
+|[**signOut**](#signout) | **POST** /v1/auth/sign-out | |
+|[**signUp**](#signup) | **POST** /v1/auth/sign-up | |
 
 # **refreshToken**
 > TokenResponse refreshToken(refreshTokenRequest)

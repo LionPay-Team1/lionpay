@@ -4,21 +4,21 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1WalletAdminExchangeRatesCurrenciesGet**](#apiv1walletadminexchangeratescurrenciesget) | **GET** /api/v1/wallet/admin/exchange-rates/currencies | Get all currencies (admin)|
-|[**apiV1WalletAdminExchangeRatesGet**](#apiv1walletadminexchangeratesget) | **GET** /api/v1/wallet/admin/exchange-rates | Get all exchange rates (admin)|
-|[**apiV1WalletAdminExchangeRatesHistoryGet**](#apiv1walletadminexchangerateshistoryget) | **GET** /api/v1/wallet/admin/exchange-rates/history | Get exchange rate history|
-|[**apiV1WalletAdminExchangeRatesPut**](#apiv1walletadminexchangeratesput) | **PUT** /api/v1/wallet/admin/exchange-rates | Update exchange rate|
-|[**apiV1WalletAdminMerchantsGet**](#apiv1walletadminmerchantsget) | **GET** /api/v1/wallet/admin/merchants | Get all merchants|
-|[**apiV1WalletAdminMerchantsIdGet**](#apiv1walletadminmerchantsidget) | **GET** /api/v1/wallet/admin/merchants/{id} | Get merchant full info|
-|[**apiV1WalletAdminMerchantsIdPut**](#apiv1walletadminmerchantsidput) | **PUT** /api/v1/wallet/admin/merchants/{id} | Update merchant|
-|[**apiV1WalletAdminMerchantsPost**](#apiv1walletadminmerchantspost) | **POST** /api/v1/wallet/admin/merchants | Create merchant|
-|[**apiV1WalletAdminSummaryGet**](#apiv1walletadminsummaryget) | **GET** /api/v1/wallet/admin/summary | Get admin dashboard summary|
-|[**apiV1WalletAdminTransactionsUserIdGet**](#apiv1walletadmintransactionsuseridget) | **GET** /api/v1/wallet/admin/transactions/{userId} | Get user transactions|
-|[**apiV1WalletAdminWalletsUserIdAdjustPost**](#apiv1walletadminwalletsuseridadjustpost) | **POST** /api/v1/wallet/admin/wallets/{userId}/adjust | Adjust user wallet balance|
-|[**apiV1WalletAdminWalletsUserIdGet**](#apiv1walletadminwalletsuseridget) | **GET** /api/v1/wallet/admin/wallets/{userId} | Get user wallet|
+|[**v1WalletAdminExchangeRatesCurrenciesGet**](#v1walletadminexchangeratescurrenciesget) | **GET** /v1/wallet/admin/exchange-rates/currencies | Get all currencies (admin)|
+|[**v1WalletAdminExchangeRatesGet**](#v1walletadminexchangeratesget) | **GET** /v1/wallet/admin/exchange-rates | Get all exchange rates (admin)|
+|[**v1WalletAdminExchangeRatesHistoryGet**](#v1walletadminexchangerateshistoryget) | **GET** /v1/wallet/admin/exchange-rates/history | Get exchange rate history|
+|[**v1WalletAdminExchangeRatesPut**](#v1walletadminexchangeratesput) | **PUT** /v1/wallet/admin/exchange-rates | Update exchange rate|
+|[**v1WalletAdminMerchantsGet**](#v1walletadminmerchantsget) | **GET** /v1/wallet/admin/merchants | Get all merchants|
+|[**v1WalletAdminMerchantsIdGet**](#v1walletadminmerchantsidget) | **GET** /v1/wallet/admin/merchants/{id} | Get merchant full info|
+|[**v1WalletAdminMerchantsIdPut**](#v1walletadminmerchantsidput) | **PUT** /v1/wallet/admin/merchants/{id} | Update merchant|
+|[**v1WalletAdminMerchantsPost**](#v1walletadminmerchantspost) | **POST** /v1/wallet/admin/merchants | Create merchant|
+|[**v1WalletAdminSummaryGet**](#v1walletadminsummaryget) | **GET** /v1/wallet/admin/summary | Get admin dashboard summary|
+|[**v1WalletAdminTransactionsUserIdGet**](#v1walletadmintransactionsuseridget) | **GET** /v1/wallet/admin/transactions/{userId} | Get user transactions|
+|[**v1WalletAdminWalletsUserIdAdjustPost**](#v1walletadminwalletsuseridadjustpost) | **POST** /v1/wallet/admin/wallets/{userId}/adjust | Adjust user wallet balance|
+|[**v1WalletAdminWalletsUserIdGet**](#v1walletadminwalletsuseridget) | **GET** /v1/wallet/admin/wallets/{userId} | Get user wallet|
 
-# **apiV1WalletAdminExchangeRatesCurrenciesGet**
-> Array<CurrencyResponse> apiV1WalletAdminExchangeRatesCurrenciesGet()
+# **v1WalletAdminExchangeRatesCurrenciesGet**
+> Array<CurrencyResponse> v1WalletAdminExchangeRatesCurrenciesGet()
 
 
 ### Example
@@ -32,7 +32,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletAdminExchangeRatesCurrenciesGet();
+const { status, data } = await apiInstance.v1WalletAdminExchangeRatesCurrenciesGet();
 ```
 
 ### Parameters
@@ -60,8 +60,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminExchangeRatesGet**
-> Array<ExchangeRateResponse> apiV1WalletAdminExchangeRatesGet()
+# **v1WalletAdminExchangeRatesGet**
+> Array<ExchangeRateResponse> v1WalletAdminExchangeRatesGet()
 
 
 ### Example
@@ -75,7 +75,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletAdminExchangeRatesGet();
+const { status, data } = await apiInstance.v1WalletAdminExchangeRatesGet();
 ```
 
 ### Parameters
@@ -103,8 +103,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminExchangeRatesHistoryGet**
-> Array<ExchangeRateHistoryResponse> apiV1WalletAdminExchangeRatesHistoryGet()
+# **v1WalletAdminExchangeRatesHistoryGet**
+> Array<ExchangeRateHistoryResponse> v1WalletAdminExchangeRatesHistoryGet()
 
 Returns the history of exchange rate changes.
 
@@ -114,17 +114,17 @@ Returns the history of exchange rate changes.
 import {
     AdminApi,
     Configuration,
-    ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter
+    V1WalletAdminExchangeRatesHistoryGetLimitParameter
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-let limit: ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter; // (default to undefined)
+let limit: V1WalletAdminExchangeRatesHistoryGetLimitParameter; // (default to undefined)
 let sourceCurrency: string; // (optional) (default to undefined)
 let targetCurrency: string; // (optional) (default to undefined)
 
-const { status, data } = await apiInstance.apiV1WalletAdminExchangeRatesHistoryGet(
+const { status, data } = await apiInstance.v1WalletAdminExchangeRatesHistoryGet(
     limit,
     sourceCurrency,
     targetCurrency
@@ -135,7 +135,7 @@ const { status, data } = await apiInstance.apiV1WalletAdminExchangeRatesHistoryG
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **limit** | [**ApiV1WalletAdminExchangeRatesHistoryGetLimitParameter**] |  | defaults to undefined|
+| **limit** | [**V1WalletAdminExchangeRatesHistoryGetLimitParameter**] |  | defaults to undefined|
 | **sourceCurrency** | [**string**] |  | (optional) defaults to undefined|
 | **targetCurrency** | [**string**] |  | (optional) defaults to undefined|
 
@@ -161,8 +161,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminExchangeRatesPut**
-> ExchangeRateResponse apiV1WalletAdminExchangeRatesPut(updateExchangeRateRequest)
+# **v1WalletAdminExchangeRatesPut**
+> ExchangeRateResponse v1WalletAdminExchangeRatesPut(updateExchangeRateRequest)
 
 Create or update an exchange rate between two currencies.
 
@@ -180,7 +180,7 @@ const apiInstance = new AdminApi(configuration);
 
 let updateExchangeRateRequest: UpdateExchangeRateRequest; //
 
-const { status, data } = await apiInstance.apiV1WalletAdminExchangeRatesPut(
+const { status, data } = await apiInstance.v1WalletAdminExchangeRatesPut(
     updateExchangeRateRequest
 );
 ```
@@ -214,8 +214,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminMerchantsGet**
-> Array<MerchantResponse> apiV1WalletAdminMerchantsGet()
+# **v1WalletAdminMerchantsGet**
+> Array<MerchantResponse> v1WalletAdminMerchantsGet()
 
 Retrieves all merchants including inactive ones.
 
@@ -230,7 +230,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletAdminMerchantsGet();
+const { status, data } = await apiInstance.v1WalletAdminMerchantsGet();
 ```
 
 ### Parameters
@@ -258,8 +258,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminMerchantsIdGet**
-> MerchantModel apiV1WalletAdminMerchantsIdGet()
+# **v1WalletAdminMerchantsIdGet**
+> MerchantModel v1WalletAdminMerchantsIdGet()
 
 
 ### Example
@@ -275,7 +275,7 @@ const apiInstance = new AdminApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.apiV1WalletAdminMerchantsIdGet(
+const { status, data } = await apiInstance.v1WalletAdminMerchantsIdGet(
     id
 );
 ```
@@ -309,8 +309,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminMerchantsIdPut**
-> MerchantModel apiV1WalletAdminMerchantsIdPut(updateMerchantRequest)
+# **v1WalletAdminMerchantsIdPut**
+> MerchantModel v1WalletAdminMerchantsIdPut(updateMerchantRequest)
 
 
 ### Example
@@ -328,7 +328,7 @@ const apiInstance = new AdminApi(configuration);
 let id: string; // (default to undefined)
 let updateMerchantRequest: UpdateMerchantRequest; //
 
-const { status, data } = await apiInstance.apiV1WalletAdminMerchantsIdPut(
+const { status, data } = await apiInstance.v1WalletAdminMerchantsIdPut(
     id,
     updateMerchantRequest
 );
@@ -364,8 +364,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminMerchantsPost**
-> MerchantModel apiV1WalletAdminMerchantsPost(createMerchantRequest)
+# **v1WalletAdminMerchantsPost**
+> MerchantModel v1WalletAdminMerchantsPost(createMerchantRequest)
 
 
 ### Example
@@ -382,7 +382,7 @@ const apiInstance = new AdminApi(configuration);
 
 let createMerchantRequest: CreateMerchantRequest; //
 
-const { status, data } = await apiInstance.apiV1WalletAdminMerchantsPost(
+const { status, data } = await apiInstance.v1WalletAdminMerchantsPost(
     createMerchantRequest
 );
 ```
@@ -416,8 +416,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminSummaryGet**
-> AdminSummaryModel apiV1WalletAdminSummaryGet()
+# **v1WalletAdminSummaryGet**
+> AdminSummaryModel v1WalletAdminSummaryGet()
 
 
 ### Example
@@ -431,7 +431,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletAdminSummaryGet();
+const { status, data } = await apiInstance.v1WalletAdminSummaryGet();
 ```
 
 ### Parameters
@@ -459,8 +459,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminTransactionsUserIdGet**
-> Array<TransactionResponse> apiV1WalletAdminTransactionsUserIdGet()
+# **v1WalletAdminTransactionsUserIdGet**
+> Array<TransactionResponse> v1WalletAdminTransactionsUserIdGet()
 
 
 ### Example
@@ -469,18 +469,18 @@ No authorization required
 import {
     AdminApi,
     Configuration,
-    ApiV1WalletTransactionsGetLimitParameter,
-    ApiV1WalletTransactionsGetOffsetParameter
+    V1WalletTransactionsGetLimitParameter,
+    V1WalletTransactionsGetOffsetParameter
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
 let userId: string; // (default to undefined)
-let limit: ApiV1WalletTransactionsGetLimitParameter; // (optional) (default to 10)
-let offset: ApiV1WalletTransactionsGetOffsetParameter; // (optional) (default to 0)
+let limit: V1WalletTransactionsGetLimitParameter; // (optional) (default to 10)
+let offset: V1WalletTransactionsGetOffsetParameter; // (optional) (default to 0)
 
-const { status, data } = await apiInstance.apiV1WalletAdminTransactionsUserIdGet(
+const { status, data } = await apiInstance.v1WalletAdminTransactionsUserIdGet(
     userId,
     limit,
     offset
@@ -492,8 +492,8 @@ const { status, data } = await apiInstance.apiV1WalletAdminTransactionsUserIdGet
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **userId** | [**string**] |  | defaults to undefined|
-| **limit** | [**ApiV1WalletTransactionsGetLimitParameter**] |  | (optional) defaults to 10|
-| **offset** | [**ApiV1WalletTransactionsGetOffsetParameter**] |  | (optional) defaults to 0|
+| **limit** | [**V1WalletTransactionsGetLimitParameter**] |  | (optional) defaults to 10|
+| **offset** | [**V1WalletTransactionsGetOffsetParameter**] |  | (optional) defaults to 0|
 
 
 ### Return type
@@ -517,8 +517,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminWalletsUserIdAdjustPost**
-> WalletResponse apiV1WalletAdminWalletsUserIdAdjustPost(adjustBalanceRequest)
+# **v1WalletAdminWalletsUserIdAdjustPost**
+> WalletResponse v1WalletAdminWalletsUserIdAdjustPost(adjustBalanceRequest)
 
 
 ### Example
@@ -536,7 +536,7 @@ const apiInstance = new AdminApi(configuration);
 let userId: string; // (default to undefined)
 let adjustBalanceRequest: AdjustBalanceRequest; //
 
-const { status, data } = await apiInstance.apiV1WalletAdminWalletsUserIdAdjustPost(
+const { status, data } = await apiInstance.v1WalletAdminWalletsUserIdAdjustPost(
     userId,
     adjustBalanceRequest
 );
@@ -573,8 +573,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletAdminWalletsUserIdGet**
-> WalletResponse apiV1WalletAdminWalletsUserIdGet()
+# **v1WalletAdminWalletsUserIdGet**
+> WalletResponse v1WalletAdminWalletsUserIdGet()
 
 
 ### Example
@@ -590,7 +590,7 @@ const apiInstance = new AdminApi(configuration);
 
 let userId: string; // (default to undefined)
 
-const { status, data } = await apiInstance.apiV1WalletAdminWalletsUserIdGet(
+const { status, data } = await apiInstance.v1WalletAdminWalletsUserIdGet(
     userId
 );
 ```

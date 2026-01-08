@@ -4,13 +4,13 @@ All URIs are relative to *http://localhost:8080*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**createAdmin**](#createadmin) | **POST** /api/v1/admin/new | |
-|[**getAdmins**](#getadmins) | **GET** /api/v1/admin/admins | |
-|[**getUsers**](#getusers) | **GET** /api/v1/admin/users | |
-|[**refreshAdminToken**](#refreshadmintoken) | **POST** /api/v1/admin/refresh-token | |
-|[**signIn1**](#signin1) | **POST** /api/v1/admin/sign-in | |
-|[**signOut1**](#signout1) | **POST** /api/v1/admin/sign-out | |
-|[**updateAdmin**](#updateadmin) | **PUT** /api/v1/admin/admins/{adminId} | |
+|[**createAdmin**](#createadmin) | **POST** /v1/admin/new | |
+|[**getAdmins**](#getadmins) | **GET** /v1/admin/admins | |
+|[**getUsers**](#getusers) | **GET** /v1/admin/users | |
+|[**refreshAdminToken**](#refreshadmintoken) | **POST** /v1/admin/refresh-token | |
+|[**signIn1**](#signin1) | **POST** /v1/admin/sign-in | |
+|[**signOut1**](#signout1) | **POST** /v1/admin/sign-out | |
+|[**updateAdmin**](#updateadmin) | **PUT** /v1/admin/admins/{adminId} | |
 
 # **createAdmin**
 > AdminDetailResponse createAdmin(adminCreateRequest)

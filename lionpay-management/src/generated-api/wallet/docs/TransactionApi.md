@@ -4,10 +4,10 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1WalletTransactionsGet**](#apiv1wallettransactionsget) | **GET** /api/v1/wallet/transactions | Get transaction history|
+|[**v1WalletTransactionsGet**](#v1wallettransactionsget) | **GET** /v1/wallet/transactions | Get transaction history|
 
-# **apiV1WalletTransactionsGet**
-> Array<TransactionResponse> apiV1WalletTransactionsGet()
+# **v1WalletTransactionsGet**
+> Array<TransactionResponse> v1WalletTransactionsGet()
 
 Retrieves a list of past transactions for the authenticated user.
 
@@ -17,17 +17,17 @@ Retrieves a list of past transactions for the authenticated user.
 import {
     TransactionApi,
     Configuration,
-    ApiV1WalletTransactionsGetLimitParameter,
-    ApiV1WalletTransactionsGetOffsetParameter
+    V1WalletTransactionsGetLimitParameter,
+    V1WalletTransactionsGetOffsetParameter
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TransactionApi(configuration);
 
-let limit: ApiV1WalletTransactionsGetLimitParameter; // (optional) (default to 10)
-let offset: ApiV1WalletTransactionsGetOffsetParameter; // (optional) (default to 0)
+let limit: V1WalletTransactionsGetLimitParameter; // (optional) (default to 10)
+let offset: V1WalletTransactionsGetOffsetParameter; // (optional) (default to 0)
 
-const { status, data } = await apiInstance.apiV1WalletTransactionsGet(
+const { status, data } = await apiInstance.v1WalletTransactionsGet(
     limit,
     offset
 );
@@ -37,8 +37,8 @@ const { status, data } = await apiInstance.apiV1WalletTransactionsGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **limit** | [**ApiV1WalletTransactionsGetLimitParameter**] |  | (optional) defaults to 10|
-| **offset** | [**ApiV1WalletTransactionsGetOffsetParameter**] |  | (optional) defaults to 0|
+| **limit** | [**V1WalletTransactionsGetLimitParameter**] |  | (optional) defaults to 10|
+| **offset** | [**V1WalletTransactionsGetOffsetParameter**] |  | (optional) defaults to 0|
 
 
 ### Return type

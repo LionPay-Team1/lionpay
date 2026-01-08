@@ -70,6 +70,7 @@ public class AuthService {
 
 		// 1. 사용자 저장 (회원가입)
 		User savedUser = userRepository.save(user);
+		log.info("회원가입 완료: {}", savedUser);
 
 		// 2. 토큰 생성
 		String accessToken = jwtService.generateAccessToken(savedUser.getUserId());

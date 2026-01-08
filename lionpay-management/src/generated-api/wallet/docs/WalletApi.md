@@ -4,11 +4,11 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1WalletChargePost**](#apiv1walletchargepost) | **POST** /api/v1/wallet/charge | Charge wallet|
-|[**apiV1WalletMeGet**](#apiv1walletmeget) | **GET** /api/v1/wallet/me | Get my wallet|
+|[**v1WalletChargePost**](#v1walletchargepost) | **POST** /v1/wallet/charge | Charge wallet|
+|[**v1WalletMeGet**](#v1walletmeget) | **GET** /v1/wallet/me | Get my wallet|
 
-# **apiV1WalletChargePost**
-> WalletResponse apiV1WalletChargePost(chargeRequest)
+# **v1WalletChargePost**
+> WalletResponse v1WalletChargePost(chargeRequest)
 
 Charges the user\'s Money wallet with the specified amount.
 
@@ -26,7 +26,7 @@ const apiInstance = new WalletApi(configuration);
 
 let chargeRequest: ChargeRequest; //
 
-const { status, data } = await apiInstance.apiV1WalletChargePost(
+const { status, data } = await apiInstance.v1WalletChargePost(
     chargeRequest
 );
 ```
@@ -61,8 +61,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiV1WalletMeGet**
-> WalletResponse apiV1WalletMeGet()
+# **v1WalletMeGet**
+> WalletResponse v1WalletMeGet()
 
 Retrieves the current user\'s Money wallet information.
 
@@ -77,7 +77,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new WalletApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletMeGet();
+const { status, data } = await apiInstance.v1WalletMeGet();
 ```
 
 ### Parameters

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -28,7 +28,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails.getUser();
-        log.info("본인 정보 조회 요청: phone={}", user.getPhone());
+        log.info("본인 정보 조회 요청: User={}", user);
 
         return ResponseEntity.ok(UserResponse.from(user));
     }
