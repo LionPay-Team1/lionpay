@@ -51,20 +51,20 @@ public class SecurityConfig {
 						.permitAll()
 						.requestMatchers(
 								// 인증 API 경로
-								"/api/v1/auth/sign-up",
-								"/api/v1/auth/sign-in",
-								"/api/v1/auth/sign-out",
-								"/api/v1/auth/refresh-token",
-								"/api/v1/auth/health",
-								"/api/v1/auth/info")
+								"/v1/auth/sign-up",
+								"/v1/auth/sign-in",
+								"/v1/auth/sign-out",
+								"/v1/auth/refresh-token",
+								"/v1/auth/health",
+								"/v1/auth/info")
 						.permitAll()
 						// 관리자 토큰 재발급 경로
-						.requestMatchers("/api/v1/admin/refresh-token").permitAll()
-						.requestMatchers("/api/v1/admin/sign-in").permitAll()
-						.requestMatchers("/api/v1/admin/new").hasRole("SUPER_ADMIN")
-						.requestMatchers("/api/v1/admin/admins/**").hasRole("SUPER_ADMIN")
-						.requestMatchers("/api/v1/admin/admins").hasRole("SUPER_ADMIN")
-						.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+						.requestMatchers("/v1/admin/refresh-token").permitAll()
+						.requestMatchers("/v1/admin/sign-in").permitAll()
+						.requestMatchers("/v1/admin/new").hasRole("SUPER_ADMIN")
+						.requestMatchers("/v1/admin/admins/**").hasRole("SUPER_ADMIN")
+						.requestMatchers("/v1/admin/admins").hasRole("SUPER_ADMIN")
+						.requestMatchers("/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 						.anyRequest().authenticated())
 				.exceptionHandling(exception -> exception
 						.authenticationEntryPoint(jwtAuthenticationEntryPoint))
@@ -75,11 +75,14 @@ public class SecurityConfig {
 	@Bean
 	public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
 		org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-		configuration.setAllowedOrigins(java.util.Arrays.asList(
+		// AllowCredentials가 true일 때는 AllowedOrigins 대신 AllowedOriginPatterns를 사용해야
+		// 와일드카드를 쓸 수 있습니다.
+		configuration.setAllowedOriginPatterns(java.util.Arrays.asList(
 				"https://lionpay.shop",
 				"https://admin.lionpay.shop",
-				"http://localhost:5173",
-				"http://localhost:5174"));
+				"http://localhost:*",
+				"http://*.dev.localhost:*",
+				"http://lionpay.dev.localhost:*"));
 		configuration.addAllowedMethod("*");
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);

@@ -10,6 +10,7 @@ aws:
     access-key: ${AWS_ACCESS_KEY_ID:}
     secret-key: ${AWS_SECRET_ACCESS_KEY:}
     table-name: ${DYNAMODB_TABLE_NAME:lionpay-auth}
+    init-table: ${DYNAMODB_INIT_TABLE:false}
 
 jwt:
   secret: ${JWT_SECRET:SGVsbG9Xb3JsZFRoaXNJc0FTZWNyZXRLZXlGb3JMb2NhbFRlc3Rpbmc=}
@@ -30,8 +31,7 @@ springdoc:
   swagger-ui:
     path: /swagger.html
   paths-to-match:
-    - /api/**
-    - /admin/**
+    - /v1/**
 super-admin:
   username: ${SUPER_ADMIN_USERNAME:admin}
   password: ${SUPER_ADMIN_PASSWORD:password}

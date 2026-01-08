@@ -54,12 +54,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         corsBuilder =>
         {
-            corsBuilder.WithOrigins(
-                    "https://lionpay.shop",
-                    "https://admin.lionpay.shop",
-                    "http://localhost:5173",
-                    "http://localhost:5174"
-                )
+            corsBuilder.SetIsOriginAllowed(origin =>
+                {
+                    var host = new Uri(origin).Host;
+                    return host == "localhost" ||
+                           host.EndsWith(".dev.localhost") ||
+                           host == "lionpay.shop" ||
+                           host == "admin.lionpay.shop";
+                })
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -89,7 +91,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 app.MapDefaultEndpoints(); // Health checks should not require authentication
-app.MapHealthChecks("/api/v1/wallet/health")
+app.MapHealthChecks("/v1/wallet/health")
     .CacheOutput("HealthChecks")
     .WithRequestTimeout("HealthChecks");
 
