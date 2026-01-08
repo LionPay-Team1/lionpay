@@ -2,22 +2,22 @@ package com.likelion.lionpay_auth.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamoDbBean
-public class User extends BaseEntity {
+public class User {
 
+	private String pk;
+	private String sk;
 	private String userId;
 	private String phone;
 	private String password;
@@ -26,7 +26,24 @@ public class User extends BaseEntity {
 	private String createdAt;
 	private String updatedAt;
 
-	// Explicit Getters and Setters to ensure DynamoDB SDK visibility
+	@DynamoDbPartitionKey
+	public String getPk() {
+		return pk;
+	}
+
+	public void setPk(String pk) {
+		this.pk = pk;
+	}
+
+	@DynamoDbSortKey
+	public String getSk() {
+		return sk;
+	}
+
+	public void setSk(String sk) {
+		this.sk = sk;
+	}
+
 	public String getUserId() {
 		return userId;
 	}
@@ -100,5 +117,14 @@ public class User extends BaseEntity {
 			this.status = "ACTIVE";
 		}
 		this.updatedAt = now;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"userId='" + userId + '\'' +
+				", name='" + name + '\'' +
+				", status='" + status + '\'' +
+				'}';
 	}
 }
