@@ -35,7 +35,7 @@ Resources:
   WalletDB:
     Type: AWS::DSQL::Cluster
     Properties:
-      DeletionProtectionEnabled: true
+      DeletionProtectionEnabled: false
       Tags:
         - Key: Name
           Value: lionpay-local-dev-wallet-dsql-cluster
