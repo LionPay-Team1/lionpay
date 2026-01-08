@@ -37,7 +37,7 @@ const mapAdmin = (a: any): Admin => ({
 export const adminsApi = {
     getAll: async (): Promise<Admin[]> => {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get(`${AUTH_BASE_URL}/api/v1/admin/admins`, {
+        const response = await axios.get(`${AUTH_BASE_URL}/v1/admin/admins`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -58,7 +58,7 @@ export const adminsApi = {
 
     update: async (adminId: string, params: AdminUpdateParams): Promise<Admin> => {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.put(`${AUTH_BASE_URL}/api/v1/admin/admins/${adminId}`, params, {
+        const response = await axios.put(`${AUTH_BASE_URL}/v1/admin/admins/${adminId}`, params, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

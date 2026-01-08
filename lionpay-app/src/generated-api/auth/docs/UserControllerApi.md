@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost:8080*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**getCurrentUser**](#getcurrentuser) | **GET** /api/v1/users/me | |
+|[**getCurrentUser**](#getcurrentuser) | **GET** /v1/users/me | |
 
 # **getCurrentUser**
 > UserResponse getCurrentUser()

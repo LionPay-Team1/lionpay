@@ -141,7 +141,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     fetchWallet: async () => {
         try {
-            const response = await walletApi.apiV1WalletMeGet();
+            const response = await walletApi.v1WalletMeGet();
             const wallet = response.data;
 
             const balanceVal = (typeof wallet.balance === 'number') ? wallet.balance : ((wallet.balance as unknown as { amount: number })?.amount ?? 0);
@@ -156,7 +156,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     fetchTransactions: async () => {
         try {
-            const response = await transactionApi.apiV1WalletTransactionsGet();
+            const response = await transactionApi.v1WalletTransactionsGet();
             const transactions = response.data.map(mapTransaction);
             set({ transactions });
         } catch (error) {
@@ -170,12 +170,18 @@ export const useAppStore = create<AppState>((set, get) => ({
             set({ userName: response.data.name || '' });
         } catch (error) {
             console.error('Fetch user info failed:', error);
+            // Handle cases where token exists but user is invalid (e.g. DB reset, user deleted)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const status = (error as any)?.response?.status;
+            if (status === 401 || status === 403 || status === 404) {
+                get().logout();
+            }
         }
     },
 
     fetchExchangeRates: async () => {
         try {
-            const response = await exchangeRatesApi.apiV1WalletExchangeRatesGet();
+            const response = await exchangeRatesApi.v1WalletExchangeRatesGet();
             const rates = response.data;
 
             const newCountries = get().countries.map(c => {

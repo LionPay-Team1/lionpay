@@ -58,7 +58,7 @@ export function UserDetail() {
 
         setAdjusting(true);
         try {
-            await adminWalletApi.apiV1WalletAdminWalletsUserIdAdjustPost({
+            await adminWalletApi.v1WalletAdminWalletsUserIdAdjustPost({
                 userId,
                 adjustBalanceRequest: {
                     amount: parseFloat(adjustAmount),

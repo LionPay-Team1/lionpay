@@ -4,10 +4,10 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiV1WalletExchangeRatesGet**](#apiv1walletexchangeratesget) | **GET** /api/v1/wallet/exchange-rates | Get applied exchange rates|
+|[**v1WalletExchangeRatesGet**](#v1walletexchangeratesget) | **GET** /v1/wallet/exchange-rates | Get applied exchange rates|
 
-# **apiV1WalletExchangeRatesGet**
-> Array<ExchangeRateResponse> apiV1WalletExchangeRatesGet()
+# **v1WalletExchangeRatesGet**
+> Array<ExchangeRateResponse> v1WalletExchangeRatesGet()
 
 
 ### Example
@@ -21,7 +21,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new ExchangeRatesApi(configuration);
 
-const { status, data } = await apiInstance.apiV1WalletExchangeRatesGet();
+const { status, data } = await apiInstance.v1WalletExchangeRatesGet();
 ```
 
 ### Parameters

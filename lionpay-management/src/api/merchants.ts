@@ -23,24 +23,24 @@ const mapMerchant = (m: MerchantResponse | MerchantModel): Merchant => ({
 
 export const merchantsApi = {
     getAll: async (): Promise<Merchant[]> => {
-        const response = await adminWalletApi.apiV1WalletAdminMerchantsGet();
+        const response = await adminWalletApi.v1WalletAdminMerchantsGet();
         return response.data.map(mapMerchant);
     },
 
     getById: async (id: string): Promise<Merchant> => {
-        const response = await adminWalletApi.apiV1WalletAdminMerchantsIdGet({ id });
+        const response = await adminWalletApi.v1WalletAdminMerchantsIdGet({ id });
         return mapMerchant(response.data);
     },
 
     create: async (data: CreateMerchantRequest): Promise<Merchant> => {
-        const response = await adminWalletApi.apiV1WalletAdminMerchantsPost({
+        const response = await adminWalletApi.v1WalletAdminMerchantsPost({
             createMerchantRequest: data
         });
         return mapMerchant(response.data);
     },
 
     update: async (id: string, data: UpdateMerchantRequest): Promise<Merchant> => {
-        const response = await adminWalletApi.apiV1WalletAdminMerchantsIdPut({
+        const response = await adminWalletApi.v1WalletAdminMerchantsIdPut({
             id,
             updateMerchantRequest: data
         });

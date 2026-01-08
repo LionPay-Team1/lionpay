@@ -45,7 +45,7 @@ export default function Payment() {
         const fetchMerchants = async () => {
             try {
                 const countryCode = country.id.toUpperCase();
-                const response = await merchantApi.apiV1WalletMerchantsGet({ countryCode });
+                const response = await merchantApi.v1WalletMerchantsGet({ countryCode });
                 const merchantShops: Shop[] = response.data.map((m: MerchantResponse) => ({
                     id: m.merchantId,
                     name: m.merchantName,
@@ -88,7 +88,7 @@ export default function Payment() {
             // Call actual payment API
 
 
-            await paymentApi.apiV1WalletPaymentsPost({
+            await paymentApi.v1WalletPaymentsPost({
                 paymentRequest: {
                     merchantId: selectedShop!.id,
                     amountCash: payAmount,
