@@ -29,7 +29,7 @@ public class UserRepository {
 
     /**
      * DynamoDB 페이지네이션 결과를 감싸는 레코드
-     * 
+     *
      * @param items   현재 페이지의 사용자 목록
      * @param lastKey 다음 페이지 조회를 위한 키 (Base64 인코딩된 문자열)
      * @param hasMore 다음 페이지가 있는지 여부
@@ -67,8 +67,10 @@ public class UserRepository {
      */
     public Optional<User> findByUserId(String userId) {
         Expression filterExpression = Expression.builder()
-                .expression("userId = :val")
-                .expressionValues(Map.of(":val", AttributeValue.fromS(userId)))
+                .expression("userId = :val AND sk = :sk_val")
+                .expressionValues(Map.of(
+                        ":val", AttributeValue.fromS(userId),
+                        ":sk_val", AttributeValue.fromS(DynamoDBConstants.INFO_SK)))
                 .build();
 
         ScanEnhancedRequest request = ScanEnhancedRequest.builder()
@@ -81,7 +83,7 @@ public class UserRepository {
 
     /**
      * 모든 사용자를 스캔하여 반환합니다.
-     * 
+     *
      * @return 모든 사용자 목록
      */
     public List<User> findAll() {
