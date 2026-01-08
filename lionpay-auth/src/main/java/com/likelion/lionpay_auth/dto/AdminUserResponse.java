@@ -9,10 +9,11 @@ import com.likelion.lionpay_auth.entity.User;
 public record AdminUserResponse(
         String userId,
         String phone,
+        String name,
         String status,
-        String createdAt
-) {
+        String createdAt) {
     public static AdminUserResponse from(User user) {
-        return new AdminUserResponse(user.getUserId(), user.getPhone(), user.getStatus(), user.getCreatedAt());
+        return new AdminUserResponse(user.getUserId(), user.getPhone(), user.getName(), user.getStatus(),
+                user.getCreatedAt());
     }
 }
