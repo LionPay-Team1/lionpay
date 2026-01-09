@@ -78,8 +78,8 @@ public class SecurityConfig {
 		// AllowCredentials가 true일 때는 AllowedOrigins 대신 AllowedOriginPatterns를 사용해야
 		// 와일드카드를 쓸 수 있습니다.
 		configuration.setAllowedOriginPatterns(java.util.Arrays.asList(
-				"https://lionpay.shop",
-				"https://admin.lionpay.shop",
+				"https://*.lionpay.shop",
+				"https://*.dev.lionpay.shop",
 				"http://localhost:*",
 				"http://*.dev.localhost:*",
 				"http://lionpay.dev.localhost:*"));
