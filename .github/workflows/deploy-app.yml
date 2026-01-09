@@ -32,9 +32,13 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
               echo "BUCKET_FRONTEND=${{ secrets.BUCKET_FRONTEND_PROD }}" >> "$GITHUB_ENV"
               echo "DIST_ID=${{ secrets.DIST_APP_ID_PROD }}" >> "$GITHUB_ENV"
+              echo "AUTH_SERVICE_URL=https://api.lionpay.shop" >> "$GITHUB_ENV"
+              echo "WALLET_SERVICE_URL=https://api.lionpay.shop" >> "$GITHUB_ENV"
           else
               echo "BUCKET_FRONTEND=${{ secrets.BUCKET_FRONTEND_DEV }}" >> "$GITHUB_ENV"
               echo "DIST_ID=${{ secrets.DIST_APP_ID_DEV }}" >> "$GITHUB_ENV"
+              echo "AUTH_SERVICE_URL=https://api.dev.lionpay.shop" >> "$GITHUB_ENV"
+              echo "WALLET_SERVICE_URL=https://api.dev.lionpay.shop" >> "$GITHUB_ENV"
           fi
 
       - name: Setup Bun
@@ -49,8 +53,8 @@ jobs:
       - name: Build
         working-directory: lionpay-app
         env:
-          AUTH_SERVICE_URL: https://api.lionpay.shop
-          WALLET_SERVICE_URL: https://api.lionpay.shop
+          AUTH_SERVICE_URL: ${{ env.AUTH_SERVICE_URL }}
+          WALLET_SERVICE_URL: ${{ env.WALLET_SERVICE_URL }}
         run: bun run build
 
       - name: Configure AWS credentials
