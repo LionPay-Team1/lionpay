@@ -59,8 +59,8 @@ builder.Services.AddCors(options =>
                     var host = new Uri(origin).Host;
                     return host == "localhost" ||
                            host.EndsWith(".dev.localhost") ||
-                           host == "lionpay.shop" ||
-                           host == "admin.lionpay.shop";
+                           host.EndsWith(".lionpay.shop") ||
+                           host.EndsWith(".dev.lionpay.shop");
                 })
                 .AllowAnyMethod()
                 .AllowAnyHeader()
